@@ -37,13 +37,13 @@ O Stante centraliza esse ciclo — do recebimento da demanda até o fechamento �
 
 | Integrante | Função |
 |---|---|
-| **Yasmin** | Product Manager |
-| **Calixto** | Product Manager |
-| **Jullya** | Data Analyst |
-| **Marcos** | Data Engineer |
-| **Miguel** | Front-end Developer |
-| **JV** | Back-end Developer |
-| **Leandro** | Back-end Developer |
+| **Yasmin Lopes** | Product Manager |
+| **Lucas Calixto** | Product Manager |
+| **Jullya Medeiros** | Data Analyst |
+| **Marcos Felipe** | Data Engineer |
+| **Miguel Cabral** | Front-end Developer |
+| **João Vitor** | Back-end Developer |
+| **Leandro Carvalho** | Back-end Developer |
 
 <br/>
 
