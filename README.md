@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/Status-Em%20desenvolvimento-E0A526?style=for-the-badge" alt="status"/>
-  <img src="https://img.shields.io/badge/Metodologia-Lean%20UX%20%2B%20Scrum-16261C?style=for-the-badge" alt="metodologia"/>
+  <img src="https://img.shields.io/badge/Metodologia-Scrumban-16261C?style=for-the-badge" alt="metodologia"/>
   <img src="https://img.shields.io/badge/Sprint-Atual-1B2B22?style=for-the-badge" alt="sprint"/>
 </p>
 
@@ -29,7 +29,7 @@ Essa fragmentação gera:
 
 O Stante centraliza esse ciclo — do recebimento da demanda até o fechamento — dando **rastreabilidade, prazos visíveis e indicadores em tempo real** para quem gerencia, quem executa em campo e quem cobra uma resposta institucional.
 
-> Projeto construído a partir de pesquisa documental, definição de proto-personas (metodologia Lean UX), matriz CSD, roteiro de entrevista semiestruturada e mapeamento de stakeholders.
+> Projeto construído a partir de pesquisa documental, definição de proto-personas, matriz CSD, roteiro de entrevista semiestruturada e mapeamento de stakeholders.
 
 <br/>
 
@@ -75,7 +75,7 @@ O Stante centraliza esse ciclo — do recebimento da demanda até o fechamento �
 
 O processo de descoberta seguiu o fluxo: **Pesquisa documental → Persona preliminar → Entrevista → Validação → Persona final**, apoiado em:
 
-- **Proto-personas (Lean UX)** — Gestora VISAT, Inspetor de campo e Representante institucional
+- **Proto-personas** — Gestora VISAT, Inspetor de campo e Representante institucional
 - **Matriz CSD** — Certezas, Suposições e Dúvidas sobre o problema
 - **Mapeamento de stakeholders** — centrais, internos e externos
 - **Roteiro de entrevista semiestruturada** — validação de hipóteses de dor com a equipe real
@@ -89,7 +89,7 @@ O processo de descoberta seguiu o fluxo: **Pesquisa documental → Persona preli
 **Board — visão geral**
 <img src="./assets/board-view-1.png" alt="Board do projeto no ClickUp" width="100%"/>
 
-**Board — backlog e colunas de status**
+**Backlog priorizado**
 <img src="./assets/backlog-view.png" alt="Backlog priorizado no ClickUp" width="100%"/>
 
 <br/>
