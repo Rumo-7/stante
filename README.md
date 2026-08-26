@@ -90,7 +90,7 @@ O processo de descoberta seguiu o fluxo: **Pesquisa documental → Persona preli
 <img src="./assets/board-view-1.png" alt="Board do projeto no ClickUp" width="100%"/>
 
 **Board — backlog e colunas de status**
-<img src="./assets/board-view-2.png" alt="Backlog priorizado no ClickUp" width="100%"/>
+<img src="./assets/backlog-view.png" alt="Backlog priorizado no ClickUp" width="100%"/>
 
 <br/>
 
