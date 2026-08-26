@@ -133,7 +133,7 @@ A stack de desenvolvimento do produto ainda está em definição conforme o proj
 - [ClickUp](https://clickup.com) — board, backlog e sprints
 - [Markdown](https://www.markdownguide.org) — documentação
 - [Shields.io](https://shields.io) — badges
-- [UI Avatars](https://ui-avatars.com) — avatares da equipe
+- GitHub — avatares reais da equipe no Hall of Fame
 
 <br/>
 
@@ -186,50 +186,38 @@ A stack de desenvolvimento do produto ainda está em definição conforme o proj
 <table>
 <tr>
 <td align="center">
-<img src="https://ui-avatars.com/api/?name=Yasmin&background=E0A526&color=16261C&bold=true&size=128&rounded=true" width="80"/><br/>
-<b>Yasmin</b><br/><sub>Product Manager</sub>
+<a href="https://github.com/lopesyas"><img src="https://github.com/lopesyas.png" width="80" style="border-radius:50%"/></a><br/>
+<b><a href="https://github.com/lopesyas">Yasmin</a></b><br/><sub>Product Manager</sub>
 </td>
 <td align="center">
-<img src="https://ui-avatars.com/api/?name=Calixto&background=16261C&color=E0A526&bold=true&size=128&rounded=true" width="80"/><br/>
-<b>Calixto</b><br/><sub>Product Manager</sub>
+<a href="https://github.com/lucas-calixto-lemos"><img src="https://github.com/lucas-calixto-lemos.png" width="80" style="border-radius:50%"/></a><br/>
+<b><a href="https://github.com/lucas-calixto-lemos">Calixto</a></b><br/><sub>Product Manager</sub>
 </td>
 <td align="center">
-<img src="https://ui-avatars.com/api/?name=Jullya&background=E0A526&color=16261C&bold=true&size=128&rounded=true" width="80"/><br/>
-<b>Jullya</b><br/><sub>Data Analyst</sub>
+<a href="https://github.com/juuvmed"><img src="https://github.com/juuvmed.png" width="80" style="border-radius:50%"/></a><br/>
+<b><a href="https://github.com/juuvmed">Jullya</a></b><br/><sub>Data Analyst</sub>
 </td>
 <td align="center">
-<img src="https://ui-avatars.com/api/?name=Marcos&background=16261C&color=E0A526&bold=true&size=128&rounded=true" width="80"/><br/>
-<b>Marcos</b><br/><sub>Data Engineer</sub>
+<a href="https://github.com/marcos-felipe17"><img src="https://github.com/marcos-felipe17.png" width="80" style="border-radius:50%"/></a><br/>
+<b><a href="https://github.com/marcos-felipe17">Marcos</a></b><br/><sub>Data Engineer</sub>
 </td>
 </tr>
 <tr>
 <td align="center">
-<img src="https://ui-avatars.com/api/?name=Miguel&background=E0A526&color=16261C&bold=true&size=128&rounded=true" width="80"/><br/>
-<b>Miguel</b><br/><sub>Front-end Developer</sub>
+<a href="https://github.com/O-bono"><img src="https://github.com/O-bono.png" width="80" style="border-radius:50%"/></a><br/>
+<b><a href="https://github.com/O-bono">Miguel</a></b><br/><sub>Front-end Developer</sub>
 </td>
 <td align="center">
-<img src="https://ui-avatars.com/api/?name=JV&background=16261C&color=E0A526&bold=true&size=128&rounded=true" width="80"/><br/>
-<b>JV</b><br/><sub>Back-end Developer</sub>
+<a href="https://github.com/itsjvsouza"><img src="https://github.com/itsjvsouza.png" width="80" style="border-radius:50%"/></a><br/>
+<b><a href="https://github.com/itsjvsouza">JV</a></b><br/><sub>Back-end Developer</sub>
 </td>
 <td align="center">
-<img src="https://ui-avatars.com/api/?name=Leandro&background=E0A526&color=16261C&bold=true&size=128&rounded=true" width="80"/><br/>
-<b>Leandro</b><br/><sub>Back-end Developer</sub>
+<a href="https://github.com/leandrodev-sudo"><img src="https://github.com/leandrodev-sudo.png" width="80" style="border-radius:50%"/></a><br/>
+<b><a href="https://github.com/leandrodev-sudo">Leandro</a></b><br/><sub>Back-end Developer</sub>
 </td>
 <td></td>
 </tr>
 </table>
-
-<br/>
-
-<a name="agradecimentos"></a>
-## 🎉 Agradecimentos
-
-- **CESAR School** — orientação acadêmica e critérios de entrega
-- Comunidade que documenta boas práticas de README, incluindo o [crash course do HackerNoon](https://hackernoon.com/a-crash-course-on-writing-a-better-readme-d796d1f6b352) e o [hall-of-fame do Sourcerer](https://github.com/sourcerer-io/hall-of-fame), referências de estrutura para este documento
-- Time **RUMO 7** pela pesquisa, entrevistas e construção do backlog
-
-<br/>
-
 <a name="licenca"></a>
 ## 📄 Licença
 
@@ -239,6 +227,6 @@ Projeto acadêmico desenvolvido para a CESAR School. Uso restrito à equipe RUMO
 
 <div align="center">
 
-Feito com 💚 pelo time **RUMO 7** — CESAR School
+time **RUMO 7** — CESAR School
 
 </div>
