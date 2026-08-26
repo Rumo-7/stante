@@ -187,33 +187,33 @@ A stack de desenvolvimento do produto ainda está em definição conforme o proj
 <tr>
 <td align="center">
 <a href="https://github.com/lopesyas"><img src="https://github.com/lopesyas.png" width="80" style="border-radius:50%"/></a><br/>
-<b><a href="https://github.com/lopesyas">Yasmin</a></b><br/><sub>Product Manager</sub>
+<b><a href="https://github.com/lopesyas">Yasmin Lopes</a></b><br/><sub>Product Manager</sub>
 </td>
 <td align="center">
 <a href="https://github.com/lucas-calixto-lemos"><img src="https://github.com/lucas-calixto-lemos.png" width="80" style="border-radius:50%"/></a><br/>
-<b><a href="https://github.com/lucas-calixto-lemos">Calixto</a></b><br/><sub>Product Manager</sub>
+<b><a href="https://github.com/lucas-calixto-lemos">Lucas Calixto</a></b><br/><sub>Product Manager</sub>
 </td>
 <td align="center">
 <a href="https://github.com/juuvmed"><img src="https://github.com/juuvmed.png" width="80" style="border-radius:50%"/></a><br/>
-<b><a href="https://github.com/juuvmed">Jullya</a></b><br/><sub>Data Analyst</sub>
+<b><a href="https://github.com/juuvmed">Jullya Medeiros</a></b><br/><sub>Data Analyst</sub>
 </td>
 <td align="center">
 <a href="https://github.com/marcos-felipe17"><img src="https://github.com/marcos-felipe17.png" width="80" style="border-radius:50%"/></a><br/>
-<b><a href="https://github.com/marcos-felipe17">Marcos</a></b><br/><sub>Data Engineer</sub>
+<b><a href="https://github.com/marcos-felipe17">Marcos Felipe</a></b><br/><sub>Data Engineer</sub>
 </td>
 </tr>
 <tr>
 <td align="center">
 <a href="https://github.com/O-bono"><img src="https://github.com/O-bono.png" width="80" style="border-radius:50%"/></a><br/>
-<b><a href="https://github.com/O-bono">Miguel</a></b><br/><sub>Front-end Developer</sub>
+<b><a href="https://github.com/O-bono">Miguel Cabral</a></b><br/><sub>Front-end Developer</sub>
 </td>
 <td align="center">
 <a href="https://github.com/itsjvsouza"><img src="https://github.com/itsjvsouza.png" width="80" style="border-radius:50%"/></a><br/>
-<b><a href="https://github.com/itsjvsouza">JV</a></b><br/><sub>Back-end Developer</sub>
+<b><a href="https://github.com/itsjvsouza">João Noya</a></b><br/><sub>Back-end Developer</sub>
 </td>
 <td align="center">
 <a href="https://github.com/leandrodev-sudo"><img src="https://github.com/leandrodev-sudo.png" width="80" style="border-radius:50%"/></a><br/>
-<b><a href="https://github.com/leandrodev-sudo">Leandro</a></b><br/><sub>Back-end Developer</sub>
+<b><a href="https://github.com/leandrodev-sudo">Leandro Carvalho</a></b><br/><sub>Back-end Developer</sub>
 </td>
 <td></td>
 </tr>
