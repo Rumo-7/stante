@@ -109,6 +109,6 @@ O processo de descoberta seguiu o fluxo: **Pesquisa documental → Persona preli
 
 <div align="center">
 
-Feito com 💚 pelo time **RUMO 7** — CESAR School
+ **RUMO 7** — CESAR School
 
 </div>
