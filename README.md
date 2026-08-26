@@ -1,22 +1,45 @@
-<div align="center">
+<p align="center">
+  <img src="./assets/logo.jpeg" alt="Stante" width="280"/>
+</p>
 
-<img src="./assets/logo.jpeg" alt="Stante" width="320"/>
+<h1 align="center">Stante</h1>
 
-### Gestão centralizada de demandas de Vigilância em Saúde do Trabalhador
+<p align="center">
+  Gestão centralizada de demandas de Vigilância em Saúde do Trabalhador (VISAT/CEREST)
+</p>
 
-<p>
+<p align="center">
   <img src="https://img.shields.io/badge/Status-Em%20desenvolvimento-E0A526?style=for-the-badge" alt="status"/>
   <img src="https://img.shields.io/badge/Metodologia-Scrumban-16261C?style=for-the-badge" alt="metodologia"/>
   <img src="https://img.shields.io/badge/Sprint-Atual-1B2B22?style=for-the-badge" alt="sprint"/>
 </p>
 
-**[📋 Ver Board Completo no ClickUp »](https://sharing.clickup.com/90171494885/b/h/5-901710774440-2/e2df639a3523910)**
+<p align="center">
+  <a href="https://sharing.clickup.com/90171494885/b/h/5-901710774440-2/e2df639a3523910">
+    <img src="https://img.shields.io/badge/📋_Ver_Board_Completo-Abrir_no_ClickUp-E0A526?style=for-the-badge" alt="board"/>
+  </a>
+</p>
 
-</div>
+---
+
+## 📝 Índice
+
+- [Sobre o projeto](#sobre)
+- [Como começar](#comecando)
+- [Backlog priorizado](#backlog)
+- [Metodologia](#metodologia)
+- [Construído com](#construido-com)
+- [Evidências](#evidencias)
+- [Critérios atendidos](#criterios)
+- [Como contribuir](#contribuir)
+- [Hall of Fame — Equipe](#hall-of-fame)
+- [Agradecimentos](#agradecimentos)
+- [Licença](#licenca)
 
 <br/>
 
-## 🧭 Sobre o projeto
+<a name="sobre"></a>
+## 🧐 Sobre o projeto
 
 O **Stante** é um sistema de gestão de demandas desenvolvido para a **VISAT/CEREST Recife** (Vigilância em Saúde do Trabalhador). Hoje, o fluxo de trabalho da equipe depende de planilhas e processos manuais para receber, distribuir, executar e responder formalmente a solicitações de órgãos como **MPT**, **TRT**, **Conselhos de Saúde** e **Sindicatos**.
 
@@ -33,23 +56,39 @@ O Stante centraliza esse ciclo — do recebimento da demanda até o fechamento �
 
 <br/>
 
-## 👥 Equipe — RUMO 7
+<a name="comecando"></a>
+## 🏁 Como começar
 
-| Integrante | Função |
-|---|---|
-| **Yasmin Lopes** | Product Manager |
-| **Lucas Calixto** | Product Manager |
-| **Jullya Medeiros** | Data Analyst |
-| **Marcos Felipe** | Data Engineer |
-| **Miguel Cabral** | Front-end Developer |
-| **João Vitor** | Back-end Developer |
-| **Leandro Carvalho** | Back-end Developer |
+Estas instruções vão te orientar a acompanhar ou contribuir com o projeto.
+
+### Pré-requisitos
+
+O projeto está na fase de descoberta e construção de backlog — ainda não há uma aplicação instalável. Para acompanhar ou contribuir, você precisa de:
+
+```
+Acesso ao Space "RUMO 7" no ClickUp (solicite a um PM da equipe)
+Git instalado, para quando o versionamento de código começar
+```
+
+### Acessando o projeto
+
+Acesse o board completo com todas as tarefas e status:
+
+**[📋 Abrir Board no ClickUp »](https://sharing.clickup.com/90171494885/b/h/5-901710774440-2/e2df639a3523910)**
+
+Quando o código-fonte for versionado neste repositório:
+
+```bash
+git clone <url-do-repositorio>
+cd stante
+```
 
 <br/>
 
+<a name="backlog"></a>
 ## 🗂️ Backlog priorizado
 
-15 histórias de usuário, no padrão **3Cs** (Card, Conversation, Confirmation), organizadas no board do ClickUp por status (Backlog → Pendente → Em progresso → Review → Closed).
+15 histórias de usuário, no padrão **3Cs** (Card, Conversation, Confirmation), organizadas no board por status (Backlog → Pendente → Em progresso → Review → Closed).
 
 | # | História de Usuário | Acessar |
 |---|---|---|
@@ -71,6 +110,7 @@ O Stante centraliza esse ciclo — do recebimento da demanda até o fechamento �
 
 <br/>
 
+<a name="metodologia"></a>
 ## 🔬 Metodologia
 
 O processo de descoberta seguiu o fluxo: **Pesquisa documental → Persona preliminar → Entrevista → Validação → Persona final**, apoiado em:
@@ -81,9 +121,23 @@ O processo de descoberta seguiu o fluxo: **Pesquisa documental → Persona preli
 - **Roteiro de entrevista semiestruturada** — validação de hipóteses de dor com a equipe real
 - **Jornada do usuário** — storyboard das três personas, ponta a ponta
 - **Análise de dados públicos (SmartLab/Previdência Social)** — fundamentação do problema de subnotificação
+- **Scrumban** — gestão do backlog e das sprints da equipe no ClickUp
 
 <br/>
 
+<a name="construido-com"></a>
+## ⛏️ Construído com
+
+A stack de desenvolvimento do produto ainda está em definição conforme o projeto avança. As ferramentas abaixo já sustentam a construção do backlog e da documentação:
+
+- [ClickUp](https://clickup.com) — board, backlog e sprints
+- [Markdown](https://www.markdownguide.org) — documentação
+- [Shields.io](https://shields.io) — badges
+- [UI Avatars](https://ui-avatars.com) — avatares da equipe
+
+<br/>
+
+<a name="evidencias"></a>
 ## 📸 Evidências
 
 **Board — visão geral**
@@ -94,6 +148,7 @@ O processo de descoberta seguiu o fluxo: **Pesquisa documental → Persona preli
 
 <br/>
 
+<a name="criterios"></a>
 ## ✅ Critérios atendidos — Entrega 01
 
 | Critério | Status |
@@ -101,14 +156,89 @@ O processo de descoberta seguiu o fluxo: **Pesquisa documental → Persona preli
 | Mínimo de 15 histórias de usuário, padrão 3Cs | ✅ 15 histórias (UH1–UH15) |
 | Backlog priorizado no board | ✅ ClickUp — colunas Backlog / Pendente / Em progresso / Review / Closed |
 | Repositório público com README organizado | ✅ este documento |
-| Papéis de cada integrante registrados | ✅ seção Equipe |
+| Papéis de cada integrante registrados | ✅ seção Hall of Fame |
 | Print atualizado do board no README | ✅ seção Evidências |
 | Print atualizado do backlog no README | ✅ seção Evidências |
 
 <br/>
 
+<a name="contribuir"></a>
+## 🎈 Como contribuir
+
+1. Crie uma branch a partir de `main` referenciando a tarefa do ClickUp:
+   ```bash
+   git checkout -b feature/UHx-nome-da-tarefa
+   ```
+2. Faça commits seguindo o padrão [Conventional Commits](https://www.conventionalcommits.org):
+   ```
+   feat: adiciona cálculo automático de prazo
+   fix: corrige exibição de status no painel
+   docs: atualiza README
+   ```
+3. Abra um Pull Request vinculando a tarefa correspondente no ClickUp.
+4. Peça revisão de pelo menos 1 dev do time antes do merge em `main`.
+
+<br/>
+
+<a name="hall-of-fame"></a>
+## ✨ Hall of Fame — Equipe RUMO 7
+
+<table>
+<tr>
+<td align="center">
+<img src="https://ui-avatars.com/api/?name=Yasmin&background=E0A526&color=16261C&bold=true&size=128&rounded=true" width="80"/><br/>
+<b>Yasmin</b><br/><sub>Product Manager</sub>
+</td>
+<td align="center">
+<img src="https://ui-avatars.com/api/?name=Calixto&background=16261C&color=E0A526&bold=true&size=128&rounded=true" width="80"/><br/>
+<b>Calixto</b><br/><sub>Product Manager</sub>
+</td>
+<td align="center">
+<img src="https://ui-avatars.com/api/?name=Jullya&background=E0A526&color=16261C&bold=true&size=128&rounded=true" width="80"/><br/>
+<b>Jullya</b><br/><sub>Data Analyst</sub>
+</td>
+<td align="center">
+<img src="https://ui-avatars.com/api/?name=Marcos&background=16261C&color=E0A526&bold=true&size=128&rounded=true" width="80"/><br/>
+<b>Marcos</b><br/><sub>Data Engineer</sub>
+</td>
+</tr>
+<tr>
+<td align="center">
+<img src="https://ui-avatars.com/api/?name=Miguel&background=E0A526&color=16261C&bold=true&size=128&rounded=true" width="80"/><br/>
+<b>Miguel</b><br/><sub>Front-end Developer</sub>
+</td>
+<td align="center">
+<img src="https://ui-avatars.com/api/?name=JV&background=16261C&color=E0A526&bold=true&size=128&rounded=true" width="80"/><br/>
+<b>JV</b><br/><sub>Back-end Developer</sub>
+</td>
+<td align="center">
+<img src="https://ui-avatars.com/api/?name=Leandro&background=E0A526&color=16261C&bold=true&size=128&rounded=true" width="80"/><br/>
+<b>Leandro</b><br/><sub>Back-end Developer</sub>
+</td>
+<td></td>
+</tr>
+</table>
+
+<br/>
+
+<a name="agradecimentos"></a>
+## 🎉 Agradecimentos
+
+- **CESAR School** — orientação acadêmica e critérios de entrega
+- Comunidade que documenta boas práticas de README, incluindo o [crash course do HackerNoon](https://hackernoon.com/a-crash-course-on-writing-a-better-readme-d796d1f6b352) e o [hall-of-fame do Sourcerer](https://github.com/sourcerer-io/hall-of-fame), referências de estrutura para este documento
+- Time **RUMO 7** pela pesquisa, entrevistas e construção do backlog
+
+<br/>
+
+<a name="licenca"></a>
+## 📄 Licença
+
+Projeto acadêmico desenvolvido para a CESAR School. Uso restrito à equipe RUMO 7 — sem licença open-source definida até o momento.
+
+<br/>
+
 <div align="center">
 
- **RUMO 7** — CESAR School
+Feito com 💚 pelo time **RUMO 7** — CESAR School
 
 </div>
