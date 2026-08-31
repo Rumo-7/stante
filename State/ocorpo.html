@@ -2,28 +2,103 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0", user-scalable="no">
     <title>Login</title>
+    <link rel="icon" href="rumo7.ico" type="logo-icon">
+    <link rel="stylesheet" href="estyle.css">
 </head>
 <body>
     <main class="login-container">
         <section class="login-form">
             <div class="form-content">
-                <h1>Acesse sua conta</hi>
+                <h1>Acesse sua conta!</h1>
+                <p class="subtitle"> Centralize, acompanhe e responda suas demandas.</p>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="nome">
+                            Nome
+                        </label>
+                        <input
+                            type="text"
+                            id="nome"
+                            placeholder="Digite seu nome"
+                        >
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="email">
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="Digite seu email"
+                        >
+                    </div>
+                    <div class="input-group">
+                        <label for="senha">
+                            Senha
+                        </label>
+                        <input
+                            type="password"
+                            id="senha"
+                            placeholder="Digite sua senha"
+                        >
+                    </div>
+
+                    <div class="terms">
+                        <input
+                            type="checkbox"
+                            id="terms"
+                        >
+                        <label for="terms">
+                            I agree to the
+                            <a href="#">terms & policy</a>
+                        </label>
+                    </div>
+                    
+                    <button
+                        type="submit"
+                        class="login-button"
+                    >
+                        Entrar
+                    </button>
+                </form>
+                
+                    <div class="divider">
+                        <span></span>
+                        <p>ou</p>
+                        <span></span>
+                    </div>
+                <div class="social-login">
+                    <button class="social-button">
+                        <strong>G</strong>
+                        Entrar com o Google
+                    </button>
+                    <button class="social-button">
+                        <strong>gov</strong>
+                        Entrar com o gov.br
+                    </button>
+
+                </div>
+                <p class="register">
+                    Não tem uma conta?
+                    <a href="#">
+                        Solicite acesso
+                    </a>
+                </p>
             </div>
-
-
-
-
-
         </section> 
-
+        
+        <section class="brand-panel">
+            
+        </section>
 
     </main>
 
 
 
-
+<script type="javascript" src="animado.js"></script>
 
 
 </body>
