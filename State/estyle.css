@@ -1,0 +1,249 @@
+/* ========================================
+   CONFIGURAÇÕES GERAIS
+======================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background: #f2f2f2;
+    color: #152822;
+    
+}
+
+
+/* ========================================
+   CONTAINER PRINCIPAL
+======================================== */
+
+.login-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    
+}
+
+
+/* ========================================
+   ÁREA DO FORMULÁRIO
+======================================== */
+
+.login-form {
+    width: 50%;
+    min-height: 100vh;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-content {
+    width: 512.66px;
+    max-width: calc(100% - 48px);
+
+}
+.form-content h1{
+    font-size: 50px;
+    font-weight: 600;
+
+
+}
+
+/* ========================================
+   BOTÃO DE LOGIN
+======================================== */
+
+.login-button {
+    box-sizing: border-box;
+    background: #274d21;
+    color: #fff;
+}
+
+/* ========================================
+   TÍTULOS E TEXTOS
+======================================== */
+h1{
+    margin-bottom: 8px;
+    text-align: left;
+}
+.subtitle{
+    text-align: left;
+    margin-bottom: 38px;
+    color: #17352e;
+    font-size: 20px;
+
+
+}
+
+/* ========================================
+   CAMPOS DO FORMULÁRIO
+======================================== */
+.input-group{
+    width:100%;
+    height:80px;
+    padding: 1px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom:20px;
+}
+.input-group label{
+    margin-bottom: 20px;
+    font-size:17.77px;
+    margin-bottom: 7px;
+    font-family:"Poppins", sans-serif;
+}
+.input-group input{
+    border: 1px solid;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+    padding: 0 10px;
+    height: 45px;
+}
+.input-group input:focus {
+    border-color: #315f28;
+
+    box-shadow: 0 0 0 2px rgba(49, 95, 40, 0.08);
+}
+.password-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom:10px;
+}
+
+.login-button {
+    width: 100%;
+    height: 43px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #315f28;
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+    font-family: "Poppins", sans-serif;
+}
+.login-button:hover {
+    background: #274d21;
+}
+/* ========================================
+   DIVISOR
+======================================== */
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 30px 0;
+}
+
+.divider span {
+    height: 1px;
+    background: #e1e6e4;
+    flex: 1;
+}
+
+.divider p {
+    font-size: 11px;
+}
+
+
+/* ========================================
+   LOGIN SOCIAL
+======================================== */
+
+.social-login {
+    display: flex;
+    gap: 14px;
+}
+
+.social-button {
+    flex: 1;
+    height: 38px;
+
+    background: white;
+
+    font-size: 13px;
+    cursor: pointer;
+
+    border-radius: 10px;
+    border: 1px solid;
+
+    margin: 20px;
+    font-family: "Poppins", sans-serif;
+}
+
+
+/* ========================================
+   CADASTRO
+======================================== */
+
+.register {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 20px;
+
+}
+
+.register a {
+    color: #0088FF;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+
+/* ========================================
+   PAINEL DA STANTE
+======================================== */
+
+.brand-panel {
+    width: 50%;
+    min-height: 100vh;
+    background-image: url("panelstante.jpeg");
+    border-radius: 39px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+.terms{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 24px;
+    font-size: 12px;
+}
+
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+@media (max-width: 900px) {
+
+    .login-container {
+        flex-direction: column;
+    }
+
+    .login-form {
+        width: 100%;
+    }
+
+    .brand-panel {
+        width: 100%;
+        min-height: 500px;
+    }
+
+}
