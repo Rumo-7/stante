@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Login</title>
+    <link rel="icon" href="rumo7.ico" type="logo-icon">
+    <link rel="stylesheet" href="estyle.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="login-container">
+ 
+        <section class="login-form">
+            <div class="form-content">
+                <h1>Acesse sua conta!</h1>
+                <p class="subtitle">Centralize, acompanhe e responda suas demandas.</p>
+ 
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="Digite seu email"
+                            name="email" required
+                        >
+                    </div>
+ 
+                    <div class="input-group">
+                        <div class="password-header">
+                            <label for="senha">Senha</label>
+                            <a href="esqueci.html">Esqueceu sua senha?</a>
+                        </div>
+                        <div class="password-field">
+                            <input
+                                type="password"
+                                id="senha"
+                                placeholder="Digite sua senha"
+                                name="senha" required
+                            >
+                            <button
+                                type="button"
+                                class="toggle-password"
+                                id="togglePassword"
+                                aria-label="Mostrar senha"
+                            >
+                                <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+ 
+                    <div class="terms">
+                        <input
+                            type="checkbox"
+                            id="terms"
+                        >
+                        <label for="terms">
+                            Eu concordo com os
+                            <a href="#">termos e política de privacidade</a>
+                        </label>
+                    </div>
+ 
+                    <button
+                        type="submit"
+                        class="login-button"
+                    >
+                        Entrar
+                    </button>
+                </form>
+ 
+                <div class="divider">
+                    <span></span>
+                    <p>ou</p>
+                    <span></span>
+                </div>
+ 
+                <div class="social-login">
+                    <button class="social-button">
+                        <img class="social-icon" src="google.png" alt="Google">
+                        Entrar com o Google
+                    </button>
+                    <button class="social-button">
+                        <img class="social-icon" src="govbr.png" alt="gov.br">
+                        Entrar com o gov.br
+                    </button>
+                </div>
+
+                <p class="register">
+                    Não tem uma conta?
+                    <a href="#">Solicite acesso</a>
+                </p>
+            </div>
+        </section>
+ 
+        <section class="brand-panel"></section>
+ 
+    </main>
+    <script src="animado.js"></script>
+</body>
+</html>

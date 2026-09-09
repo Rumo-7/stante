@@ -1,0 +1,67 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esqueci a Senha - Stante</title>
+    <link rel="stylesheet" href="esqueci_estilo.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="body">
+    
+    <form class="form" action="/resetar_senha" method="POST">
+ 
+        <div class="form-logo">
+            <img src="logo_stante.png" alt="Stante - Gestão de Demandas">
+        </div>
+ 
+        <h1>Esqueceu sua senha?</h1>
+ 
+        <div class="field-group">
+            <label for="email">Digite seu email de acesso</label>
+            <input type="email" id="email" name="email" placeholder="Digite seu Email" required>
+        </div>
+ 
+        <button type="submit">Enviar</button>
+ 
+        <a class="back-link" href="/login">
+            <span class="back-arrow">&larr;</span>
+            Voltar para página de login
+        </a>
+ 
+        <div class="divider"></div>
+ 
+        <p class="helper-text">Aguarde, esse processo pode demorar alguns segundos</p>
+        
+    </form>
+     
+    <!-- Camada decorativa: fios e bolinhas douradas -->
+    <!-- aria-hidden="true" porque isso é só visual, não tem informação nenhuma -->
+    <!-- leitores de tela devem ignorar esse bloco -->
+    <svg class="bg-decor" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+ 
+        <!-- Manchas escuras grandes nos cantos (centro fora da viewBox) -->
+        <circle cx="1500" cy="-40" r="320" fill="#1c3a30" opacity="0.6" />
+        <circle cx="-80" cy="960" r="320" fill="#1c3a30" opacity="0.5" />
+ 
+        <!-- Linhas curvas douradas (círculo com centro fora da tela = só a "fatia" aparece) -->
+        <circle cx="1440" cy="60" r="380" fill="none" stroke="#CC8712" stroke-width="1.5" opacity="0.7" />
+        <circle cx="-60" cy="500" r="260" fill="none" stroke="#CC8712" stroke-width="1.5" opacity="0.6" />
+ 
+        <!-- Linha pontilhada clara (efeito "rede") -->
+        <circle cx="1250" cy="-150" r="420" fill="none" stroke="#5a6b63" stroke-width="1" stroke-dasharray="2 6" opacity="0.5" />
+ 
+        <!-- Bolinhas douradas pequenas -->
+        <circle cx="1120" cy="40" r="5" fill="#CC8712" />
+        <circle cx="1300" cy="220" r="4" fill="#CC8712" />
+        <circle cx="80" cy="640" r="5" fill="#CC8712" />
+        <circle cx="200" cy="780" r="4" fill="#CC8712" />
+ 
+        <!-- Bolinhas claras/neutras maiores -->
+        <circle cx="1180" cy="140" r="9" fill="#8f9c96" opacity="0.5" />
+        <circle cx="140" cy="700" r="8" fill="#8f9c96" opacity="0.5" />
+    </svg>
+ 
+</body>
+</html>
+ 

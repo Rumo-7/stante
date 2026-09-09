@@ -11,16 +11,14 @@ body {
     font-family: "Poppins", sans-serif;
     background: #f2f2f2;
     color: #152822;
-    
+    font-weight: 500;
 }
 
 .login-container {
     width: 100%;
     min-height: 100vh;
     display: flex;
-    
 }
-
 
 /* ▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴
    ÁREA DO FORMULÁRIO
@@ -38,16 +36,12 @@ body {
 .form-content {
     width: 512.66px;
     max-width: calc(100% - 48px);
-
 }
-.form-content h1{
+
+.form-content h1 {
     font-size: 50px;
     font-weight: 600;
-
-
 }
-
-
 
 .login-button {
     box-sizing: border-box;
@@ -55,77 +49,150 @@ body {
     color: #fff;
 }
 
-h1{
-    margin-bottom: 8px;
+h1 {
+    margin-bottom: 14px;
     text-align: left;
+    font-weight: 500;
 }
-.subtitle{
+
+.subtitle {
     text-align: left;
-    margin-bottom: 38px;
+    margin-bottom: 43px;
     color: #17352e;
     font-size: 20px;
-
-
 }
 
-/*▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴
+/* ▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴
    CAMPOS DO FORMULÁRIO
 ▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴*/
+
 .input-group {
     width: 100%;
-    padding: 1px;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
-.input-group label{
-    margin-bottom: 20px;
-    font-size:17.77px;
+
+.input-group label {
     margin-bottom: 7px;
-    font-family:"Poppins", sans-serif;
+    height: 20px;
+    font-size: 17.77px;
+    font-family: "Poppins", sans-serif;
 }
-.input-group input{
-    border: 1px solid;
+
+.input-group input {
+    border: 1px solid #d5dcd9;
     border-radius: 8px;
-    font-size: 13px;
+    background: #f2f2f2;
     outline: none;
     padding: 0 10px;
     height: 45px;
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+    transition: 0.2s;
 }
+
 .input-group input:focus {
     border-color: #315f28;
-
     box-shadow: 0 0 0 2px rgba(49, 95, 40, 0.08);
 }
-.password-header{
+
+.input-group input::placeholder {
+    color: #b9c0bd;
+    font-size: 13px;
+}
+
+.password-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom:10px;
+    margin-bottom: 7px;
+}
+
+.password-header label {
+    margin-bottom: 0px;
+
+}
+
+.password-header a {
+    font-size: 12px;
+    color: #0088FF;
+    font-weight: 600;
+    text-decoration: none;
+    margin-bottom: 0px;
+}
+
+.password-header a:hover {
+    text-decoration: underline;
+}
+
+/* Campo de senha com botão de mostrar/ocultar (olhinho) */
+.password-field {
+    position: relative;
+}
+
+.password-field input {
+    width: 100%;
+    padding-right: 42px;
+    margin-bottom: 0px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b756f;
+}
+
+.toggle-password:hover {
+    color: #315f28;
+}
+
+.toggle-password svg {
+    width: 20px;
+    height: 20px;
 }
 
 .login-button {
     width: 100%;
     height: 43px;
-
     border: none;
-    border-radius: 7px;
-
+    border-radius: 8px;
     background: #315f28;
-
     color: white;
-
     font-size: 13px;
     font-weight: 600;
-
     cursor: pointer;
-
     transition: 0.2s;
     font-family: "Poppins", sans-serif;
 }
+
 .login-button:hover {
     background: #274d21;
 }
+
+.login-button:active {
+    background: #274d21;
+    transform: scale(0.98);
+}
+
+.login-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴
+   DIVISOR
+▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴*/
 
 .divider {
     display: flex;
@@ -144,33 +211,49 @@ h1{
     font-size: 11px;
 }
 
+/* ▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴
+   LOGIN SOCIAL
+▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴*/
 
 .social-login {
     display: flex;
     gap: 14px;
+    border-image: auto;
 }
 
 .social-button {
     flex: 1;
     height: 38px;
-
     background: white;
-
     font-size: 13px;
     cursor: pointer;
-
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid;
-
-    margin: 20px;
     font-family: "Poppins", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
+.social-icon {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+.social-button:hover {
+    background: #f2f2f2;
+    border-color: #315f28;
+}
+
+/* ▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴
+   CADASTRO
+▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴*/
 
 .register {
     text-align: center;
     margin-top: 50px;
-    font-size: 20px;
-
+    font-size: 14px;
 }
 
 .register a {
@@ -179,6 +262,9 @@ h1{
     text-decoration: none;
 }
 
+.register a:hover {
+    text-decoration: underline;
+}
 
 /* ▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴▴
    PAINEL DA STANTE
@@ -194,21 +280,26 @@ h1{
     background-repeat: no-repeat;
     overflow: hidden;
 }
-.terms{
+
+.terms {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-bottom: 24px;
+    margin-bottom: 27px;
     font-size: 12px;
 }
 
+.terms a {
+    color: #0088FF;
+    font-weight: 500;
+    text-decoration: none;
+}
 
 /* ========================================
    PARA CELULAR (RESPONSIVIDADE)
 ======================================== */
 
 @media (max-width: 900px) {
-
     .login-container {
         flex-direction: column;
     }
@@ -221,5 +312,4 @@ h1{
         width: 100%;
         min-height: 500px;
     }
-
 }
