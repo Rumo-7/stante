@@ -4,32 +4,156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Stante</title>
+    <link rel="stylesheet" href="dashboard_estilo.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            font-family: "Poppins", sans-serif;
-            background: #f2f2f2;
-            color: #152822;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-        }
-        a {
-            color: #0088FF;
-            font-weight: 600;
-            text-decoration: none;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div>
-        <h1>Cadastro concluído</h1>
-        <p>O dashboard ainda está em construção.</p>
-        <a href="ocorpo.html">Voltar para o login</a>
+
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <img src="logo_stante.png" alt="Stante">
+        </div>
+        <div class="navbar-menu">
+            <a href="dashboard.html" class="nav-item active">Dashboard</a>
+            <a href="#" class="nav-item">Demandas</a>
+            <a href="#" class="nav-item">Prazos</a>
+            <a href="#" class="nav-item">Fiscais</a>
+            <a href="#" class="nav-item">Demandantes</a>
+            <a href="#" class="nav-item">Relatórios</a>
+        </div>
+        <div class="navbar-user">
+            <div class="user-info">
+                <strong id="userName">Usuário</strong>
+                <span id="userRole">Perfil</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page">
+
+        <header class="page-header">
+            <div>
+                <h1>Visão Geral</h1>
+                <p class="page-subtitle">VISAT/CEREST Recife</p>
+            </div>
+            <button type="button" class="btn-primary" id="novaDemandaBtn">+ Nova Demanda</button>
+        </header>
+
+        <div class="alert-banner" id="alertBanner" hidden>
+            <span>⚠ <strong>Atenção:</strong> <span id="alertText"></span></span>
+        </div>
+
+        <section class="kpi-row">
+            <div class="kpi-card kpi-highlight">
+                <p class="kpi-label">Total Demandas</p>
+                <div class="kpi-value" id="kpiTotal">–</div>
+            </div>
+            <div class="kpi-card">
+                <p class="kpi-label">Em Andamento</p>
+                <div class="kpi-value" id="kpiEmAndamento">–</div>
+                <p class="kpi-sub" id="kpiAtribuidas"></p>
+            </div>
+            <div class="kpi-card">
+                <p class="kpi-label">Prazo Crítico</p>
+                <div class="kpi-value" id="kpiPrazoCritico">–</div>
+                <p class="kpi-sub">≤ 5 dias</p>
+            </div>
+            <div class="kpi-card">
+                <p class="kpi-label">Vencidas</p>
+                <div class="kpi-value" id="kpiVencidas">–</div>
+            </div>
+            <div class="kpi-card">
+                <p class="kpi-label">Concluídas</p>
+                <div class="kpi-value" id="kpiConcluidas">–</div>
+            </div>
+        </section>
+
+        <section class="charts-row">
+            <div class="card chart-card">
+                <h2>Tendência Mensal</h2>
+                <p class="card-subtitle">Recebidas vs. Concluídas</p>
+                <canvas id="tendenciaChart" height="240"></canvas>
+            </div>
+            <div class="card">
+                <h2>Demandas por Demandante</h2>
+                <p class="card-subtitle">Em aberto</p>
+                <div id="porDemandanteList" class="bar-list"></div>
+            </div>
+        </section>
+
+        <section class="bottom-row">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Demandas Recentes</h2>
+                </div>
+                <p class="card-subtitle">Últimas atualizações</p>
+                <table class="demandas-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Origem</th>
+                            <th>Assunto</th>
+                            <th>Fiscal</th>
+                            <th>Prazo</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="demandasTableBody"></tbody>
+                </table>
+            </div>
+            <div class="side-cards">
+                <div class="card">
+                    <h2>Prazos Próximos</h2>
+                    <p class="card-subtitle">Próximos 30 dias</p>
+                    <div id="prazosProximosList" class="prazos-list"></div>
+                </div>
+                <div class="card">
+                    <h2>Carga dos Fiscais</h2>
+                    <p class="card-subtitle">Demandas ativas por fiscal</p>
+                    <div id="cargaFiscaisList" class="bar-list"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="modal-overlay" id="novaDemandaModal" hidden>
+        <div class="modal">
+            <h2>Nova Demanda</h2>
+            <form id="novaDemandaForm">
+                <div class="field-group">
+                    <label for="demandanteSelect">Demandante</label>
+                    <select id="demandanteSelect" required></select>
+                </div>
+                <div class="field-group" id="outroDemandanteGroup" hidden>
+                    <label for="outroDemandanteInput">Qual órgão?</label>
+                    <input type="text" id="outroDemandanteInput" placeholder="Digite o nome do órgão">
+                </div>
+                <div class="field-group">
+                    <label for="assuntoInput">Assunto</label>
+                    <input type="text" id="assuntoInput" placeholder="Ex: Laudo de insalubridade — Empresa X" required>
+                </div>
+                <div class="field-group">
+                    <label for="fiscalSelect">Fiscal responsável</label>
+                    <select id="fiscalSelect">
+                        <option value="">Não atribuído</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label for="prazoInput">Prazo</label>
+                    <input type="date" id="prazoInput" required>
+                </div>
+                <p class="form-message" id="novaDemandaMessage"></p>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelarNovaDemanda">Cancelar</button>
+                    <button type="submit" class="btn-primary">Criar demanda</button>
+                </div>
+            </form>
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="dashboard_script.js"></script>
 </body>
 </html>

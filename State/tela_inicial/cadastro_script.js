@@ -35,8 +35,9 @@ form.addEventListener('submit', async (e) => {
         }
 
         showMessage('Cadastro realizado! Redirecionando...', 'success');
+        const params = new URLSearchParams({ nome, perfil });
         setTimeout(() => {
-            window.location.href = 'dashboard.html';
+            window.location.href = `dashboard.html?${params.toString()}`;
         }, 1200);
     } catch (err) {
         showMessage('Erro ao conectar com o servidor.', 'error');
