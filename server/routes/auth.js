@@ -48,6 +48,35 @@ router.post('/cadastro', async (req, res) => {
   res.status(201).json({ mensagem: 'Cadastro realizado com sucesso.' });
 });
 
+router.post('/login', async (req, res) => {
+  const { email, senha } = req.body;
+
+  if (!email || !senha) {
+    return res.status(400).json({ erro: 'Preencha email e senha.' });
+  }
+
+  const db = getDb();
+  const stmt = db.prepare('SELECT id, nome, email, senha_hash, perfil FROM users WHERE email = ?');
+  stmt.bind([email]);
+
+  let user = null;
+  if (stmt.step()) {
+    user = stmt.getAsObject();
+  }
+  stmt.free();
+
+  if (!user) {
+    return res.status(401).json({ erro: 'Email ou senha inválidos.' });
+  }
+
+  const senhaValida = await bcrypt.compare(senha, user.senha_hash);
+  if (!senhaValida) {
+    return res.status(401).json({ erro: 'Email ou senha inválidos.' });
+  }
+
+  res.json({ nome: user.nome, email: user.email, perfil: user.perfil });
+});
+
 router.get('/perfil/:email', (req, res) => {
   const db = getDb();
   const stmt = db.prepare('SELECT id, nome, email, perfil, created_at FROM users WHERE email = ?');

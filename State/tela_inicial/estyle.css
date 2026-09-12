@@ -185,6 +185,23 @@ h1 {
     transform: scale(0.98);
 }
 
+.form-message {
+    display: none;
+    font-size: 13px;
+    margin-top: 12px;
+    text-align: center;
+}
+
+.form-message.error {
+    display: block;
+    color: #b3261e;
+}
+
+.form-message.success {
+    display: block;
+    color: #315f28;
+}
+
 .login-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;

@@ -22,10 +22,35 @@
         });
 
         const loginForm = document.getElementById('loginForm');
+        const loginMessage = document.getElementById('loginMessage');
 
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('Login ainda não conectado a um backend. Em breve!');
+
+            const email = document.getElementById('email').value.trim();
+            const senha = passwordInput.value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha }),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    loginMessage.textContent = data.erro || 'Não foi possível entrar.';
+                    loginMessage.className = 'form-message error';
+                    return;
+                }
+
+                const params = new URLSearchParams({ nome: data.nome, perfil: data.perfil });
+                window.location.href = `dashboard.html?${params.toString()}`;
+            } catch (err) {
+                loginMessage.textContent = 'Erro ao conectar com o servidor.';
+                loginMessage.className = 'form-message error';
+            }
         });
 
         document.getElementById('googleLogin').addEventListener('click', () => {
