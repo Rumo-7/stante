@@ -20,3 +20,18 @@
             eyeIcon.innerHTML = isPassword ? eyeClosedPath : eyeOpenPath;
             toggleButton.setAttribute('aria-label', isPassword ? 'Ocultar senha' : 'Mostrar senha');
         });
+
+        const loginForm = document.getElementById('loginForm');
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Login ainda não conectado a um backend. Em breve!');
+        });
+
+        document.getElementById('googleLogin').addEventListener('click', () => {
+            alert('Login com Google ainda não implementado.');
+        });
+
+        document.getElementById('govbrLogin').addEventListener('click', () => {
+            alert('Login com gov.br ainda não implementado.');
+        });
