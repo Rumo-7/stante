@@ -1,9 +1,3 @@
-const PERFIL_LABELS = {
-    gestor: 'Gestora',
-    inspetor: 'Inspetor(a) de campo',
-    representante: 'Representante institucional',
-};
-
 const STATUS_BADGES = {
     aberta: { label: 'ABERTA', className: 'badge-gray' },
     em_andamento: { label: 'EM ANDAMENTO', className: 'badge-gray' },
@@ -13,15 +7,6 @@ const STATUS_BADGES = {
 };
 
 const BAR_COLORS = ['#CC8712', '#142721', '#E0A526', '#315f28', '#8f9c96'];
-
-function preencherUsuario() {
-    const params = new URLSearchParams(window.location.search);
-    const nome = params.get('nome');
-    const perfil = params.get('perfil');
-
-    document.getElementById('userName').textContent = nome || 'Usuário';
-    document.getElementById('userRole').textContent = PERFIL_LABELS[perfil] || 'Perfil não identificado';
-}
 
 function formatarData(isoDate) {
     const [ano, mes, dia] = isoDate.split('-');
@@ -270,6 +255,5 @@ function configurarModal() {
     });
 }
 
-preencherUsuario();
 configurarModal();
 carregarDashboard();

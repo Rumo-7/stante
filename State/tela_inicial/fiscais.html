@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiscais - Stante</title>
+    <link rel="stylesheet" href="dashboard_estilo.css">
+    <link rel="stylesheet" href="fiscais_estilo.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <img src="logo_stante.png" alt="Stante">
+        </div>
+        <div class="navbar-menu">
+            <a href="dashboard.html" class="nav-item">Dashboard</a>
+            <a href="demandas.html" class="nav-item">Demandas</a>
+            <a href="prazos.html" class="nav-item">Prazos</a>
+            <a href="fiscais.html" class="nav-item active">Fiscais</a>
+            <a href="#" class="nav-item">Demandantes</a>
+            <a href="#" class="nav-item">Relatórios</a>
+        </div>
+        <div class="navbar-user">
+            <div class="user-info">
+                <strong id="userName">Usuário</strong>
+                <span id="userRole">Perfil</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page">
+
+        <header class="page-header">
+            <div>
+                <h1>Fiscais</h1>
+                <p class="page-subtitle">Equipe de inspetores da VISAT/CEREST Recife</p>
+            </div>
+            <button type="button" class="btn-primary" id="novoFiscalBtn">+ Novo Fiscal</button>
+        </header>
+
+        <section class="fiscais-grid" id="fiscaisGrid"></section>
+
+    </main>
+
+    <div class="modal-overlay" id="novoFiscalModal" hidden>
+        <div class="modal">
+            <h2>Novo Fiscal</h2>
+            <form id="novoFiscalForm">
+                <div class="field-group">
+                    <label for="fiscalNomeInput">Nome completo</label>
+                    <input type="text" id="fiscalNomeInput" placeholder="Ex: Ana Beatriz Lima" required>
+                </div>
+                <div class="field-group">
+                    <label for="fiscalEspecialidadeInput">Especialidade</label>
+                    <input type="text" id="fiscalEspecialidadeInput" placeholder="Ex: Segurança do Trabalho">
+                </div>
+                <p class="form-message" id="novoFiscalMessage"></p>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelarNovoFiscal">Cancelar</button>
+                    <button type="submit" class="btn-primary">Adicionar fiscal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="nav.js"></script>
+    <script src="fiscais_script.js"></script>
+</body>
+</html>

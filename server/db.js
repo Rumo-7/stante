@@ -27,9 +27,16 @@ async function initDb() {
   db.run(`
     CREATE TABLE IF NOT EXISTS fiscais (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nome TEXT NOT NULL
+      nome TEXT NOT NULL,
+      especialidade TEXT
     )
   `);
+
+  try {
+    db.run('ALTER TABLE fiscais ADD COLUMN especialidade TEXT');
+  } catch (err) {
+    // coluna já existe em bancos criados antes desta versão
+  }
 
   db.run(`
     CREATE TABLE IF NOT EXISTS demandantes (
@@ -60,8 +67,13 @@ async function initDb() {
 function seedReferenceData() {
   const { total: totalFiscais } = get('SELECT COUNT(*) AS total FROM fiscais');
   if (totalFiscais === 0) {
-    ['Carlos Melo', 'Patrícia Souza', 'Ricardo Alves', 'Fernanda Costa'].forEach((nome) => {
-      run('INSERT INTO fiscais (nome) VALUES (?)', [nome]);
+    [
+      ['Carlos Melo', 'Segurança do Trabalho'],
+      ['Patrícia Souza', 'Saúde Ocupacional'],
+      ['Ricardo Alves', 'Ergonomia'],
+      ['Fernanda Costa', 'Higiene Ocupacional'],
+    ].forEach(([nome, especialidade]) => {
+      run('INSERT INTO fiscais (nome, especialidade) VALUES (?, ?)', [nome, especialidade]);
     });
   }
 
