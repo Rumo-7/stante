@@ -1,0 +1,141 @@
+.body{
+    background-color: #142721;
+    padding: 20px;
+    font-family: Poppins, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+.form{
+    font-family: Poppins, sans-serif;
+    font-weight: 500;
+    width: 100%;
+    max-width: 540px;
+    margin: 40px auto;
+    background-color: #F4F5F0;
+    padding: 48px 40px;
+    border-radius: 32px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+input, select{
+    display: block;
+    width: 100%;
+    height: 40px;
+    padding: 0 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f2f2f2;
+    font-family: Poppins, sans-serif;
+    font-size: 15px;
+    color: #152822;
+    box-sizing: border-box;
+}
+input::placeholder {
+    color: #b9c0bd;
+    font-size: 14px;
+}
+input:focus, select:focus {
+    outline: none;
+    border-color: #315f28;
+    box-shadow: 0 0 2px rgba(49, 95, 40, 0.05);
+}
+h1 {
+    text-align: center;
+    color: #152822;
+    font-size: 30px;
+    font-weight: 600;
+    margin: 0 0 32px;
+}
+.field-group {
+    margin-bottom: 24px;
+}
+.field-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: #152822;
+}
+
+button{
+    display: block;
+    width: 100%;
+    height: 45px;
+    background-color: #CC8712;
+    color: #152822;
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 24px;
+    transition: 0.2s;
+}
+button:hover {
+    background-color: #b97f0f;
+}
+button:active {
+    transform: scale(0.98);
+}
+.back-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #0088FF;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    width: fit-content;
+    margin: 0 auto;
+}
+.back-link:hover {
+    text-decoration: underline;
+}
+.back-arrow {
+    font-size: 16px;
+}
+
+.form-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+}
+.form-logo img {
+    height: 100px;
+    width: auto;
+    display: block;
+}
+
+.form-message {
+    display: none;
+    font-size: 14px;
+    margin: -8px 0 16px;
+    text-align: center;
+}
+.form-message.error {
+    display: block;
+    color: #b3261e;
+}
+.form-message.success {
+    display: block;
+    color: #315f28;
+}
+
+@media (max-width: 480px) {
+    .form {
+        padding: 32px 24px;
+        border-radius: 24px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+}

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Acesso - Stante</title>
+    <link rel="stylesheet" href="cadastro_estilo.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="body">
+
+    <form class="form" id="cadastroForm">
+
+        <div class="form-logo">
+            <img src="logo_stante.png" alt="Stante - Gestão de Demandas">
+        </div>
+
+        <h1>Solicite seu acesso</h1>
+
+        <div class="field-group">
+            <label for="nome">Nome completo</label>
+            <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required>
+        </div>
+
+        <div class="field-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Digite seu email" required>
+        </div>
+
+        <div class="field-group">
+            <label for="perfil">Perfil</label>
+            <select id="perfil" name="perfil" required>
+                <option value="" disabled selected>Selecione seu perfil</option>
+                <option value="gestor">Gestor(a) VISAT</option>
+                <option value="inspetor">Inspetor(a) de campo</option>
+                <option value="representante">Representante institucional</option>
+            </select>
+        </div>
+
+        <div class="field-group">
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" name="senha" placeholder="Crie uma senha" minlength="8" required>
+        </div>
+
+        <div class="field-group">
+            <label for="confirmarSenha">Confirmar senha</label>
+            <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Repita a senha" minlength="8" required>
+        </div>
+
+        <p class="form-message" id="formMessage"></p>
+
+        <button type="submit">Solicitar acesso</button>
+
+        <a class="back-link" href="ocorpo.html">
+            <span class="back-arrow">&larr;</span>
+            Voltar para página de login
+        </a>
+
+    </form>
+
+    <script src="cadastro_script.js"></script>
+</body>
+</html>
