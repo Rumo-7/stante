@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demandas - Stante</title>
+    <link rel="stylesheet" href="dashboard_estilo.css">
+    <link rel="stylesheet" href="demandas_estilo.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <img src="logo_stante.png" alt="Stante">
+        </div>
+        <div class="navbar-menu">
+            <a href="dashboard.html" class="nav-item">Dashboard</a>
+            <a href="demandas.html" class="nav-item active">Demandas</a>
+            <a href="#" class="nav-item">Prazos</a>
+            <a href="fiscais.html" class="nav-item">Fiscais</a>
+            <a href="#" class="nav-item">Demandantes</a>
+            <a href="#" class="nav-item">Relatórios</a>
+        </div>
+        <div class="navbar-user">
+            <div class="user-info">
+                <strong id="userName">Usuário</strong>
+                <span id="userRole">Perfil</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page">
+
+        <header class="page-header">
+            <div>
+                <h1>Demandas</h1>
+                <p class="page-subtitle">Todas as demandas da VISAT/CEREST Recife</p>
+            </div>
+            <button type="button" class="btn-primary" id="novaDemandaBtn">+ Nova Demanda</button>
+        </header>
+
+        <section class="card filtros-card">
+            <div class="filtros-row">
+                <div class="field-group">
+                    <label for="filtroDe">Prazo de</label>
+                    <input type="date" id="filtroDe">
+                </div>
+                <div class="field-group">
+                    <label for="filtroAte">Prazo até</label>
+                    <input type="date" id="filtroAte">
+                </div>
+                <div class="field-group">
+                    <label for="filtroStatus">Status</label>
+                    <select id="filtroStatus">
+                        <option value="">Todos</option>
+                        <option value="aberta">Aberta</option>
+                        <option value="em_andamento">Em andamento</option>
+                        <option value="prazo_critico">Prazo crítico</option>
+                        <option value="vencida">Vencida</option>
+                        <option value="concluida">Concluída</option>
+                    </select>
+                </div>
+                <div class="field-group busca-group">
+                    <label for="filtroBusca">Buscar</label>
+                    <input type="text" id="filtroBusca" placeholder="ID, assunto, demandante ou fiscal">
+                </div>
+                <button type="button" class="btn-secondary" id="limparFiltros">Limpar filtros</button>
+            </div>
+        </section>
+
+        <div class="bulk-bar" id="bulkBar" hidden>
+            <span id="bulkCount">0 selecionada(s)</span>
+            <button type="button" class="btn-primary" id="bulkConcluir">Marcar como concluída</button>
+        </div>
+
+        <section class="card">
+            <div class="card-header">
+                <h2>Todas as Demandas</h2>
+                <span class="card-subtitle" id="totalResultados"></span>
+            </div>
+            <table class="demandas-table">
+                <thead>
+                    <tr>
+                        <th class="col-checkbox"><input type="checkbox" id="selecionarTodos"></th>
+                        <th>ID</th>
+                        <th>Origem</th>
+                        <th>Assunto</th>
+                        <th>Fiscal</th>
+                        <th>Prazo</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="demandasTableBody"></tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <div class="modal-overlay" id="verDemandaModal" hidden>
+        <div class="modal">
+            <h2 id="verDemandaNumero">Demanda</h2>
+            <p class="card-subtitle" id="verDemandaAssunto"></p>
+
+            <div class="detalhe-grid">
+                <div>
+                    <span class="detalhe-label">Demandante</span>
+                    <p id="verDemandaDemandante">—</p>
+                </div>
+                <div>
+                    <span class="detalhe-label">Prazo</span>
+                    <p id="verDemandaPrazo">—</p>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="verDemandaStatus">Status</label>
+                <select id="verDemandaStatus">
+                    <option value="aberta">Aberta</option>
+                    <option value="em_andamento">Em andamento</option>
+                    <option value="concluida">Concluída</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label for="verDemandaFiscal">Fiscal responsável</label>
+                <select id="verDemandaFiscal">
+                    <option value="">Não atribuído</option>
+                </select>
+            </div>
+
+            <p class="form-message" id="verDemandaMessage"></p>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="fecharVerDemanda">Fechar</button>
+                <button type="button" class="btn-primary" id="salvarVerDemanda">Salvar alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="novaDemandaModal" hidden>
+        <div class="modal">
+            <h2>Nova Demanda</h2>
+            <form id="novaDemandaForm">
+                <div class="field-group">
+                    <label for="demandanteSelect">Demandante</label>
+                    <select id="demandanteSelect" required></select>
+                </div>
+                <div class="field-group" id="outroDemandanteGroup" hidden>
+                    <label for="outroDemandanteInput">Qual órgão?</label>
+                    <input type="text" id="outroDemandanteInput" placeholder="Digite o nome do órgão">
+                </div>
+                <div class="field-group">
+                    <label for="assuntoInput">Assunto</label>
+                    <input type="text" id="assuntoInput" placeholder="Ex: Laudo de insalubridade — Empresa X" required>
+                </div>
+                <div class="field-group">
+                    <label for="fiscalSelect">Fiscal responsável</label>
+                    <select id="fiscalSelect">
+                        <option value="">Não atribuído</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label for="prazoInput">Prazo</label>
+                    <input type="date" id="prazoInput" required>
+                </div>
+                <p class="form-message" id="novaDemandaMessage"></p>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelarNovaDemanda">Cancelar</button>
+                    <button type="submit" class="btn-primary">Criar demanda</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="nav.js"></script>
+    <script src="demandas_script.js"></script>
+</body>
+</html>

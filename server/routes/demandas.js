@@ -42,8 +42,22 @@ function serializar(demanda) {
 }
 
 router.get('/', (req, res) => {
-  const demandas = all(`${SELECT_BASE} ORDER BY demandas.prazo ASC`);
-  res.json(demandas.map(serializar));
+  const { de, ate, status, busca } = req.query;
+
+  let demandas = all(`${SELECT_BASE} ORDER BY demandas.prazo ASC`).map(serializar);
+
+  if (de) demandas = demandas.filter((d) => d.prazo >= de);
+  if (ate) demandas = demandas.filter((d) => d.prazo <= ate);
+  if (status) demandas = demandas.filter((d) => d.status === status);
+
+  if (busca) {
+    const termo = busca.toLowerCase();
+    demandas = demandas.filter((d) => [d.numero, d.assunto, d.demandante, d.fiscal]
+      .filter(Boolean)
+      .some((campo) => campo.toLowerCase().includes(termo)));
+  }
+
+  res.json(demandas);
 });
 
 router.post('/', (req, res) => {
@@ -62,14 +76,32 @@ router.post('/', (req, res) => {
   res.status(201).json(serializar(criada));
 });
 
-router.patch('/:id/status', (req, res) => {
-  const { status } = req.body;
+router.patch('/:id', (req, res) => {
+  const { status, fiscalId } = req.body;
+  const campos = [];
+  const valores = [];
 
-  if (!STATUS_VALIDOS.includes(status)) {
-    return res.status(400).json({ erro: 'Status inválido.' });
+  if (status !== undefined) {
+    if (!STATUS_VALIDOS.includes(status)) {
+      return res.status(400).json({ erro: 'Status inválido.' });
+    }
+    campos.push('status = ?');
+    valores.push(status);
   }
 
-  run('UPDATE demandas SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [status, req.params.id]);
+  if (fiscalId !== undefined) {
+    campos.push('fiscal_id = ?');
+    valores.push(fiscalId || null);
+  }
+
+  if (!campos.length) {
+    return res.status(400).json({ erro: 'Nada para atualizar.' });
+  }
+
+  campos.push('updated_at = CURRENT_TIMESTAMP');
+  valores.push(req.params.id);
+
+  run(`UPDATE demandas SET ${campos.join(', ')} WHERE id = ?`, valores);
 
   const atualizada = get(`${SELECT_BASE} WHERE demandas.id = ?`, [req.params.id]);
   if (!atualizada) {
