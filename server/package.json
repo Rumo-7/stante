@@ -8,8 +8,9 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "sql.js": "^1.11.0",
     "bcryptjs": "^2.4.3",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "multer": "^2.3.0",
+    "sql.js": "^1.11.0"
   }
 }

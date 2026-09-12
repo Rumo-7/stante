@@ -225,17 +225,19 @@ function configurarModal() {
                 demandanteId = criado.id;
             }
 
-            const payload = {
-                demandanteId,
-                assunto: document.getElementById('assuntoInput').value.trim(),
-                fiscalId: document.getElementById('fiscalSelect').value || null,
-                prazo: document.getElementById('prazoInput').value,
-            };
+            const formData = new FormData();
+            formData.append('demandanteId', demandanteId);
+            formData.append('assunto', document.getElementById('assuntoInput').value.trim());
+            formData.append('fiscalId', document.getElementById('fiscalSelect').value || '');
+            formData.append('prazo', document.getElementById('prazoInput').value);
+
+            Array.from(document.getElementById('anexosInput').files).forEach((file) => {
+                formData.append('anexos', file);
+            });
 
             const response = await fetch('/api/demandas', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
+                body: formData,
             });
 
             const data = await response.json();

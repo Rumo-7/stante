@@ -1,5 +1,6 @@
 const express = require('express');
 const { all, get, run } = require('../db');
+const { uploadAnexos } = require('../upload');
 
 const router = express.Router();
 
@@ -60,7 +61,7 @@ router.get('/', (req, res) => {
   res.json(demandas);
 });
 
-router.post('/', (req, res) => {
+router.post('/', uploadAnexos, (req, res) => {
   const { demandanteId, assunto, fiscalId, prazo } = req.body;
 
   if (!demandanteId || !assunto || !prazo) {
@@ -73,6 +74,14 @@ router.post('/', (req, res) => {
   );
 
   const criada = get(`${SELECT_BASE} ORDER BY demandas.id DESC LIMIT 1`);
+
+  (req.files || []).forEach((file) => {
+    run(
+      'INSERT INTO anexos (demanda_id, nome_original, nome_arquivo, mime_type, tamanho) VALUES (?, ?, ?, ?, ?)',
+      [criada.id, file.originalname, file.filename, file.mimetype, file.size]
+    );
+  });
+
   res.status(201).json(serializar(criada));
 });
 

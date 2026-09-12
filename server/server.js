@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth');
 const demandasRoutes = require('./routes/demandas');
 const referenceRoutes = require('./routes/reference');
 const dashboardRoutes = require('./routes/dashboard');
+const anexosRoutes = require('./routes/anexos');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -15,6 +16,7 @@ app.use('/api', authRoutes);
 app.use('/api/demandas', demandasRoutes);
 app.use('/api', referenceRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api', anexosRoutes);
 
 app.get('/', (req, res) => {
   res.redirect('/ocorpo.html');

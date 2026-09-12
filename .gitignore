@@ -1,3 +1,4 @@
 node_modules/
 server/database.sqlite
+server/uploads/
 .DS_Store

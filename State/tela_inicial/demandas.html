@@ -131,6 +131,15 @@
                 </select>
             </div>
 
+            <div class="field-group">
+                <label>Anexos</label>
+                <ul class="anexos-list" id="verDemandaAnexosList"></ul>
+                <div class="anexo-upload-row">
+                    <input type="file" id="verDemandaAnexoInput" multiple accept=".pdf,.doc,.docx">
+                    <button type="button" class="btn-secondary" id="verDemandaAnexoUpload">Adicionar</button>
+                </div>
+            </div>
+
             <p class="form-message" id="verDemandaMessage"></p>
 
             <div class="modal-actions">
@@ -165,6 +174,10 @@
                 <div class="field-group">
                     <label for="prazoInput">Prazo</label>
                     <input type="date" id="prazoInput" required>
+                </div>
+                <div class="field-group">
+                    <label for="anexosInput">Anexos (PDF ou DOCX)</label>
+                    <input type="file" id="anexosInput" multiple accept=".pdf,.doc,.docx">
                 </div>
                 <p class="form-message" id="novaDemandaMessage"></p>
                 <div class="modal-actions">

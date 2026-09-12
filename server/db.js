@@ -59,6 +59,18 @@ async function initDb() {
     )
   `);
 
+  db.run(`
+    CREATE TABLE IF NOT EXISTS anexos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      demanda_id INTEGER NOT NULL REFERENCES demandas(id),
+      nome_original TEXT NOT NULL,
+      nome_arquivo TEXT NOT NULL,
+      mime_type TEXT,
+      tamanho INTEGER,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
   seedReferenceData();
   persist();
   return db;

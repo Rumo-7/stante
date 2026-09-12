@@ -136,6 +136,37 @@ function configurarFiltros() {
     });
 }
 
+function formatarTamanho(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+async function carregarAnexos(demandaId) {
+    const anexos = await fetch(`/api/demandas/${demandaId}/anexos`).then((r) => r.json());
+    const lista = document.getElementById('verDemandaAnexosList');
+
+    if (!anexos.length) {
+        lista.innerHTML = '<li class="empty-state">Nenhum anexo enviado.</li>';
+        return;
+    }
+
+    lista.innerHTML = anexos.map((anexo) => `
+        <li>
+            <a href="/api/anexos/${anexo.id}/download" target="_blank">${anexo.nomeOriginal}</a>
+            <span class="anexo-tamanho">${formatarTamanho(anexo.tamanho)}</span>
+            <button type="button" class="anexo-remover" data-id="${anexo.id}" title="Remover anexo">✕</button>
+        </li>
+    `).join('');
+
+    document.querySelectorAll('.anexo-remover').forEach((botao) => {
+        botao.addEventListener('click', async () => {
+            await fetch(`/api/anexos/${botao.dataset.id}`, { method: 'DELETE' });
+            carregarAnexos(demandaId);
+        });
+    });
+}
+
 async function abrirVerDemanda(id) {
     const demanda = demandasAtuais.find((d) => d.id === id);
     if (!demanda) return;
@@ -144,6 +175,7 @@ async function abrirVerDemanda(id) {
     const messageEl = document.getElementById('verDemandaMessage');
     messageEl.className = 'form-message';
     messageEl.textContent = '';
+    document.getElementById('verDemandaAnexoInput').value = '';
 
     document.getElementById('verDemandaNumero').textContent = `${demanda.numero} · ${demanda.demandante || 'Sem demandante'}`;
     document.getElementById('verDemandaAssunto').textContent = demanda.assunto;
@@ -160,6 +192,7 @@ async function abrirVerDemanda(id) {
 
     modal.dataset.demandaId = demanda.id;
     modal.hidden = false;
+    await carregarAnexos(demanda.id);
 }
 
 function configurarModalVerDemanda() {
@@ -168,6 +201,30 @@ function configurarModalVerDemanda() {
 
     document.getElementById('fecharVerDemanda').addEventListener('click', () => {
         modal.hidden = true;
+    });
+
+    document.getElementById('verDemandaAnexoUpload').addEventListener('click', async () => {
+        const id = modal.dataset.demandaId;
+        const input = document.getElementById('verDemandaAnexoInput');
+        if (!input.files.length) return;
+
+        const formData = new FormData();
+        Array.from(input.files).forEach((file) => formData.append('anexos', file));
+
+        const response = await fetch(`/api/demandas/${id}/anexos`, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const data = await response.json();
+            messageEl.className = 'form-message error';
+            messageEl.textContent = data.erro || 'Não foi possível enviar o anexo.';
+            return;
+        }
+
+        input.value = '';
+        await carregarAnexos(id);
     });
 
     document.getElementById('salvarVerDemanda').addEventListener('click', async () => {
@@ -271,17 +328,19 @@ function configurarModalNovaDemanda() {
                 demandanteId = criado.id;
             }
 
-            const payload = {
-                demandanteId,
-                assunto: document.getElementById('assuntoInput').value.trim(),
-                fiscalId: document.getElementById('fiscalSelect').value || null,
-                prazo: document.getElementById('prazoInput').value,
-            };
+            const formData = new FormData();
+            formData.append('demandanteId', demandanteId);
+            formData.append('assunto', document.getElementById('assuntoInput').value.trim());
+            formData.append('fiscalId', document.getElementById('fiscalSelect').value || '');
+            formData.append('prazo', document.getElementById('prazoInput').value);
+
+            Array.from(document.getElementById('anexosInput').files).forEach((file) => {
+                formData.append('anexos', file);
+            });
 
             const response = await fetch('/api/demandas', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
+                body: formData,
             });
 
             const data = await response.json();
