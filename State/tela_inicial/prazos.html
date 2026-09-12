@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prazos - Stante</title>
+    <link rel="stylesheet" href="dashboard_estilo.css">
+    <link rel="stylesheet" href="demandas_estilo.css">
+    <link rel="stylesheet" href="prazos_estilo.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <img src="logo_stante.png" alt="Stante">
+        </div>
+        <div class="navbar-menu">
+            <a href="dashboard.html" class="nav-item">Dashboard</a>
+            <a href="demandas.html" class="nav-item">Demandas</a>
+            <a href="prazos.html" class="nav-item active">Prazos</a>
+            <a href="fiscais.html" class="nav-item">Fiscais</a>
+            <a href="#" class="nav-item">Demandantes</a>
+            <a href="#" class="nav-item">Relatórios</a>
+        </div>
+        <div class="navbar-user">
+            <div class="user-info">
+                <strong id="userName">Usuário</strong>
+                <span id="userRole">Perfil</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page">
+
+        <header class="page-header">
+            <div>
+                <h1>Prazos</h1>
+                <p class="page-subtitle">Vencidos, críticos e próximos prazos legais</p>
+            </div>
+        </header>
+
+        <section class="card filtros-card">
+            <div class="filtros-row">
+                <div class="field-group">
+                    <label for="filtroFiscal">Fiscal</label>
+                    <select id="filtroFiscal">
+                        <option value="">Todos os fiscais</option>
+                    </select>
+                </div>
+                <div class="view-toggle">
+                    <button type="button" class="toggle-btn active" id="verListaBtn">Lista</button>
+                    <button type="button" class="toggle-btn" id="verCalendarioBtn">Calendário</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="visaoLista">
+            <div class="prazo-secao">
+                <h2 class="prazo-secao-titulo titulo-vencida">Vencidas <span class="contagem" id="contagemVencidas">0</span></h2>
+                <div class="prazo-secao-lista" id="listaVencidas"></div>
+            </div>
+            <div class="prazo-secao">
+                <h2 class="prazo-secao-titulo titulo-critico">Prazo Crítico · até 5 dias <span class="contagem" id="contagemCritico">0</span></h2>
+                <div class="prazo-secao-lista" id="listaCritico"></div>
+            </div>
+            <div class="prazo-secao">
+                <h2 class="prazo-secao-titulo">Próximos 30 dias <span class="contagem" id="contagemProximos">0</span></h2>
+                <div class="prazo-secao-lista" id="listaProximos"></div>
+            </div>
+        </section>
+
+        <section id="visaoCalendario" hidden>
+            <div class="card">
+                <div class="calendario-header">
+                    <button type="button" class="btn-secondary" id="mesAnterior">← Anterior</button>
+                    <h2 id="calendarioTitulo">Mês</h2>
+                    <button type="button" class="btn-secondary" id="mesSeguinte">Próximo →</button>
+                </div>
+                <div class="calendario-dias-semana">
+                    <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+                </div>
+                <div class="calendario-grid" id="calendarioGrid"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="modal-overlay" id="verDemandaModal" hidden>
+        <div class="modal">
+            <h2 id="verDemandaNumero">Demanda</h2>
+            <p class="card-subtitle" id="verDemandaAssunto"></p>
+
+            <div class="detalhe-grid">
+                <div>
+                    <span class="detalhe-label">Demandante</span>
+                    <p id="verDemandaDemandante">—</p>
+                </div>
+                <div>
+                    <span class="detalhe-label">Prazo</span>
+                    <p id="verDemandaPrazo">—</p>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="verDemandaStatus">Status</label>
+                <select id="verDemandaStatus">
+                    <option value="aberta">Aberta</option>
+                    <option value="em_andamento">Em andamento</option>
+                    <option value="concluida">Concluída</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label for="verDemandaFiscal">Fiscal responsável</label>
+                <select id="verDemandaFiscal">
+                    <option value="">Não atribuído</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label>Anexos</label>
+                <ul class="anexos-list" id="verDemandaAnexosList"></ul>
+                <div class="anexo-upload-row">
+                    <input type="file" id="verDemandaAnexoInput" multiple accept=".pdf,.doc,.docx">
+                    <button type="button" class="btn-secondary" id="verDemandaAnexoUpload">Adicionar</button>
+                </div>
+            </div>
+
+            <p class="form-message" id="verDemandaMessage"></p>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="fecharVerDemanda">Fechar</button>
+                <button type="button" class="btn-primary" id="salvarVerDemanda">Salvar alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="nav.js"></script>
+    <script src="prazos_script.js"></script>
+</body>
+</html>

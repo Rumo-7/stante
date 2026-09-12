@@ -138,6 +138,17 @@ body {
     border-radius: 12px;
     margin-bottom: 24px;
     font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.alert-link {
+    color: #fff;
+    font-weight: 700;
+    text-decoration: underline;
+    white-space: nowrap;
 }
 
 /* KPI CARDS */

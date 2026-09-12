@@ -43,13 +43,14 @@ function serializar(demanda) {
 }
 
 router.get('/', (req, res) => {
-  const { de, ate, status, busca } = req.query;
+  const { de, ate, status, busca, fiscalId } = req.query;
 
   let demandas = all(`${SELECT_BASE} ORDER BY demandas.prazo ASC`).map(serializar);
 
   if (de) demandas = demandas.filter((d) => d.prazo >= de);
   if (ate) demandas = demandas.filter((d) => d.prazo <= ate);
   if (status) demandas = demandas.filter((d) => d.status === status);
+  if (fiscalId) demandas = demandas.filter((d) => String(d.fiscalId) === String(fiscalId));
 
   if (busca) {
     const termo = busca.toLowerCase();
