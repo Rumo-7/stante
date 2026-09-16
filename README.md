@@ -18,6 +18,9 @@
   <a href="https://sharing.clickup.com/90171494885/b/h/5-901710774440-2/e2df639a3523910">
     <img src="https://img.shields.io/badge/📋_Ver_Board_Completo-Abrir_no_ClickUp-E0A526?style=for-the-badge" alt="board"/>
   </a>
+  <a href="https://drive.google.com/file/d/1KuRrKUckxbRy6CZpkiCz4VHuf7SGNOoQ/view?usp=drivesdk">
+    <img src="https://img.shields.io/badge/🎥_Abrir_Screencast_Stante-Assistir_no_Drive-E0A526?style=for-the-badge" alt="screencast"/>
+  </a>
 </p>
 
 ---
