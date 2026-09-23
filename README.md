@@ -23,6 +23,9 @@
   </a>
 </p>
 
+<p align="center">
+  <img src="./assets/grafico.jpg" alt="Grafico" width="280"/>
+</p>
 ---
 
 ## 📝 Índice
