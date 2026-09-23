@@ -23,9 +23,8 @@
   </a>
 </p>
 
-<p align="center">
-  <img src="./assets/grafico.jpg" alt="Grafico" width="280"/>
-</p>
+<img width="1518" height="874" alt="tela_principal" src="https://github.com/user-attachments/assets/a422eff5-fb39-40c9-88bb-a3470e3bc849" />
+
 ---
 
 ## 📝 Índice
