@@ -85,6 +85,9 @@ Quando o código-fonte for versionado neste repositório:
 git clone <url-do-repositorio>
 cd stante
 ```
+### ScreenCast do Projeto
+
+https://github.com/user-attachments/assets/9f1b4924-af34-40b4-bac9-eb5f91aa92e1
 
 <br/>
 
