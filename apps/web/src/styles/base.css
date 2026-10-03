@@ -176,6 +176,135 @@ body {
   resize: vertical;
 }
 
+/* Sino de avisos na barra de navegação */
+.app-shell .navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.app-shell .sino {
+  position: relative;
+}
+
+.app-shell .sino-botao {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #d5dcd9;
+  cursor: pointer;
+}
+
+.app-shell .sino-botao:hover,
+.app-shell .sino-botao[aria-expanded='true'] {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.app-shell .sino-botao svg {
+  width: 20px;
+  height: 20px;
+}
+
+.app-shell .sino-contagem {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 18px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: #cc8712;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+}
+
+.app-shell .sino-painel {
+  position: absolute;
+  right: 0;
+  top: 46px;
+  z-index: 20;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  background: #fff;
+  color: #152822;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.app-shell .sino-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eef0ee;
+  font-size: 14px;
+}
+
+.app-shell .sino-acao {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #0088ff;
+  font-family: Poppins, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.app-shell .sino-vazio {
+  padding: 20px 16px;
+}
+
+.app-shell .sino-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.app-shell .sino-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid #f2f2f2;
+  background: #fff;
+  color: #152822;
+  font-family: Poppins, sans-serif;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.app-shell .sino-item:hover {
+  background: #f7f8f7;
+}
+
+.app-shell .sino-item.nao-lida {
+  background: #fff6e5;
+  font-weight: 600;
+}
+
+.app-shell .sino-quando {
+  color: #5a6b63;
+  font-size: 11px;
+  font-weight: 500;
+}
+
 /* Histórico da demanda */
 .app-shell .historico {
   margin-bottom: 16px;

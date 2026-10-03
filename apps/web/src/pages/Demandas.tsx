@@ -68,6 +68,22 @@ export function Demandas() {
   const [idAberto, setIdAberto] = useState<number | null>(null);
   const [novaAberta, setNovaAberta] = useState(false);
 
+  // Vindo de um aviso do sino (/demandas?abrir=ID): abre a demanda e limpa o parâmetro da URL
+  const abrirParametro = parametros.get('abrir');
+  useEffect(() => {
+    if (!abrirParametro || !demandas.data) return;
+    const id = Number(abrirParametro);
+    if (demandas.data.some((demanda) => demanda.id === id)) setIdAberto(id);
+    setParametros(
+      (atuais) => {
+        const novos = new URLSearchParams(atuais);
+        novos.delete('abrir');
+        return novos;
+      },
+      { replace: true },
+    );
+  }, [abrirParametro, demandas.data, setParametros]);
+
   // Mudou o filtro: a seleção anterior não vale mais
   const chaveFiltros = JSON.stringify(filtros);
   useEffect(() => setSelecionadas(new Set()), [chaveFiltros]);

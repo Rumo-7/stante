@@ -5,6 +5,7 @@ import { useUsuarios } from '../api/usuarios';
 import logo from '../assets/logo_stante.png';
 import { ROTULO_PERFIL } from '../auth/perfis';
 import { useUsuarioLogado } from '../auth/rotas';
+import { SinoNotificacoes } from '../components/SinoNotificacoes';
 
 export function AppLayout() {
   const usuario = useUsuarioLogado();
@@ -59,6 +60,7 @@ export function AppLayout() {
           )}
         </div>
         <div className="navbar-user">
+          {usuario.perfil !== 'representante' && <SinoNotificacoes />}
           <div className="user-info">
             <strong>{usuario.nome}</strong>
             <span>{ROTULO_PERFIL[usuario.perfil]}</span>
