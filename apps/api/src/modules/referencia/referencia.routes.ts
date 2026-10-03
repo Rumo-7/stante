@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { Prisma } from '@prisma/client';
+import { z } from 'zod';
 import {
   criarDemandanteSchema,
   criarFiscalSchema,
@@ -9,6 +10,14 @@ import { exigirPerfil } from '../../auth/middleware';
 import { prisma } from '../../db';
 import { ErroHttp } from '../../http/erros';
 import { validar } from '../../http/validar';
+import { sugerirFiscais } from '../fiscais/sugestao';
+
+const consultaSugestaoSchema = z.object({
+  demandanteId: z.preprocess(
+    (valor) => (valor === '' ? undefined : valor),
+    z.coerce.number({ invalid_type_error: 'Órgão inválido.' }).int('Órgão inválido.').positive('Órgão inválido.').optional(),
+  ),
+});
 
 export const referenciaRouter = Router();
 
@@ -35,6 +44,12 @@ referenciaRouter.get('/fiscais', exigirPerfil('gestor'), async (_req, res) => {
       demandas_ativas: fiscal._count.demandas,
     })),
   );
+});
+
+// Ranking de quem está mais indicado para uma demanda (do órgão informado, se houver): a decisão é do gestor
+referenciaRouter.get('/fiscais/sugestoes', exigirPerfil('gestor'), async (req, res) => {
+  const { demandanteId } = validar(consultaSugestaoSchema, req.query);
+  res.json(await sugerirFiscais(demandanteId));
 });
 
 referenciaRouter.post('/fiscais', exigirPerfil('gestor'), async (req, res) => {
