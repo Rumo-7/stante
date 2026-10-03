@@ -8,12 +8,12 @@ import {
   type Demanda,
   type StatusDemandaEditavel,
 } from '../api/demandas';
-import { useFiscais } from '../api/fiscais';
 import { useHistorico } from '../api/historico';
 import { useUsuarioLogado } from '../auth/rotas';
 import { formatarData, formatarInstante } from '../util/data';
 import { formatarTamanho } from '../util/tamanho';
 import { Modal } from './Modal';
+import { SeletorFiscal } from './SeletorFiscal';
 import { StatusBadge } from './StatusBadge';
 
 const STATUS_EDITAVEIS: { valor: StatusDemandaEditavel; rotulo: string }[] = [
@@ -52,7 +52,6 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
   const somenteLeitura = usuario.perfil === 'representante';
   const emAnalise = demanda.statusSalvo === 'em_analise';
 
-  const fiscais = useFiscais(ehGestor);
   const anexos = useAnexos(demanda.id);
   const enviarAnexos = useEnviarAnexos(demanda.id);
   const removerAnexo = useRemoverAnexo(demanda.id);
@@ -129,14 +128,13 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
     ehGestor || (usuario.perfil === 'inspetor' && enviadoPorId === usuario.id);
 
   const seletorFiscal = (
-    <select id="fiscal" value={fiscalId} onChange={(e) => setFiscalId(e.target.value)}>
-      <option value="">Não atribuído</option>
-      {fiscais.data?.map((fiscal) => (
-        <option key={fiscal.id} value={fiscal.id}>
-          {fiscal.nome}
-        </option>
-      ))}
-    </select>
+    <SeletorFiscal
+      id="fiscal"
+      valor={fiscalId}
+      aoMudar={setFiscalId}
+      demandanteId={demanda.demandanteId}
+      fiscalAtual={demanda.fiscalId ? { id: demanda.fiscalId, nome: demanda.fiscal ?? 'Fiscal atual' } : null}
+    />
   );
 
   return (

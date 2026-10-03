@@ -2,10 +2,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { criarDemandaSchema } from '@stante/shared';
 import { criarDemandante, useCriarDemanda, useDemandantes } from '../api/demandas';
-import { useFiscais } from '../api/fiscais';
 import { mensagemDeErro } from '../api/cliente';
 import { useUsuarioLogado } from '../auth/rotas';
 import { Modal } from './Modal';
+import { SeletorFiscal } from './SeletorFiscal';
 
 const TAMANHO_MAXIMO = 10 * 1024 * 1024;
 const CAMPOS_VAZIOS = { demandanteId: '', outroNome: '', assunto: '', fiscalId: '', prazo: '' };
@@ -17,7 +17,6 @@ export function NovaDemandaModal({ onFechar }: { onFechar: () => void }) {
   const clienteQuery = useQueryClient();
 
   const demandantes = useDemandantes();
-  const fiscais = useFiscais(ehGestor);
   const criarDemanda = useCriarDemanda();
 
   const [campos, setCampos] = useState(CAMPOS_VAZIOS);
@@ -127,14 +126,14 @@ export function NovaDemandaModal({ onFechar }: { onFechar: () => void }) {
           {ehGestor && (
             <div className="field-group">
               <label htmlFor="fiscal">Fiscal responsável</label>
-              <select id="fiscal" value={campos.fiscalId} onChange={alterar('fiscalId')}>
-                <option value="">Não atribuído</option>
-                {fiscais.data?.map((fiscal) => (
-                  <option key={fiscal.id} value={fiscal.id}>
-                    {fiscal.nome}
-                  </option>
-                ))}
-              </select>
+              <SeletorFiscal
+                id="fiscal"
+                valor={campos.fiscalId}
+                aoMudar={(fiscalId) => setCampos((atual) => ({ ...atual, fiscalId }))}
+                demandanteId={
+                  campos.demandanteId && campos.demandanteId !== 'outro' ? Number(campos.demandanteId) : null
+                }
+              />
             </div>
           )}
 

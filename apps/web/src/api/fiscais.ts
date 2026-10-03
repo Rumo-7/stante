@@ -15,6 +15,31 @@ export interface Fiscal {
 export const useFiscais = (habilitado: boolean) =>
   useQuery({ queryKey: ['fiscais'], queryFn: () => api.get<Fiscal[]>('/fiscais'), enabled: habilitado });
 
+export interface SugestaoFiscal {
+  fiscalId: number;
+  nome: string;
+  especialidade: string | null;
+  ativas: number;
+  emRisco: number;
+  atendimentosDoOrgao: number;
+  pontos: number;
+  /** O primeiro do ranking: quem tem menos carga (e, em empate, já atendeu o órgão). */
+  sugerido: boolean;
+  resumo: string;
+}
+
+/**
+ * Fiscais do mais ao menos indicado para uma demanda do órgão informado.
+ * A chave começa com "fiscais", então atribuir ou concluir demandas já atualiza o ranking.
+ */
+export const useSugestoesFiscais = (demandanteId: number | null, habilitado: boolean) =>
+  useQuery({
+    queryKey: ['fiscais', 'sugestoes', demandanteId],
+    queryFn: () =>
+      api.get<SugestaoFiscal[]>(`/fiscais/sugestoes${demandanteId ? `?demandanteId=${demandanteId}` : ''}`),
+    enabled: habilitado,
+  });
+
 export function useCriarFiscal() {
   const clienteQuery = useQueryClient();
   return useMutation({
