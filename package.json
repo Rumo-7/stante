@@ -13,6 +13,8 @@
     "node": ">=20"
   },
   "scripts": {
+    "build": "npm run build:shared && npm run build -w @stante/web && npm run build -w @stante/api",
+    "start": "npm run db:deploy -w @stante/api && npm run start -w @stante/api",
     "build:shared": "npm run build -w @stante/shared",
     "dev:api": "npm run build:shared && npm run dev -w @stante/api",
     "dev:web": "npm run build:shared && npm run dev -w @stante/web",

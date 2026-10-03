@@ -31,6 +31,7 @@
     "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
     "multer": "^2.0.0",
     "zod": "^3.23.0"
   },
