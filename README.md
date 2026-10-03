@@ -63,25 +63,32 @@ Estas instruções vão te orientar a acompanhar ou contribuir com o projeto.
 
 ### Pré-requisitos
 
-O projeto está na fase de descoberta e construção de backlog — ainda não há uma aplicação instalável. Para acompanhar ou contribuir, você precisa de:
-
 ```
+Node.js 18 ou superior
+Git
 Acesso ao Space "RUMO 7" no ClickUp (solicite a um PM da equipe)
-Git instalado, para quando o versionamento de código começar
 ```
 
-### Acessando o projeto
+### Rodando localmente
+
+```bash
+git clone https://github.com/Rumo-7/stante.git
+cd stante
+git checkout frontend        # o código da aplicação ainda vive nesta branch
+cd server
+npm install
+npm start                    # http://localhost:4000
+```
+
+O backend (Express + sql.js/SQLite) serve as telas de `State/tela_inicial/`. O banco é criado em `server/database.sqlite` na primeira execução, com fiscais e demandantes de exemplo. Esse arquivo e a pasta `server/uploads/` não são versionados.
+
+Já implementado: login e cadastro, dashboard, demandas (filtros, ações em lote, anexos), fiscais e prazos. Ainda não implementado: login com Google/gov.br, redefinição de senha, controle de acesso por perfil, log de alterações e alertas de prazo.
+
+### Acompanhando o projeto
 
 Acesse o board completo com todas as tarefas e status:
 
 **[📋 Abrir Board no ClickUp »](https://sharing.clickup.com/90171494885/b/h/5-901710774440-2/e2df639a3523910)**
-
-Quando o código-fonte for versionado neste repositório:
-
-```bash
-git clone <url-do-repositorio>
-cd stante
-```
 
 <br/>
 
@@ -128,7 +135,7 @@ O processo de descoberta seguiu o fluxo: **Pesquisa documental → Persona preli
 <a name="construido-com"></a>
 ## ⛏️ Construído com
 
-A stack de desenvolvimento do produto ainda está em definição conforme o projeto avança. As ferramentas abaixo já sustentam a construção do backlog e da documentação:
+Backend em Node.js (Express, sql.js, bcryptjs, multer), frontend em HTML/CSS/JS puro. Uma migração para React + TypeScript + PostgreSQL está em andamento. Ferramentas de gestão e documentação:
 
 - [ClickUp](https://clickup.com) — board, backlog e sprints
 - [Markdown](https://www.markdownguide.org) — documentação
