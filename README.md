@@ -64,7 +64,8 @@ Estas instruções vão te orientar a acompanhar ou contribuir com o projeto.
 ### Pré-requisitos
 
 ```
-Node.js 18 ou superior
+Node.js 20 ou superior (o projeto usa o 24, indicado no .nvmrc)
+PostgreSQL 16 ou 17
 Git
 Acesso ao Space "RUMO 7" no ClickUp (solicite a um PM da equipe)
 ```
@@ -74,15 +75,34 @@ Acesso ao Space "RUMO 7" no ClickUp (solicite a um PM da equipe)
 ```bash
 git clone https://github.com/Rumo-7/stante.git
 cd stante
-git checkout frontend        # o código da aplicação ainda vive nesta branch
-cd server
+git checkout feat/migracao-ts-postgres   # até a migração ser integrada à main
 npm install
-npm start                    # http://localhost:4000
+
+createdb stante_dev                       # ou crie o banco pela sua ferramenta de PostgreSQL
+cp apps/api/.env.example apps/api/.env    # ajuste DATABASE_URL e defina SEED_ADMIN_SENHA
+cd apps/api
+npx prisma migrate dev                    # cria as tabelas
+npm run db:seed                           # órgãos, fiscais de exemplo e o primeiro gestor
+npm run db:seed:demo                      # (opcional) demandas e contas de demonstração
+cd ../..
+
+npm run dev:api                           # API em http://127.0.0.1:4000
+npm run dev:web                           # abra http://localhost:5173
 ```
 
-O backend (Express + sql.js/SQLite) serve as telas de `State/tela_inicial/`. O banco é criado em `server/database.sqlite` na primeira execução, com fiscais e demandantes de exemplo. Esse arquivo e a pasta `server/uploads/` não são versionados.
+Entre com o e-mail e a senha do gestor definidos em `SEED_ADMIN_*`. Outras contas se cadastram pela tela de login e são aprovadas pelo gestor na tela **Usuários**.
 
-Já implementado: login e cadastro, dashboard, demandas (filtros, ações em lote, anexos), fiscais e prazos. Ainda não implementado: login com Google/gov.br, redefinição de senha, controle de acesso por perfil, log de alterações e alertas de prazo.
+**Testes e verificação:** `npm run typecheck` (na raiz) e `npm test` (em `apps/api`). Os testes de integração usam um banco separado e **apagam os dados dele**: crie o `stante_test`, copie `apps/api/.env.test.example` para `apps/api/.env.test` e rode `npm run db:test:prepare` uma vez.
+
+**Estrutura:** `apps/api` (Node, Express, Prisma), `apps/web` (React, Vite), `packages/shared` (regras de prazo e schemas Zod usados pelos dois lados).
+
+**Já implementado:** login e cadastro com aprovação do gestor, perfis (gestor, inspetor de campo, representante), dashboard, demandas (filtros, ações em lote, anexos e o fluxo de demandas abertas em campo, que o gestor valida), prazos (lista e calendário), fiscais e gestão de usuários.
+
+**Ainda não implementado:** login com Google e gov.br, recuperação de senha, log de alterações (UH3), alertas de prazo (UH9), sugestão de inspetor (UH14), reabertura de demanda (UH15) e integração com o SEI (UH6).
+
+### Publicando para testes
+
+O projeto roda de graça no **Render** (aplicação), **Neon** (PostgreSQL) e um bucket S3-compatível como o **Cloudflare R2** (anexos). O passo a passo, com o que esperar do plano gratuito, está em [`docs/deploy.md`](docs/deploy.md), e a configuração do serviço em [`render.yaml`](render.yaml).
 
 ### Acompanhando o projeto
 
@@ -135,7 +155,7 @@ O processo de descoberta seguiu o fluxo: **Pesquisa documental → Persona preli
 <a name="construido-com"></a>
 ## ⛏️ Construído com
 
-Backend em Node.js (Express, sql.js, bcryptjs, multer), frontend em HTML/CSS/JS puro. Uma migração para React + TypeScript + PostgreSQL está em andamento. Ferramentas de gestão e documentação:
+Backend em Node.js (Express 5, TypeScript, Prisma, PostgreSQL), frontend em React (Vite, TanStack Query) e regras compartilhadas em um pacote próprio. Ferramentas de gestão e documentação:
 
 - [ClickUp](https://clickup.com) — board, backlog e sprints
 - [Markdown](https://www.markdownguide.org) — documentação
