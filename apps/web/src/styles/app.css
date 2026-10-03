@@ -1,0 +1,474 @@
+/* Gerado a partir de State/tela_inicial/dashboard_estilo.css, com todos os seletores restritos a .app-shell.
+   Daqui em diante este arquivo é mantido à mão. */
+
+.app-shell, .app-shell * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.app-shell {
+    font-family: "Poppins", sans-serif;
+    background: #f2f2f2;
+    color: #152822;
+}
+
+/* NAVBAR */
+
+.app-shell .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #142721;
+    color: #fff;
+    padding: 14px 32px;
+}
+
+.app-shell .navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.app-shell .navbar-logo img {
+    height: 32px;
+    width: auto;
+}
+
+.app-shell .navbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.app-shell .nav-item {
+    color: #d5dcd9;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-radius: 8px;
+}
+
+.app-shell .nav-item:hover {
+    color: #fff;
+}
+
+.app-shell .nav-item.active {
+    background: #f2f2f2;
+    color: #142721;
+    font-weight: 600;
+}
+
+.app-shell .navbar-user .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 1.3;
+}
+
+.app-shell .navbar-user strong {
+    font-size: 14px;
+}
+
+.app-shell .navbar-user span {
+    font-size: 12px;
+    color: #CC8712;
+    font-weight: 600;
+}
+
+/* PAGE */
+
+.app-shell .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px;
+}
+
+.app-shell .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.app-shell .page-header h1 {
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.app-shell .page-subtitle {
+    color: #5a6b63;
+    margin-top: 4px;
+}
+
+.app-shell .btn-primary {
+    background: #142721;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.app-shell .btn-primary:hover {
+    background: #0d1b16;
+}
+
+.app-shell .btn-secondary {
+    background: #fff;
+    color: #152822;
+    border: 1px solid #d5dcd9;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* ALERT */
+
+.app-shell .alert-banner {
+    background: #CC8712;
+    color: #fff;
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.app-shell .alert-link {
+    color: #fff;
+    font-weight: 700;
+    text-decoration: underline;
+    white-space: nowrap;
+}
+
+/* KPI CARDS */
+
+.app-shell .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.app-shell .kpi-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.app-shell .kpi-highlight {
+    border-left: 4px solid #142721;
+}
+
+.app-shell .kpi-label {
+    font-size: 13px;
+    color: #5a6b63;
+    margin-bottom: 8px;
+}
+
+.app-shell .kpi-value {
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.app-shell .kpi-sub {
+    font-size: 12px;
+    color: #5a6b63;
+    margin-top: 4px;
+}
+
+/* CARDS GENERIC */
+
+.app-shell .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.app-shell .card h2 {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.app-shell .card-subtitle {
+    font-size: 13px;
+    color: #5a6b63;
+    margin-bottom: 16px;
+}
+
+.app-shell .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* CHARTS ROW */
+
+.app-shell .charts-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+/* BAR LISTS (por demandante / carga fiscais) */
+
+.app-shell .bar-list-item {
+    margin-bottom: 16px;
+}
+
+.app-shell .bar-list-item:last-child {
+    margin-bottom: 0;
+}
+
+.app-shell .bar-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.app-shell .bar-track {
+    height: 8px;
+    background: #eef0ee;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.app-shell .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+}
+
+.app-shell .empty-state {
+    color: #8f9c96;
+    font-size: 14px;
+}
+
+/* BOTTOM ROW */
+
+.app-shell .bottom-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+}
+
+.app-shell .side-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.app-shell .link {
+    color: #0088FF;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* TABLE */
+
+.app-shell .demandas-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.app-shell .demandas-table th {
+    text-align: left;
+    font-size: 11px;
+    color: #8f9c96;
+    text-transform: uppercase;
+    padding: 8px 8px;
+    border-bottom: 1px solid #eef0ee;
+}
+
+.app-shell .demandas-table td {
+    padding: 14px 8px;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+/* BADGES */
+
+.app-shell .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+}
+
+.app-shell .badge-red {
+    background: #b3261e;
+    color: #fff;
+}
+
+.app-shell .badge-amber {
+    background: #CC8712;
+    color: #fff;
+}
+
+.app-shell .badge-gray {
+    background: #eef0ee;
+    color: #5a6b63;
+}
+
+.app-shell .badge-green {
+    background: #315f28;
+    color: #fff;
+}
+
+/* PRAZOS PROXIMOS */
+
+.app-shell .prazo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f2f2f2;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    gap: 12px;
+}
+
+.app-shell .prazo-item:last-child {
+    margin-bottom: 0;
+}
+
+.app-shell .prazo-item.urgente {
+    background: #CC8712;
+    color: #fff;
+}
+
+.app-shell .prazo-info strong {
+    display: block;
+    font-size: 13px;
+}
+
+.app-shell .prazo-info span {
+    font-size: 12px;
+    color: #5a6b63;
+}
+
+.app-shell .prazo-item.urgente .prazo-info span {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.app-shell .prazo-dias-badge {
+    background: #fff;
+    color: #152822;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.app-shell .prazo-item.urgente .prazo-dias-badge {
+    background: rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
+/* MODAL */
+
+.app-shell .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 39, 33, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.app-shell .modal-overlay[hidden] {
+    display: none;
+}
+
+.app-shell .modal {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 440px;
+}
+
+.app-shell .modal h2 {
+    margin-bottom: 20px;
+}
+
+.app-shell .field-group {
+    margin-bottom: 16px;
+}
+
+.app-shell .field-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.app-shell .field-group input, .app-shell .field-group select {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #d5dcd9;
+    border-radius: 8px;
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    background: #f2f2f2;
+}
+
+.app-shell .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.app-shell .form-message {
+    display: none;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.app-shell .form-message.error {
+    display: block;
+    color: #b3261e;
+}
+
+.app-shell .form-message.success {
+    display: block;
+    color: #315f28;
+}
+
+@media (max-width: 1100px) {
+    .app-shell .kpi-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+    .app-shell .charts-row, .app-shell .bottom-row {
+            grid-template-columns: 1fr;
+        }
+
+    .app-shell .navbar-menu {
+            display: none;
+        }
+}

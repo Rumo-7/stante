@@ -1,0 +1,174 @@
+/* Gerado a partir de State/tela_inicial/esqueci_estilo.css, com todos os seletores restritos a .pg-esqueci.
+   Daqui em diante este arquivo é mantido à mão. */
+
+.pg-esqueci .body {
+    background-color: #142721;
+    padding: 20px;
+    font-family: Poppins, sans-serif;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    min-height: 100vh;
+
+}
+
+.pg-esqueci {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.pg-esqueci .form {
+    font-family: Poppins, sans-serif;
+    font-weight: 500;
+    width: 100%;
+    max-width: 540px;
+    margin: 0 auto;
+    background-color: #F4F5F0;
+    padding: 48px 40px;
+    border-radius: 32px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+.pg-esqueci input {
+    display: block;
+    width: 100%;
+    height: 40px;
+    padding: 0 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f2f2f2;
+    font-family: Poppins, sans-serif;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.pg-esqueci input::placeholder {
+    color: #b9c0bd;
+    font-size: 14px;
+}
+
+.pg-esqueci input:focus {
+    outline: none;
+    border-color: #315f28;
+    box-shadow: 0 0 2px rgba(49, 95, 40, 0.05);
+}
+
+.pg-esqueci h1 {
+    text-align: center;
+    color: #152822;
+    font-size: 30px;
+    font-weight: 600;
+    margin: 0 0 32px;
+}
+
+.pg-esqueci .field-group {
+    margin-bottom: 24px;
+}
+
+.pg-esqueci .field-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: #152822;
+}
+
+.pg-esqueci p {
+    text-align: center;
+    color: #666;
+    font-family: Poppins, sans-serif;
+
+}
+
+.pg-esqueci h3 {
+    text-align: center;
+    color: #666;
+    font-family: Poppins, sans-serif;
+
+}
+
+.pg-esqueci button {
+    display: block;
+    width: 100%;
+    height: 45px;
+    background-color: #CC8712;
+    color: #152822;
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 24px;
+    transition: 0.2s;
+}
+
+.pg-esqueci button:hover {
+    background-color: #b97f0f;
+}
+
+.pg-esqueci button:active {
+    transform: scale(0.98);
+}
+
+.pg-esqueci .divider {
+    height: 1px;
+    background-color: #e1e6e4;
+    margin-bottom: 20px;
+}
+
+.pg-esqueci .back-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #0088FF;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-bottom: 24px;
+    width: fit-content;
+}
+
+.pg-esqueci .back-link:hover {
+    text-decoration: underline;
+}
+
+.pg-esqueci .back-arrow {
+    font-size: 16px;
+}
+
+.pg-esqueci .form-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+}
+
+.pg-esqueci .form-logo img {
+    height: 100px;
+    width: auto;
+    display: block;
+}
+
+.pg-esqueci .bg-decor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+@media (max-width: 480px) {
+    .pg-esqueci .form {
+            padding: 32px 24px;
+            border-radius: 24px;
+        }
+
+    .pg-esqueci h1 {
+            font-size: 24px;
+        }
+}
