@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { mensagemDeErro } from '../api/cliente';
 import { useDemanda } from '../api/demandas';
 import { useRadar, type ItemDoRadar } from '../api/radar';
 import { useUsuarioLogado } from '../auth/rotas';
 import { DetalheDemandaModal } from '../components/DetalheDemandaModal';
+import { ParecerPainel } from '../components/ParecerPainel';
 import { formatarData } from '../util/data';
 
 function CartaoDeRisco({ item, aoAbrir }: { item: ItemDoRadar; aoAbrir: () => void }) {
@@ -33,8 +35,7 @@ function CartaoDeRisco({ item, aoAbrir }: { item: ItemDoRadar; aoAbrir: () => vo
   );
 }
 
-export function Sentinela() {
-  const usuario = useUsuarioLogado();
+function RadarPainel() {
   const radar = useRadar(true);
   const [idAberto, setIdAberto] = useState<number | null>(null);
   const detalhe = useDemanda(idAberto);
@@ -43,18 +44,7 @@ export function Sentinela() {
   const itens = useMemo(() => dados?.itens ?? [], [dados]);
 
   return (
-    <main className="page">
-      <header className="page-header">
-        <div>
-          <h1>Sentinela</h1>
-          <p className="page-subtitle">
-            {usuario.perfil === 'gestor'
-              ? 'Vigilância sobre os prazos da unidade: o que ainda está no prazo, mas pode não ficar'
-              : 'Suas demandas que ainda estão no prazo, mas podem não ficar'}
-          </p>
-        </div>
-      </header>
-
+    <>
       <section className="card">
         <h2>Radar de prazos</h2>
         <p className="card-subtitle">
@@ -121,6 +111,45 @@ export function Sentinela() {
       </section>
 
       {idAberto !== null && detalhe.data && <DetalheDemandaModal demanda={detalhe.data} onFechar={() => setIdAberto(null)} />}
+    </>
+  );
+}
+
+export function Sentinela() {
+  const usuario = useUsuarioLogado();
+  const ehGestor = usuario.perfil === 'gestor';
+  const [parametros, setParametros] = useSearchParams();
+  // O parecer é do gestor: para o inspetor só existe o Radar
+  const aba = ehGestor && parametros.get('aba') === 'parecer' ? 'parecer' : 'radar';
+
+  const irPara = (nova: 'radar' | 'parecer') =>
+    setParametros(nova === 'parecer' ? { aba: 'parecer' } : {}, { replace: true });
+
+  return (
+    <main className="page">
+      <header className="page-header">
+        <div>
+          <h1>Sentinela</h1>
+          <p className="page-subtitle">
+            {ehGestor
+              ? 'Vigilância inteligente sobre os prazos e a efetividade da unidade'
+              : 'Suas demandas que ainda estão no prazo, mas podem não ficar'}
+          </p>
+        </div>
+      </header>
+
+      {ehGestor && (
+        <div className="abas" role="tablist">
+          <button type="button" role="tab" aria-selected={aba === 'radar'} className={`aba ${aba === 'radar' ? 'ativa' : ''}`} onClick={() => irPara('radar')}>
+            Radar de prazos
+          </button>
+          <button type="button" role="tab" aria-selected={aba === 'parecer'} className={`aba ${aba === 'parecer' ? 'ativa' : ''}`} onClick={() => irPara('parecer')}>
+            Parecer de efetividade
+          </button>
+        </div>
+      )}
+
+      {aba === 'parecer' ? <ParecerPainel /> : <RadarPainel />}
     </main>
   );
 }

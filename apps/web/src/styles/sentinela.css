@@ -133,3 +133,310 @@
 .app-shell .risco-cartao .btn-ver {
   align-self: flex-start;
 }
+
+/* Abas da Sentinela */
+.app-shell .abas {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e4e8e5;
+}
+
+.app-shell .aba {
+  padding: 10px 18px;
+  margin-bottom: -2px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: #5a6b63;
+  font-family: Poppins, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.app-shell .aba.ativa {
+  color: #152822;
+  border-bottom-color: #cc8712;
+}
+
+/* Parecer de efetividade */
+.app-shell .parecer > section {
+  margin-bottom: 20px;
+}
+
+.app-shell .aviso-ia {
+  border-left: 4px solid #cc8712;
+  margin-bottom: 20px;
+}
+
+.app-shell .aviso-ia p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #5a6b63;
+}
+
+.app-shell .fatos-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 12px 0 16px;
+}
+
+.app-shell .fatos-grade div {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f2f2f2;
+}
+
+.app-shell .fatos-grade strong {
+  font-size: 22px;
+}
+
+.app-shell .fatos-grade span {
+  font-size: 12px;
+  color: #5a6b63;
+}
+
+.app-shell .como-decide {
+  font-size: 13px;
+}
+
+.app-shell .parecer-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.app-shell .parecer-acoes .btn-secondary {
+  padding: 8px 14px;
+  font-size: 12px;
+}
+
+.app-shell .aviso-conferencia {
+  margin: 12px 0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #fff6e5;
+  border-left: 4px solid #cc8712;
+  font-size: 13px;
+}
+
+.app-shell .parecer-texto {
+  margin-top: 12px;
+  padding: 24px 28px;
+  border: 1px solid #e4e8e5;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.app-shell .parecer-texto h2 {
+  margin: 22px 0 8px;
+  font-size: 16px;
+  text-transform: none;
+}
+
+.app-shell .parecer-texto h2:first-child {
+  margin-top: 0;
+}
+
+.app-shell .parecer-texto p {
+  margin: 0 0 10px;
+}
+
+.app-shell .parecer-texto ul,
+.app-shell .parecer-texto ol {
+  margin: 0 0 10px 22px;
+  padding: 0;
+}
+
+.app-shell .parecer-texto hr {
+  margin: 20px 0 12px;
+  border: none;
+  border-top: 1px solid #e4e8e5;
+}
+
+.app-shell .parecer-editor {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid #d5dcd9;
+  border-radius: 8px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.app-shell .historico-pareceres {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.app-shell .historico-pareceres li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 10px 0;
+  border-top: 1px solid #f2f2f2;
+  font-size: 13px;
+}
+
+/* Imprimir / salvar em PDF: só o documento, sem a barra de navegação nem os botões */
+@media print {
+  .app-shell .navbar,
+  .app-shell .page-header,
+  .app-shell .abas,
+  .app-shell .parecer > section:not(.parecer-documento),
+  .app-shell .parecer-acoes,
+  .app-shell .aviso-conferencia,
+  .app-shell .filtros-nota {
+    display: none !important;
+  }
+
+  .app-shell .parecer-documento {
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .app-shell .parecer-texto {
+    border: none;
+    padding: 0;
+  }
+}
+
+/* Documento do parecer: cabeçalho formal e tabelas (o texto vem em Markdown) */
+.app-shell .parecer-cabecalho {
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid #142721;
+  text-align: center;
+}
+
+.app-shell .parecer-cabecalho p {
+  margin: 2px 0;
+  font-size: 13px;
+  color: #5a6b63;
+}
+
+.app-shell .parecer-cabecalho .parecer-unidade {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #142721;
+}
+
+.app-shell .parecer-cabecalho h1 {
+  margin: 6px 0;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.app-shell .parecer-cabecalho .parecer-selo {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 12px;
+  border: 1px solid #cc8712;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #8f5a00;
+}
+
+.app-shell .parecer-texto table {
+  width: 100%;
+  margin: 12px 0 16px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.app-shell .parecer-texto th,
+.app-shell .parecer-texto td {
+  padding: 7px 10px;
+  border: 1px solid #d5dcd9;
+  text-align: left;
+  vertical-align: top;
+}
+
+.app-shell .parecer-texto th {
+  background: #eef0ee;
+  font-weight: 700;
+}
+
+.app-shell .parecer-texto tbody tr:nth-child(even) {
+  background: #f7f8f7;
+}
+
+.app-shell .parecer-texto blockquote {
+  margin: 12px 0;
+  padding: 8px 14px;
+  border-left: 4px solid #cc8712;
+  background: #fff6e5;
+}
+
+.app-shell .parecer-texto strong {
+  font-weight: 700;
+}
+
+/* Papel A4 com margem de 2 cm e letra de documento */
+@page {
+  size: A4;
+  margin: 2cm;
+}
+
+@media print {
+  html,
+  body,
+  .app-shell {
+    background: #fff !important;
+  }
+
+  .app-shell .page {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* O título "Minuta do parecer" e os botões são da tela; no papel vale o cabeçalho do documento */
+  .app-shell .parecer-documento .card-header {
+    display: none !important;
+  }
+
+  .app-shell .parecer-texto {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 11pt;
+    line-height: 1.5;
+    color: #000;
+  }
+
+  .app-shell .parecer-cabecalho h1 {
+    font-size: 15pt;
+  }
+
+  .app-shell .parecer-texto h2 {
+    font-size: 12.5pt;
+    break-after: avoid;
+  }
+
+  .app-shell .parecer-texto h3 {
+    break-after: avoid;
+  }
+
+  .app-shell .parecer-texto table,
+  .app-shell .parecer-texto tr,
+  .app-shell .parecer-texto blockquote {
+    break-inside: avoid;
+  }
+
+  .app-shell .parecer-texto th {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
