@@ -3,6 +3,7 @@ import { AppLayout } from './layout/AppLayout';
 import { RotaProtegida, RotaPublica, SomentePerfil, useUsuarioLogado } from './auth/rotas';
 import { Cadastro } from './pages/Cadastro';
 import { Dashboard } from './pages/Dashboard';
+import { Demandantes } from './pages/Demandantes';
 import { Demandas } from './pages/Demandas';
 import { Fiscais } from './pages/Fiscais';
 import { Prazos } from './pages/Prazos';
@@ -49,6 +50,14 @@ export function App() {
               element={
                 <SomentePerfil perfis={['gestor']}>
                   <Fiscais />
+                </SomentePerfil>
+              }
+            />
+            <Route
+              path="/demandantes"
+              element={
+                <SomentePerfil perfis={['gestor']}>
+                  <Demandantes />
                 </SomentePerfil>
               }
             />

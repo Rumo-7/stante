@@ -48,6 +48,9 @@ export function AppLayout() {
               <NavLink to="/fiscais" className={classeDoLink}>
                 Fiscais
               </NavLink>
+              <NavLink to="/demandantes" className={classeDoLink}>
+                Demandantes
+              </NavLink>
               <NavLink to="/usuarios" className={classeDoLink}>
                 Usuários
                 {quantidadePendentes > 0 && (
