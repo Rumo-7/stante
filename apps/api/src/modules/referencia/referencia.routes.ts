@@ -1,15 +1,18 @@
 import { Router } from 'express';
-import { Prisma } from '@prisma/client';
+import { Prisma, type TipoDemandante } from '@prisma/client';
 import { z } from 'zod';
 import {
+  atualizarDemandanteSchema,
   criarDemandanteSchema,
   criarFiscalSchema,
+  periodoQuerySchema,
   ROTULO_TIPO_DEMANDANTE,
 } from '@stante/shared';
 import { exigirPerfil } from '../../auth/middleware';
 import { prisma } from '../../db';
 import { ErroHttp } from '../../http/erros';
 import { validar } from '../../http/validar';
+import { estatisticasPorOrgao } from '../demandantes/estatisticas';
 import { sugerirFiscais } from '../fiscais/sugestao';
 
 const consultaSugestaoSchema = z.object({
@@ -64,33 +67,66 @@ referenciaRouter.post('/fiscais', exigirPerfil('gestor'), async (req, res) => {
   });
 });
 
+const serializarOrgao = (orgao: { id: number; nome: string; tipo: TipoDemandante }) => ({
+  id: orgao.id,
+  nome: orgao.nome,
+  tipo: orgao.tipo,
+  tipoRotulo: ROTULO_TIPO_DEMANDANTE[orgao.tipo],
+});
+
+const NOME_JA_CADASTRADO = 'Este órgão já está cadastrado.';
+
+function nomeJaExiste(erro: unknown): boolean {
+  return erro instanceof Prisma.PrismaClientKnownRequestError && erro.code === 'P2002';
+}
+
 // Demandantes: o inspetor precisa da lista para abrir demandas em campo
 referenciaRouter.get('/demandantes', exigirPerfil('gestor', 'inspetor'), async (_req, res) => {
   const demandantes = await prisma.demandante.findMany({ orderBy: { id: 'asc' } });
-  res.json(
-    demandantes.map((d) => ({
-      id: d.id,
-      nome: d.nome,
-      tipo: d.tipo,
-      tipoRotulo: ROTULO_TIPO_DEMANDANTE[d.tipo],
-    })),
-  );
+  res.json(demandantes.map(serializarOrgao));
+});
+
+// Indicadores por órgão (volume, conclusão, pontualidade, tempo): visão de gestão
+referenciaRouter.get('/demandantes/estatisticas', exigirPerfil('gestor'), async (req, res) => {
+  const periodo = validar(periodoQuerySchema, req.query);
+  const { orgaos, resumo } = await estatisticasPorOrgao(periodo);
+
+  res.json({
+    periodo: { de: periodo.de ?? null, ate: periodo.ate ?? null },
+    resumo,
+    orgaos: orgaos.map((orgao) => ({ ...orgao, tipoRotulo: ROTULO_TIPO_DEMANDANTE[orgao.tipo] })),
+  });
 });
 
 referenciaRouter.post('/demandantes', exigirPerfil('gestor', 'inspetor'), async (req, res) => {
   const dados = validar(criarDemandanteSchema, req.body);
+  // Só o gestor classifica o órgão; o inspetor, em campo, cadastra como "outro" e o gestor ajusta depois
+  const tipo = req.usuario!.perfil === 'gestor' ? (dados.tipo ?? 'outro') : 'outro';
 
   try {
-    const criado = await prisma.demandante.create({ data: { nome: dados.nome, tipo: 'outro' } });
-    res.status(201).json({
-      id: criado.id,
-      nome: criado.nome,
-      tipo: criado.tipo,
-      tipoRotulo: ROTULO_TIPO_DEMANDANTE[criado.tipo],
-    });
+    const criado = await prisma.demandante.create({ data: { nome: dados.nome, tipo } });
+    res.status(201).json(serializarOrgao(criado));
   } catch (erro) {
-    if (erro instanceof Prisma.PrismaClientKnownRequestError && erro.code === 'P2002') {
-      throw new ErroHttp(409, 'Este órgão já está cadastrado.');
+    if (nomeJaExiste(erro)) throw new ErroHttp(409, NOME_JA_CADASTRADO);
+    throw erro;
+  }
+});
+
+referenciaRouter.patch('/demandantes/:id', exigirPerfil('gestor'), async (req, res) => {
+  const id = typeof req.params.id === 'string' ? Number(req.params.id) : NaN;
+  if (!Number.isInteger(id) || id <= 0 || id > 2_147_483_647) {
+    throw new ErroHttp(404, 'Órgão não encontrado.');
+  }
+  const dados = validar(atualizarDemandanteSchema, req.body);
+
+  try {
+    const atualizado = await prisma.demandante.update({ where: { id }, data: dados });
+    res.json(serializarOrgao(atualizado));
+  } catch (erro) {
+    if (nomeJaExiste(erro)) throw new ErroHttp(409, NOME_JA_CADASTRADO);
+    // P2025: o registro a atualizar não existe
+    if (erro instanceof Prisma.PrismaClientKnownRequestError && erro.code === 'P2025') {
+      throw new ErroHttp(404, 'Órgão não encontrado.');
     }
     throw erro;
   }
