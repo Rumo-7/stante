@@ -1,20 +1,8 @@
 import { z } from 'zod';
+import { idOpcional } from './ids';
 import { dataIsoValida, STATUS_EXIBICAO } from './prazo';
 
 const MSG_OBRIGATORIOS = 'Preencha demandante, assunto e prazo.';
-
-/**
- * Identificador vindo de formulário ou JSON: aceita número, texto numérico,
- * "" (vira null, "sem fiscal") e null. Ausente (undefined) significa "não alterar".
- */
-const idOpcional = z.preprocess(
-  (valor) => {
-    if (valor === '') return null;
-    if (typeof valor === 'string' && valor.trim() !== '') return Number(valor);
-    return valor;
-  },
-  z.number({ invalid_type_error: 'Identificador inválido.' }).int().positive('Identificador inválido.').nullable().optional(),
-);
 
 const idObrigatorio = (mensagemInvalido: string) =>
   z.preprocess(
@@ -83,6 +71,11 @@ export const listarDemandasQuerySchema = z.object({
   ordenar: z.preprocess(
     vazioParaUndefined,
     z.enum(['prazo', 'recentes'], { errorMap: () => ({ message: 'Ordenação inválida.' }) }).optional(),
+  ),
+  // "true" = só demandas formais em andamento (abertas ou em andamento): fora as concluídas e as em análise
+  ativas: z.preprocess(
+    vazioParaUndefined,
+    z.enum(['true'], { errorMap: () => ({ message: 'Valor inválido para "ativas".' }) }).optional(),
   ),
   limite: z.preprocess(
     vazioParaUndefined,
