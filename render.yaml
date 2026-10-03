@@ -1,0 +1,40 @@
+# Blueprint do Render: https://render.com/docs/blueprint-spec
+# Um único serviço web: a API Node também entrega o front React compilado.
+# Banco (Neon) e anexos (bucket S3-compatível) ficam fora do Render, em planos gratuitos.
+# Passo a passo completo em docs/deploy.md.
+
+services:
+  - type: web
+    name: stante
+    runtime: node
+    plan: free
+    # Perto do Neon (us-east-1): API e banco na mesma região respondem mais rápido
+    region: virginia
+    # --include=dev: o build precisa de TypeScript e Vite, que são dependências de desenvolvimento
+    buildCommand: npm ci --include=dev && npm run build
+    # Aplica as migrações pendentes e sobe a API
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: TZ_NEGOCIO
+        value: America/Recife
+      - key: STORAGE_DRIVER
+        value: s3
+      - key: S3_REGION
+        value: auto
+      # Valores secretos: o Render pergunta no primeiro deploy e guarda cifrados
+      - key: DATABASE_URL
+        sync: false
+      - key: S3_ENDPOINT
+        sync: false
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
