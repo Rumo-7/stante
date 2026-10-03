@@ -10,7 +10,15 @@ export class ErroApi extends Error {
 
 type Metodo = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
-async function requisitar<T>(metodo: Metodo, caminho: string, corpo?: unknown): Promise<T> {
+const MENSAGEM_PADRAO = 'Não foi possível concluir a operação.';
+
+function mensagemDaResposta(dados: unknown): string {
+  return dados && typeof dados === 'object' && 'erro' in dados && typeof dados.erro === 'string'
+    ? dados.erro
+    : MENSAGEM_PADRAO;
+}
+
+async function enviar(metodo: Metodo, caminho: string, corpo?: unknown): Promise<Response> {
   const opcoes: RequestInit = { method: metodo, credentials: 'same-origin' };
 
   if (corpo instanceof FormData) {
@@ -21,22 +29,38 @@ async function requisitar<T>(metodo: Metodo, caminho: string, corpo?: unknown): 
     opcoes.body = JSON.stringify(corpo);
   }
 
-  const resposta = await fetch(`/api${caminho}`, opcoes);
+  return fetch(`/api${caminho}`, opcoes);
+}
+
+async function requisitar<T>(metodo: Metodo, caminho: string, corpo?: unknown): Promise<T> {
+  const resposta = await enviar(metodo, caminho, corpo);
   if (resposta.status === 204) return undefined as T;
 
   const dados: unknown = await resposta.json().catch(() => null);
-  if (!resposta.ok) {
-    const mensagem =
-      dados && typeof dados === 'object' && 'erro' in dados && typeof dados.erro === 'string'
-        ? dados.erro
-        : 'Não foi possível concluir a operação.';
-    throw new ErroApi(resposta.status, mensagem);
-  }
+  if (!resposta.ok) throw new ErroApi(resposta.status, mensagemDaResposta(dados));
   return dados as T;
+}
+
+/** Uma lista mais o total de resultados do filtro (que vem no cabeçalho X-Total-Count). */
+export interface ListaComTotal<T> {
+  itens: T[];
+  total: number;
+}
+
+async function requisitarLista<T>(caminho: string): Promise<ListaComTotal<T>> {
+  const resposta = await enviar('GET', caminho);
+  const dados: unknown = await resposta.json().catch(() => null);
+  if (!resposta.ok) throw new ErroApi(resposta.status, mensagemDaResposta(dados));
+
+  const itens = dados as T[];
+  const total = Number(resposta.headers.get('X-Total-Count'));
+  // Sem o cabeçalho (ou com valor estranho), o total é o que veio
+  return { itens, total: Number.isFinite(total) && total >= 0 ? total : itens.length };
 }
 
 export const api = {
   get: <T>(caminho: string) => requisitar<T>('GET', caminho),
+  lista: <T>(caminho: string) => requisitarLista<T>(caminho),
   post: <T>(caminho: string, corpo?: unknown) => requisitar<T>('POST', caminho, corpo),
   patch: <T>(caminho: string, corpo?: unknown) => requisitar<T>('PATCH', caminho, corpo),
   delete: <T>(caminho: string) => requisitar<T>('DELETE', caminho),

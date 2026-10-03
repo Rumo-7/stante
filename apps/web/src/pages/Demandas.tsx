@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api, mensagemDeErro } from '../api/cliente';
-import { useDemandas, type Demanda } from '../api/demandas';
+import { useDemanda, useDemandasPaginadas, type Demanda } from '../api/demandas';
 import { useQueryClient } from '@tanstack/react-query';
 import { useUsuarioLogado } from '../auth/rotas';
 import { DetalheDemandaModal } from '../components/DetalheDemandaModal';
@@ -18,6 +18,8 @@ const FILTROS_DE_STATUS = [
   { valor: 'vencida', rotulo: 'Vencida' },
   { valor: 'concluida', rotulo: 'Concluída' },
 ];
+
+const TAMANHOS_DE_PAGINA = [20, 50, 100];
 
 /** Demandas que dá para marcar como concluídas em lote: nem em análise, nem já concluídas. */
 const podeSelecionar = (demanda: Demanda) =>
@@ -40,16 +42,42 @@ export function Demandas() {
     [parametros],
   );
 
-  const definirFiltro = (nome: keyof typeof filtros, valor: string) =>
+  // A página e o tamanho dela também ficam na URL
+  const paginaPedida = Number(parametros.get('pagina'));
+  const pagina = Number.isInteger(paginaPedida) && paginaPedida >= 1 ? paginaPedida : 1;
+  const limitePedido = Number(parametros.get('limite'));
+  const limite = TAMANHOS_DE_PAGINA.includes(limitePedido) ? limitePedido : TAMANHOS_DE_PAGINA[0]!;
+
+  const alterarParametros = (alterar: (novos: URLSearchParams) => void) =>
     setParametros(
       (atuais) => {
         const novos = new URLSearchParams(atuais);
-        if (valor) novos.set(nome, valor);
-        else novos.delete(nome);
+        alterar(novos);
         return novos;
       },
       { replace: true },
     );
+
+  // Mudar um filtro volta para a primeira página: a atual pode nem existir mais
+  const definirFiltro = (nome: keyof typeof filtros, valor: string) =>
+    alterarParametros((novos) => {
+      if (valor) novos.set(nome, valor);
+      else novos.delete(nome);
+      novos.delete('pagina');
+    });
+
+  const irParaPagina = (numero: number) =>
+    alterarParametros((novos) => {
+      if (numero > 1) novos.set('pagina', String(numero));
+      else novos.delete('pagina');
+    });
+
+  const mudarTamanho = (tamanho: number) =>
+    alterarParametros((novos) => {
+      if (tamanho !== TAMANHOS_DE_PAGINA[0]) novos.set('limite', String(tamanho));
+      else novos.delete('limite');
+      novos.delete('pagina');
+    });
 
   // A busca por texto espera o usuário parar de digitar antes de consultar
   const [textoBusca, setTextoBusca] = useState(filtros.busca);
@@ -59,8 +87,17 @@ export function Demandas() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textoBusca]);
 
-  const demandas = useDemandas(filtros);
-  const lista = demandas.data ?? [];
+  const demandas = useDemandasPaginadas({ ...filtros, pagina, limite });
+  const lista = demandas.data?.itens ?? [];
+  const total = demandas.data?.total ?? 0;
+  const totalPaginas = Math.max(1, Math.ceil(total / limite));
+  const primeiroDaPagina = (pagina - 1) * limite + 1;
+
+  // Página além da última (ex.: o filtro encolheu o resultado, ou o link veio velho): volta para a última
+  useEffect(() => {
+    if (demandas.data && pagina > totalPaginas) irParaPagina(totalPaginas);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [demandas.data, pagina, totalPaginas]);
 
   const [selecionadas, setSelecionadas] = useState<Set<number>>(new Set());
   const [mensagemLote, setMensagemLote] = useState<string | null>(null);
@@ -71,9 +108,9 @@ export function Demandas() {
   // Vindo de um aviso do sino (/demandas?abrir=ID): abre a demanda e limpa o parâmetro da URL
   const abrirParametro = parametros.get('abrir');
   useEffect(() => {
-    if (!abrirParametro || !demandas.data) return;
+    if (!abrirParametro) return;
     const id = Number(abrirParametro);
-    if (demandas.data.some((demanda) => demanda.id === id)) setIdAberto(id);
+    if (Number.isInteger(id) && id > 0) setIdAberto(id);
     setParametros(
       (atuais) => {
         const novos = new URLSearchParams(atuais);
@@ -82,15 +119,22 @@ export function Demandas() {
       },
       { replace: true },
     );
-  }, [abrirParametro, demandas.data, setParametros]);
+  }, [abrirParametro, setParametros]);
 
-  // Mudou o filtro: a seleção anterior não vale mais
-  const chaveFiltros = JSON.stringify(filtros);
-  useEffect(() => setSelecionadas(new Set()), [chaveFiltros]);
+  // O detalhe é buscado pelo id: funciona mesmo que a demanda esteja em outra página da lista
+  const detalhe = useDemanda(idAberto);
+  useEffect(() => {
+    if (!detalhe.error) return;
+    setIdAberto(null);
+    setMensagemLote(`Não foi possível abrir a demanda: ${mensagemDeErro(detalhe.error)}`);
+  }, [detalhe.error]);
+
+  // Mudou o filtro ou a página: a seleção anterior não vale mais
+  const chaveDaVisao = JSON.stringify({ filtros, pagina, limite });
+  useEffect(() => setSelecionadas(new Set()), [chaveDaVisao]);
 
   const selecionaveis = lista.filter(podeSelecionar);
   const todasMarcadas = selecionaveis.length > 0 && selecionaveis.every((d) => selecionadas.has(d.id));
-  const demandaAberta = lista.find((demanda) => demanda.id === idAberto) ?? null;
 
   function alternar(id: number) {
     setSelecionadas((atuais) => {
@@ -203,18 +247,18 @@ export function Demandas() {
         <div className="card-header">
           <h2>{usuario.perfil === 'gestor' ? 'Todas as Demandas' : 'Demandas'}</h2>
           <span className="card-subtitle">
-            {demandas.data ? `${lista.length} demanda(s) encontrada(s)` : ''}
+            {demandas.data ? `${total} demanda(s) encontrada(s)` : ''}
           </span>
         </div>
 
-        <table className="demandas-table">
+        <table className={`demandas-table ${demandas.isPlaceholderData ? 'atualizando' : ''}`}>
           <thead>
             <tr>
               {podeEditar && (
                 <th className="col-checkbox">
                   <input
                     type="checkbox"
-                    aria-label="Selecionar todas"
+                    aria-label="Selecionar todas desta página"
                     checked={todasMarcadas}
                     disabled={selecionaveis.length === 0}
                     onChange={() =>
@@ -287,9 +331,43 @@ export function Demandas() {
             ))}
           </tbody>
         </table>
+
+        {total > 0 && (
+          <div className="paginacao">
+            <span>
+              Mostrando {primeiroDaPagina}–{primeiroDaPagina + lista.length - 1} de {total}
+            </span>
+            <div className="paginacao-controles">
+              <label htmlFor="por-pagina">Por página</label>
+              <select id="por-pagina" value={limite} onChange={(e) => mudarTamanho(Number(e.target.value))}>
+                {TAMANHOS_DE_PAGINA.map((tamanho) => (
+                  <option key={tamanho} value={tamanho}>
+                    {tamanho}
+                  </option>
+                ))}
+              </select>
+              <button type="button" className="btn-secondary" disabled={pagina <= 1} onClick={() => irParaPagina(pagina - 1)}>
+                ← Anterior
+              </button>
+              <span>
+                Página {pagina} de {totalPaginas}
+              </span>
+              <button
+                type="button"
+                className="btn-secondary"
+                disabled={pagina >= totalPaginas}
+                onClick={() => irParaPagina(pagina + 1)}
+              >
+                Próxima →
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
-      {demandaAberta && <DetalheDemandaModal demanda={demandaAberta} onFechar={() => setIdAberto(null)} />}
+      {idAberto !== null && detalhe.data && (
+        <DetalheDemandaModal demanda={detalhe.data} onFechar={() => setIdAberto(null)} />
+      )}
       {novaAberta && <NovaDemandaModal onFechar={() => setNovaAberta(false)} />}
     </main>
   );

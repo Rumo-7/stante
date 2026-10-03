@@ -176,6 +176,52 @@ body {
   resize: vertical;
 }
 
+/* Paginação da lista de demandas */
+.app-shell .paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eef0ee;
+  font-size: 13px;
+  color: #5a6b63;
+}
+
+.app-shell .paginacao-controles {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.app-shell .paginacao-controles select {
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid #d5dcd9;
+  border-radius: 8px;
+  font-family: Poppins, sans-serif;
+  background: #f2f2f2;
+}
+
+.app-shell .paginacao-controles .btn-secondary {
+  padding: 8px 14px;
+  font-size: 12px;
+}
+
+.app-shell .paginacao-controles .btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* A página anterior fica na tela, esmaecida, enquanto a nova carrega */
+.app-shell .demandas-table.atualizando {
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
 /* Filtros do dashboard */
 .app-shell .filtros-nota {
   margin: 12px 0 0;

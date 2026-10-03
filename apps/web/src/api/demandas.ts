@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import type { StatusDemanda, StatusExibicao } from '@stante/shared';
 import { montarQuery } from '../util/query';
 import { api } from './cliente';
@@ -35,6 +35,8 @@ export interface FiltrosDemandas {
   criadasAte?: string;
   ordenar?: 'prazo' | 'recentes';
   limite?: number;
+  /** Página a partir de 1; sem "limite", cada página tem 20 itens. */
+  pagina?: number;
   /** Só demandas formais em andamento: sem as concluídas e sem as em análise. */
   ativas?: boolean;
 }
@@ -51,6 +53,26 @@ export const useDemandas = (filtros: FiltrosDemandas = {}, habilitado = true) =>
     queryKey: ['demandas', filtros],
     queryFn: () => api.get<Demanda[]>(`/demandas${montarQuery(filtros)}`),
     enabled: habilitado,
+  });
+
+/**
+ * A lista em páginas, com o total de resultados do filtro. A chave começa com "demandas",
+ * então criar ou alterar uma demanda já atualiza a página aberta. Ao trocar de página, a
+ * anterior continua na tela até a nova chegar (sem a tabela piscar vazia).
+ */
+export const useDemandasPaginadas = (filtros: FiltrosDemandas) =>
+  useQuery({
+    queryKey: ['demandas', 'pagina', filtros],
+    queryFn: () => api.lista<Demanda>(`/demandas${montarQuery(filtros)}`),
+    placeholderData: keepPreviousData,
+  });
+
+/** Uma demanda só (abre o detalhe sem depender de ela estar na página atual da lista). */
+export const useDemanda = (id: number | null) =>
+  useQuery({
+    queryKey: ['demandas', 'detalhe', id],
+    queryFn: () => api.get<Demanda>(`/demandas/${id}`),
+    enabled: id !== null,
   });
 
 /** Só gestor e inspetor listam órgãos; para o representante a consulta não deve ser feita. */
