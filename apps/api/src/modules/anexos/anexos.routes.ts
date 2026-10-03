@@ -14,6 +14,7 @@ type AnexoBanco = {
   id: number;
   nomeOriginal: string;
   tamanho: number | null;
+  enviadoPorId: number | null;
   createdAt: Date;
 };
 
@@ -21,6 +22,7 @@ const serializar = (anexo: AnexoBanco) => ({
   id: anexo.id,
   nomeOriginal: anexo.nomeOriginal,
   tamanho: anexo.tamanho,
+  enviadoPorId: anexo.enviadoPorId,
   criadoEm: anexo.createdAt.toISOString(),
 });
 

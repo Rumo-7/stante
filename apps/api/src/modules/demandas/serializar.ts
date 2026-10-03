@@ -16,7 +16,10 @@ export function serializarDemanda(demanda: DemandaComRelacoes, hoje: string) {
     fiscalId: demanda.fiscalId,
     fiscal: demanda.fiscal?.nome ?? null,
     prazo,
+    // Status de exibição: o salvo, ajustado pelo prazo (pode ser "vencida" ou "prazo_critico")
     status: statusExibicao(demanda.status, prazo, hoje),
+    // Status gravado de fato, para telas que permitem editá-lo sem perder essa informação
+    statusSalvo: demanda.status,
     origem: demanda.origem,
     validadaEm: demanda.validadaEm?.toISOString() ?? null,
   };

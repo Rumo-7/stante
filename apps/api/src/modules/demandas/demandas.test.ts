@@ -279,6 +279,17 @@ describe('GET /api/demandas — filtros em SQL (ponto 5 da revisão)', () => {
     expect(corpo).toHaveLength(7);
   });
 
+  it('devolve o status salvo além do status de exibição (vencida não esconde "em andamento")', async () => {
+    const { cookie } = await criarUsuarioComSessao('gestor');
+    const demandante = await criarDemandante();
+    await criarDemanda({
+      demandanteId: demandante.id, assunto: 'x', prazo: data(em(-3)), status: 'em_andamento',
+    });
+
+    const res = await request(app).get('/api/demandas').set('Cookie', cookie).expect(200);
+    expect(res.body[0]).toMatchObject({ status: 'vencida', statusSalvo: 'em_andamento' });
+  });
+
   it('ordena pelas mais recentes e limita a quantidade', async () => {
     const { cookie } = await cenarioPrazos();
     const { assuntos } = await listar(cookie, { ordenar: 'recentes', limite: '2' });

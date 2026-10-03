@@ -126,6 +126,13 @@ describe('envio de anexos', () => {
     expect(anexo.chaveArquivo).toMatch(/^[0-9a-f-]{36}\.pdf$/);
   });
 
+  it('informa quem enviou cada anexo', async () => {
+    const gestor = await criarUsuarioComSessao('gestor');
+    const { demanda } = await demandaBase();
+    const res = await enviar(gestor.cookie, demanda.id, PDF).expect(201);
+    expect(res.body[0].enviadoPorId).toBe(gestor.user.id);
+  });
+
   it('preserva acentos no nome do arquivo', async () => {
     const { cookie } = await criarUsuarioComSessao('gestor');
     const { demanda } = await demandaBase();
