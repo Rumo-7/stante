@@ -360,7 +360,7 @@ describe('PATCH /api/demandas/:id', () => {
     const aposEditar = await prisma.demanda.findUniqueOrThrow({ where: { id: demanda.id } });
     expect(aposEditar.concluidaEm).toEqual(concluida.concluidaEm);
 
-    await request(app).patch(`/api/demandas/${demanda.id}`).set('Cookie', cookie).send({ status: 'aberta' }).expect(200);
+    await request(app).patch(`/api/demandas/${demanda.id}`).set('Cookie', cookie).send({ status: 'aberta', motivo: 'Faltou anexar o laudo' }).expect(200);
     const reaberta = await prisma.demanda.findUniqueOrThrow({ where: { id: demanda.id } });
     expect(reaberta.concluidaEm).toBeNull();
   });

@@ -19,6 +19,7 @@ import {
   validarArquivos,
 } from '../anexos/arquivos';
 import { arquivosDaRequisicao, receberAnexos } from '../anexos/upload';
+import { listarHistorico, registrar, type EventoHistorico } from '../historico/historico';
 import { escopoDemandas } from './escopo';
 import { montarWhere, paraData } from './filtros';
 import { INCLUIR_RELACOES, serializarDemanda } from './serializar';
@@ -35,11 +36,15 @@ function lerId(valor: unknown): number {
   return id;
 }
 
-async function garantirFiscalExiste(fiscalId: number | null | undefined) {
-  if (!fiscalId) return;
-  const fiscal = await prisma.fiscal.findUnique({ where: { id: fiscalId }, select: { id: true } });
+/** Devolve o fiscal (ou null se não foi informado); 400 se o id não existe. */
+async function buscarFiscal(fiscalId: number | null | undefined) {
+  if (!fiscalId) return null;
+  const fiscal = await prisma.fiscal.findUnique({ where: { id: fiscalId }, select: { id: true, nome: true } });
   if (!fiscal) throw new ErroHttp(400, 'Fiscal não encontrado.');
+  return fiscal;
 }
+
+const prazoIso = (demanda: { prazo: Date }) => demanda.prazo.toISOString().slice(0, 10);
 
 demandasRouter.get('/', async (req, res) => {
   const consulta = validar(listarDemandasQuerySchema, req.query);
@@ -87,7 +92,7 @@ demandasRouter.post('/', exigirPerfil('gestor', 'inspetor'), receberAnexos, asyn
       criadaPorId: usuario.id,
     };
   } else {
-    await garantirFiscalExiste(dados.fiscalId);
+    await buscarFiscal(dados.fiscalId);
     dadosCriacao = {
       demandanteId: dados.demandanteId,
       assunto: dados.assunto,
@@ -99,13 +104,22 @@ demandasRouter.post('/', exigirPerfil('gestor', 'inspetor'), receberAnexos, asyn
     };
   }
 
-  // Arquivos primeiro, depois a demanda com os anexos numa única operação do banco.
+  const eventos: EventoHistorico[] = [
+    { tipo: 'criada', dados: { origem: dadosCriacao.origem ?? 'planejada' } },
+    ...arquivos.map((arquivo) => ({ tipo: 'anexo_adicionado' as const, dados: { nome: arquivo.nomeOriginal } })),
+  ];
+
+  // Arquivos primeiro; depois demanda, anexos e histórico numa única transação.
   // Se o banco falhar, os arquivos já gravados são removidos.
   await gravarArquivos(arquivos);
   try {
-    const criada = await prisma.demanda.create({
-      data: { ...dadosCriacao, anexos: { create: paraCriacao(arquivos, usuario.id) } },
-      include: INCLUIR_RELACOES,
+    const criada = await prisma.$transaction(async (tx) => {
+      const nova = await tx.demanda.create({
+        data: { ...dadosCriacao, anexos: { create: paraCriacao(arquivos, usuario.id) } },
+        include: INCLUIR_RELACOES,
+      });
+      await registrar(tx, nova.id, usuario.id, eventos);
+      return nova;
     });
     res.status(201).json(serializarDemanda(criada, hoje));
   } catch (erro) {
@@ -122,6 +136,7 @@ demandasRouter.patch('/:id', exigirPerfil('gestor', 'inspetor'), async (req, res
 
   const atual = await prisma.demanda.findFirst({
     where: { AND: [{ id }, escopoDemandas(usuario)] },
+    include: { fiscal: { select: { nome: true } } },
   });
   if (!atual) throw new ErroHttp(404, 'Demanda não encontrada.');
 
@@ -137,7 +152,40 @@ demandasRouter.patch('/:id', exigirPerfil('gestor', 'inspetor'), async (req, res
       : new ErroHttp(403, 'Esta demanda aguarda a validação de um gestor.');
   }
 
-  await garantirFiscalExiste(dados.fiscalId);
+  // Reabrir uma demanda concluída: só o gestor, e sempre com o motivo registrado
+  const reabrindo = atual.status === 'concluida' && dados.status !== undefined && dados.status !== 'concluida';
+  if (reabrindo) {
+    if (usuario.perfil !== 'gestor') {
+      throw new ErroHttp(403, 'Só o gestor pode reabrir uma demanda concluída.');
+    }
+    if (!dados.motivo || dados.motivo.length < 3) {
+      throw new ErroHttp(400, 'Informe o motivo da reabertura.');
+    }
+  }
+
+  const novoFiscal = await buscarFiscal(dados.fiscalId);
+
+  // Só vira evento o que de fato mudou
+  const eventos: EventoHistorico[] = [];
+  if (dados.status !== undefined && dados.status !== atual.status) {
+    eventos.push(
+      reabrindo
+        ? { tipo: 'reaberta', dados: { para: dados.status, motivo: dados.motivo! } }
+        : { tipo: 'status_alterado', dados: { de: atual.status, para: dados.status } },
+    );
+  }
+  if (dados.fiscalId !== undefined && (dados.fiscalId ?? null) !== atual.fiscalId) {
+    eventos.push({
+      tipo: 'fiscal_alterado',
+      dados: { de: atual.fiscal?.nome ?? null, para: novoFiscal?.nome ?? null },
+    });
+  }
+  if (dados.prazo !== undefined && dados.prazo !== prazoIso(atual)) {
+    eventos.push({ tipo: 'prazo_alterado', dados: { de: prazoIso(atual), para: dados.prazo } });
+  }
+  if (dados.assunto !== undefined && dados.assunto !== atual.assunto) {
+    eventos.push({ tipo: 'assunto_alterado', dados: { de: atual.assunto, para: dados.assunto } });
+  }
 
   const alteracoes: Prisma.DemandaUncheckedUpdateInput = {};
   if (dados.status !== undefined) {
@@ -149,10 +197,14 @@ demandasRouter.patch('/:id', exigirPerfil('gestor', 'inspetor'), async (req, res
   if (dados.prazo !== undefined) alteracoes.prazo = paraData(dados.prazo);
   if (dados.assunto !== undefined) alteracoes.assunto = dados.assunto;
 
-  const atualizada = await prisma.demanda.update({
-    where: { id },
-    data: alteracoes,
-    include: INCLUIR_RELACOES,
+  const atualizada = await prisma.$transaction(async (tx) => {
+    const resultado = await tx.demanda.update({
+      where: { id },
+      data: alteracoes,
+      include: INCLUIR_RELACOES,
+    });
+    await registrar(tx, id, usuario.id, eventos);
+    return resultado;
   });
   res.json(serializarDemanda(atualizada, hoje));
 });
@@ -164,10 +216,24 @@ demandasRouter.post('/:id/validar', exigirPerfil('gestor'), async (req, res) => 
   const usuario = req.usuario!;
   const hoje = hojeNoFuso(env.TZ_NEGOCIO);
 
-  const existente = await prisma.demanda.findUnique({ where: { id }, select: { id: true } });
+  const existente = await prisma.demanda.findUnique({
+    where: { id },
+    include: { fiscal: { select: { nome: true } } },
+  });
   if (!existente) throw new ErroHttp(404, 'Demanda não encontrada.');
 
-  await garantirFiscalExiste(dados.fiscalId);
+  const novoFiscal = await buscarFiscal(dados.fiscalId);
+
+  const eventos: EventoHistorico[] = [{ tipo: 'validada' }];
+  if (dados.fiscalId !== undefined && (dados.fiscalId ?? null) !== existente.fiscalId) {
+    eventos.push({
+      tipo: 'fiscal_alterado',
+      dados: { de: existente.fiscal?.nome ?? null, para: novoFiscal?.nome ?? null },
+    });
+  }
+  if (dados.prazo !== undefined && dados.prazo !== prazoIso(existente)) {
+    eventos.push({ tipo: 'prazo_alterado', dados: { de: prazoIso(existente), para: dados.prazo } });
+  }
 
   const alteracoes: Prisma.DemandaUncheckedUpdateManyInput = {
     status: 'aberta',
@@ -177,14 +243,25 @@ demandasRouter.post('/:id/validar', exigirPerfil('gestor'), async (req, res) => 
   if (dados.fiscalId !== undefined) alteracoes.fiscalId = dados.fiscalId;
   if (dados.prazo !== undefined) alteracoes.prazo = paraData(dados.prazo);
 
-  // O filtro por status faz a validação ser atômica: se dois gestores clicarem
-  // ao mesmo tempo, só um altera e o outro recebe 409.
-  const resultado = await prisma.demanda.updateMany({
-    where: { id, status: 'em_analise' },
-    data: alteracoes,
+  const validada = await prisma.$transaction(async (tx) => {
+    // O filtro por status faz a validação ser atômica: se dois gestores clicarem
+    // ao mesmo tempo, só um altera e o outro recebe 409 (e nada é registrado).
+    const resultado = await tx.demanda.updateMany({ where: { id, status: 'em_analise' }, data: alteracoes });
+    if (resultado.count === 0) throw new ErroHttp(409, 'Esta demanda já foi validada.');
+    await registrar(tx, id, usuario.id, eventos);
+    return tx.demanda.findUniqueOrThrow({ where: { id }, include: INCLUIR_RELACOES });
   });
-  if (resultado.count === 0) throw new ErroHttp(409, 'Esta demanda já foi validada.');
-
-  const validada = await prisma.demanda.findUniqueOrThrow({ where: { id }, include: INCLUIR_RELACOES });
   res.json(serializarDemanda(validada, hoje));
+});
+
+// O histórico é interno: o representante do órgão não vê as movimentações da equipe.
+demandasRouter.get('/:id/historico', exigirPerfil('gestor', 'inspetor'), async (req, res) => {
+  const id = lerId(req.params.id);
+  const demanda = await prisma.demanda.findFirst({
+    where: { AND: [{ id }, escopoDemandas(req.usuario!)] },
+    select: { id: true },
+  });
+  if (!demanda) throw new ErroHttp(404, 'Demanda não encontrada.');
+
+  res.json(await listarHistorico(id));
 });

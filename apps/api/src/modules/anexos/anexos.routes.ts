@@ -4,6 +4,7 @@ import { prisma } from '../../db';
 import { ErroHttp } from '../../http/erros';
 import { armazenamento } from '../../storage';
 import { escopoDemandas } from '../demandas/escopo';
+import { registrar } from '../historico/historico';
 import { descartarArquivos, gravarArquivos, paraCriacao, validarArquivos } from './arquivos';
 import { arquivosDaRequisicao, receberAnexos } from './upload';
 
@@ -66,8 +67,16 @@ anexosRouter.post(
 
     await gravarArquivos(arquivos);
     try {
-      await prisma.anexo.createMany({
-        data: paraCriacao(arquivos, usuario.id).map((a) => ({ ...a, demandaId })),
+      await prisma.$transaction(async (tx) => {
+        await tx.anexo.createMany({
+          data: paraCriacao(arquivos, usuario.id).map((a) => ({ ...a, demandaId })),
+        });
+        await registrar(
+          tx,
+          demandaId,
+          usuario.id,
+          arquivos.map((arquivo) => ({ tipo: 'anexo_adicionado' as const, dados: { nome: arquivo.nomeOriginal } })),
+        );
       });
     } catch (erro) {
       await descartarArquivos(arquivos);
@@ -120,7 +129,12 @@ anexosRouter.delete('/anexos/:id', exigirPerfil('gestor', 'inspetor'), async (re
     throw new ErroHttp(403, 'Você só pode remover anexos enviados por você.');
   }
 
-  await prisma.anexo.delete({ where: { id } });
+  await prisma.$transaction(async (tx) => {
+    await tx.anexo.delete({ where: { id } });
+    await registrar(tx, anexo.demandaId, usuario.id, [
+      { tipo: 'anexo_removido', dados: { nome: anexo.nomeOriginal } },
+    ]);
+  });
   await armazenamento.remover(anexo.chaveArquivo).catch((erro) => console.error(erro));
   res.json({ mensagem: 'Anexo removido.' });
 });

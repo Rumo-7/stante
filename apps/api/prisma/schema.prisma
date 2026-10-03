@@ -25,6 +25,18 @@ enum OrigemDemanda {
   campo // registrada por um inspetor durante a fiscalização
 }
 
+enum TipoHistorico {
+  criada
+  validada
+  status_alterado
+  reaberta
+  fiscal_alterado
+  prazo_alterado
+  assunto_alterado
+  anexo_adicionado
+  anexo_removido
+}
+
 enum TipoDemandante {
   ministerio_publico
   judiciario
@@ -60,6 +72,7 @@ model User {
   demandasCriadas   Demanda[] @relation("DemandaCriadaPor")
   demandasValidadas Demanda[] @relation("DemandaValidadaPor")
   anexosEnviados    Anexo[]   @relation("AnexoEnviadoPor")
+  historicos        HistoricoDemanda[] @relation("HistoricoAutor")
 
   @@map("users")
 }
@@ -123,6 +136,7 @@ model Demanda {
   criadaPor    User?    @relation("DemandaCriadaPor", fields: [criadaPorId], references: [id], onDelete: SetNull)
   validadaPor  User?    @relation("DemandaValidadaPor", fields: [validadaPorId], references: [id], onDelete: SetNull)
   anexos     Anexo[]
+  historico  HistoricoDemanda[]
 
   @@index([prazo])
   @@index([status])
@@ -147,4 +161,22 @@ model Anexo {
 
   @@index([demandaId])
   @@map("anexos")
+}
+
+// Registro do que aconteceu com cada demanda: quem fez o quê e quando.
+// Só se acrescenta; nada é editado nem apagado (some junto com a demanda).
+model HistoricoDemanda {
+  id        Int           @id @default(autoincrement())
+  demandaId Int           @map("demanda_id")
+  autorId   Int?          @map("autor_id")
+  tipo      TipoHistorico
+  // Valores antes/depois (nomes legíveis, não só ids), para o texto não mudar se o fiscal for renomeado
+  dados     Json          @default("{}")
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  demanda Demanda @relation(fields: [demandaId], references: [id], onDelete: Cascade)
+  autor   User?   @relation("HistoricoAutor", fields: [autorId], references: [id], onDelete: SetNull)
+
+  @@index([demandaId, createdAt])
+  @@map("historico_demandas")
 }

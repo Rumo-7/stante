@@ -18,6 +18,20 @@ export const STATUS_EXIBICAO = [
   'vencida',
 ] as const satisfies readonly StatusExibicao[];
 
+/** Nomes dos status gravados, como aparecem para as pessoas (histórico, listas, filtros). */
+export const ROTULO_STATUS_DEMANDA: Record<StatusDemanda, string> = {
+  em_analise: 'Em análise',
+  aberta: 'Aberta',
+  em_andamento: 'Em andamento',
+  concluida: 'Concluída',
+};
+
+/** "2026-10-03" -> "03/10/2026" */
+export function formatarDataBr(dataIso: string): string {
+  const [ano, mes, dia] = dataIso.slice(0, 10).split('-');
+  return `${dia}/${mes}/${ano}`;
+}
+
 const MS_POR_DIA = 24 * 60 * 60 * 1000;
 const FORMATO_DATA = /^(\d{4})-(\d{2})-(\d{2})$/;
 

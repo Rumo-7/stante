@@ -39,10 +39,14 @@ export const atualizarDemandaSchema = z
     fiscalId: idOpcional,
     prazo: prazo.optional(),
     assunto: assunto.optional(),
+    /** Obrigatório (e só o gestor pode) ao reabrir uma demanda concluída; fica registrado no histórico. */
+    motivo: z.string().trim().max(500, 'O motivo deve ter no máximo 500 caracteres.').optional(),
   })
-  .refine((dados) => Object.values(dados).some((valor) => valor !== undefined), {
-    message: 'Nada para atualizar.',
-  });
+  .refine(
+    // O motivo sozinho não é uma alteração: ele só acompanha uma mudança de status
+    (dados) => [dados.status, dados.fiscalId, dados.prazo, dados.assunto].some((valor) => valor !== undefined),
+    { message: 'Nada para atualizar.' },
+  );
 
 export const validarDemandaSchema = z.object({
   fiscalId: idOpcional,
