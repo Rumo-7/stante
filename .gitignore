@@ -1,4 +1,12 @@
 node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+!.env.test.example
 server/database.sqlite
 server/uploads/
+apps/api/uploads/
 .DS_Store

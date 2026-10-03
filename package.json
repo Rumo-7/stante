@@ -1,0 +1,22 @@
+{
+  "name": "stante",
+  "private": true,
+  "description": "Stante - gestão de demandas VISAT/CEREST",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "overrides": {
+    "esbuild": "^0.27.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:shared": "npm run build -w @stante/shared",
+    "dev:api": "npm run build:shared && npm run dev -w @stante/api",
+    "dev:web": "npm run build:shared && npm run dev -w @stante/web",
+    "test": "npm run build:shared && npm run test --workspaces --if-present",
+    "typecheck": "npm run build:shared && npm run typecheck --workspaces --if-present"
+  }
+}
