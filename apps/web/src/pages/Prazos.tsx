@@ -1,17 +1,29 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { adicionarDias, diasParaPrazo, hojeNoFuso } from '@stante/shared';
 import { mensagemDeErro } from '../api/cliente';
 import { useDemandas, type Demanda } from '../api/demandas';
 import { useFiscais } from '../api/fiscais';
 import { useUsuarioLogado } from '../auth/rotas';
+import { mapaDoRadar, useRadar, type ItemDoRadar } from '../api/radar';
 import { CalendarioPrazos } from '../components/CalendarioPrazos';
 import { DetalheDemandaModal } from '../components/DetalheDemandaModal';
+import { RadarSelo } from '../components/RadarSelo';
 import { formatarData } from '../util/data';
 
 const DIAS_PROXIMOS = 30;
 const doisDigitos = (n: number) => String(n).padStart(2, '0');
 
-function LinhaPrazo({ demanda, hoje, aoAbrir }: { demanda: Demanda; hoje: string; aoAbrir: () => void }) {
+function LinhaPrazo({
+  demanda,
+  hoje,
+  risco,
+  aoAbrir,
+}: {
+  demanda: Demanda;
+  hoje: string;
+  risco: ItemDoRadar | undefined;
+  aoAbrir: () => void;
+}) {
   const dias = diasParaPrazo(demanda.prazo, hoje);
   const borda = demanda.status === 'vencida' ? 'borda-vencida' : demanda.status === 'prazo_critico' ? 'borda-critico' : '';
 
@@ -27,6 +39,7 @@ function LinhaPrazo({ demanda, hoje, aoAbrir }: { demanda: Demanda; hoje: string
       </div>
       <div className="prazo-row-meta">
         <span>{formatarData(demanda.prazo)}</span>
+        <RadarSelo item={risco} />
         <span className="prazo-row-dias">{dias < 0 ? `${Math.abs(dias)}d em atraso` : `${dias}d restantes`}</span>
         <button type="button" className="btn-ver" onClick={aoAbrir}>
           Ver demanda
@@ -42,6 +55,7 @@ function Secao({
   vazio,
   demandas,
   hoje,
+  riscos,
   aoAbrir,
 }: {
   titulo: string;
@@ -49,6 +63,7 @@ function Secao({
   vazio: string;
   demandas: Demanda[];
   hoje: string;
+  riscos: Map<number, ItemDoRadar>;
   aoAbrir: (id: number) => void;
 }) {
   return (
@@ -59,7 +74,7 @@ function Secao({
       <div className="prazo-secao-lista">
         {demandas.length === 0 && <p className="empty-state">{vazio}</p>}
         {demandas.map((demanda) => (
-          <LinhaPrazo key={demanda.id} demanda={demanda} hoje={hoje} aoAbrir={() => aoAbrir(demanda.id)} />
+          <LinhaPrazo key={demanda.id} demanda={demanda} hoje={hoje} risco={riscos.get(demanda.id)} aoAbrir={() => aoAbrir(demanda.id)} />
         ))}
       </div>
     </div>
@@ -80,6 +95,8 @@ export function Prazos() {
   const [idAberto, setIdAberto] = useState<number | null>(null);
 
   const fiscais = useFiscais(ehGestor);
+  const radar = useRadar(usuario.perfil !== 'representante');
+  const riscos = useMemo(() => mapaDoRadar(radar.data), [radar.data]);
 
   // Cada visão pede ao servidor só o que mostra
   const lista = useDemandas(
@@ -168,6 +185,7 @@ export function Prazos() {
             vazio="Nenhuma demanda vencida. 🎉"
             demandas={vencidas}
             hoje={hoje}
+            riscos={riscos}
             aoAbrir={setIdAberto}
           />
           <Secao
@@ -176,6 +194,7 @@ export function Prazos() {
             vazio="Nenhuma demanda com prazo crítico."
             demandas={criticas}
             hoje={hoje}
+            riscos={riscos}
             aoAbrir={setIdAberto}
           />
           <Secao
@@ -183,6 +202,7 @@ export function Prazos() {
             vazio="Nenhum prazo nos próximos 30 dias."
             demandas={proximas}
             hoje={hoje}
+            riscos={riscos}
             aoAbrir={setIdAberto}
           />
         </section>

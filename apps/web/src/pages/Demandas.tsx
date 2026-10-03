@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api, mensagemDeErro } from '../api/cliente';
 import { useDemanda, useDemandasPaginadas, type Demanda } from '../api/demandas';
+import { mapaDoRadar, useRadar } from '../api/radar';
 import { useQueryClient } from '@tanstack/react-query';
 import { useUsuarioLogado } from '../auth/rotas';
 import { DetalheDemandaModal } from '../components/DetalheDemandaModal';
 import { NovaDemandaModal } from '../components/NovaDemandaModal';
+import { RadarSelo } from '../components/RadarSelo';
 import { StatusBadge } from '../components/StatusBadge';
 import { formatarData } from '../util/data';
 
@@ -88,6 +90,8 @@ export function Demandas() {
   }, [textoBusca]);
 
   const demandas = useDemandasPaginadas({ ...filtros, pagina, limite });
+  const radar = useRadar(podeEditar);
+  const riscos = useMemo(() => mapaDoRadar(radar.data), [radar.data]);
   const lista = demandas.data?.itens ?? [];
   const total = demandas.data?.total ?? 0;
   const totalPaginas = Math.max(1, Math.ceil(total / limite));
@@ -321,6 +325,7 @@ export function Demandas() {
                 <td>{formatarData(demanda.prazo)}</td>
                 <td>
                   <StatusBadge status={demanda.status} />
+                  <RadarSelo item={riscos.get(demanda.id)} />
                 </td>
                 <td>
                   <button type="button" className="btn-ver" onClick={() => setIdAberto(demanda.id)}>

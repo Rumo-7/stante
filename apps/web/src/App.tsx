@@ -7,6 +7,7 @@ import { Demandantes } from './pages/Demandantes';
 import { Demandas } from './pages/Demandas';
 import { Fiscais } from './pages/Fiscais';
 import { Prazos } from './pages/Prazos';
+import { Sentinela } from './pages/Sentinela';
 import { TrocarSenha } from './pages/TrocarSenha';
 import { Usuarios } from './pages/Usuarios';
 import { Esqueci } from './pages/Esqueci';
@@ -45,6 +46,14 @@ export function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/demandas" element={<Demandas />} />
             <Route path="/prazos" element={<Prazos />} />
+            <Route
+              path="/sentinela"
+              element={
+                <SomentePerfil perfis={['gestor', 'inspetor']}>
+                  <Sentinela />
+                </SomentePerfil>
+              }
+            />
             <Route
               path="/fiscais"
               element={

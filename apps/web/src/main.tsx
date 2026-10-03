@@ -11,6 +11,7 @@ import './styles/demandas.css';
 import './styles/prazos.css';
 import './styles/fiscais.css';
 import './styles/demandantes.css';
+import './styles/sentinela.css';
 import './styles/login.css';
 import './styles/cadastro.css';
 import './styles/esqueci.css';

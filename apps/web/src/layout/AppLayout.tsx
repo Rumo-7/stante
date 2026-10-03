@@ -43,6 +43,11 @@ export function AppLayout() {
           <NavLink to="/prazos" className={classeDoLink}>
             Prazos
           </NavLink>
+          {usuario.perfil !== 'representante' && (
+            <NavLink to="/sentinela" className={classeDoLink}>
+              Sentinela
+            </NavLink>
+          )}
           {ehGestor && (
             <>
               <NavLink to="/fiscais" className={classeDoLink}>

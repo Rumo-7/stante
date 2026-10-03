@@ -1,0 +1,135 @@
+/* Sentinela: Radar de prazos */
+
+.app-shell .radar-selo {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: help;
+}
+
+.app-shell .radar-alto {
+  background: #fdecea;
+  color: #b3261e;
+}
+
+.app-shell .radar-medio {
+  background: #fff1d6;
+  color: #8f5a00;
+}
+
+/* Depois do selo de status nas tabelas */
+.app-shell .demandas-table .radar-selo {
+  margin-left: 6px;
+}
+
+.app-shell .radar-totais {
+  display: flex;
+  gap: 12px;
+  margin: 4px 0 16px;
+}
+
+.app-shell .radar-total {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.app-shell .radar-total strong {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.app-shell .radar-total-alto {
+  background: #fdecea;
+  color: #b3261e;
+}
+
+.app-shell .radar-total-medio {
+  background: #fff1d6;
+  color: #8f5a00;
+}
+
+.app-shell .como-decide {
+  font-size: 13px;
+  color: #152822;
+}
+
+.app-shell .como-decide summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #0088ff;
+}
+
+.app-shell .como-decide ul {
+  margin: 12px 0 8px 18px;
+  padding: 0;
+}
+
+.app-shell .como-decide li {
+  margin-bottom: 6px;
+}
+
+.app-shell .risco-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.app-shell .risco-cartao {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: #fff;
+  border-left: 4px solid #cc8712;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.app-shell .risco-cartao.risco-alto {
+  border-left-color: #b3261e;
+}
+
+.app-shell .risco-cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.app-shell .risco-assunto {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.app-shell .risco-meta {
+  margin: 0;
+  font-size: 12px;
+  color: #5a6b63;
+}
+
+.app-shell .risco-motivos {
+  margin: 4px 0 8px 18px;
+  padding: 0;
+  font-size: 13px;
+  color: #152822;
+}
+
+.app-shell .risco-motivos li {
+  margin-bottom: 4px;
+}
+
+.app-shell .risco-cartao .btn-ver {
+  align-self: flex-start;
+}

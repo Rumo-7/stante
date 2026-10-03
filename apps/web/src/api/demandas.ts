@@ -92,6 +92,7 @@ function invalidarDemandas(clienteQuery: QueryClient) {
     clienteQuery.invalidateQueries({ queryKey: ['dashboard'] }),
     clienteQuery.invalidateQueries({ queryKey: ['fiscais'] }),
     clienteQuery.invalidateQueries({ queryKey: ['historico'] }),
+    clienteQuery.invalidateQueries({ queryKey: ['radar'] }),
   ]);
 }
 
