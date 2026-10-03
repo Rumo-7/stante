@@ -588,3 +588,159 @@ describe('GET /api/demandas — filtros de órgão e de data de cadastro', () =>
     expect(await assuntos(cookie, { demandanteId: 'abc' })).toMatchObject({ status: 400, erro: 'Órgão inválido.' });
   });
 });
+
+describe('GET /api/demandas — paginação', () => {
+  /** 25 demandas com o MESMO prazo: o desempate pelo id é o que mantém as páginas coerentes. */
+  async function vinteECinco() {
+    const gestor = await criarUsuarioComSessao('gestor');
+    const demandante = await criarDemandante();
+    for (let i = 1; i <= 25; i += 1) {
+      await criarDemanda({ demandanteId: demandante.id, assunto: `demanda ${String(i).padStart(2, '0')}`, prazo: data(em(30)) });
+    }
+    return { gestor, demandante };
+  }
+
+  const pagina = (cookie: string, consulta: Record<string, string>) =>
+    request(app).get('/api/demandas').query(consulta).set('Cookie', cookie);
+
+  const idsDe = (corpo: { id: number }[]) => corpo.map((d) => d.id);
+
+  it('informa o total do filtro num cabeçalho, mesmo sem paginar', async () => {
+    const { gestor } = await vinteECinco();
+    const res = await pagina(gestor.cookie, {}).expect(200);
+    expect(res.headers['x-total-count']).toBe('25');
+    expect(res.body).toHaveLength(25);
+  });
+
+  it('entrega a fatia pedida e o total de tudo', async () => {
+    const { gestor } = await vinteECinco();
+
+    const primeira = await pagina(gestor.cookie, { pagina: '1', limite: '10' }).expect(200);
+    const terceira = await pagina(gestor.cookie, { pagina: '3', limite: '10' }).expect(200);
+    const alem = await pagina(gestor.cookie, { pagina: '4', limite: '10' }).expect(200);
+
+    expect(primeira.body).toHaveLength(10);
+    expect(terceira.body).toHaveLength(5);
+    expect(alem.body).toHaveLength(0);
+    for (const resposta of [primeira, terceira, alem]) expect(resposta.headers['x-total-count']).toBe('25');
+  });
+
+  it('sem "limite", a página tem 20 itens', async () => {
+    const { gestor } = await vinteECinco();
+    expect((await pagina(gestor.cookie, { pagina: '1' }).expect(200)).body).toHaveLength(20);
+    expect((await pagina(gestor.cookie, { pagina: '2' }).expect(200)).body).toHaveLength(5);
+  });
+
+  it('as páginas juntas são a lista inteira, sem repetir nem perder item, mesmo com prazos iguais', async () => {
+    const { gestor } = await vinteECinco();
+    const inteira = idsDe((await pagina(gestor.cookie, {}).expect(200)).body);
+
+    const juntas: number[] = [];
+    for (const numero of ['1', '2', '3']) {
+      juntas.push(...idsDe((await pagina(gestor.cookie, { pagina: numero, limite: '10' }).expect(200)).body));
+    }
+
+    expect(juntas).toEqual(inteira);
+    expect(new Set(juntas).size).toBe(25);
+  });
+
+  it('o total segue o filtro, e não só a página', async () => {
+    const { gestor, demandante } = await vinteECinco();
+    for (let i = 0; i < 3; i += 1) {
+      await criarDemanda({ demandanteId: demandante.id, assunto: 'concluída', prazo: data(em(30)), status: 'concluida', concluidaEm: new Date() });
+    }
+
+    const res = await pagina(gestor.cookie, { status: 'concluida', pagina: '1', limite: '2' }).expect(200);
+    expect(res.body).toHaveLength(2);
+    expect(res.headers['x-total-count']).toBe('3');
+  });
+
+  it('o total respeita o escopo: o inspetor só conta as dele', async () => {
+    const { demandante } = await vinteECinco();
+    const inspetor = await criarUsuarioComSessao('inspetor');
+    const fiscal = await criarFiscal('Meu', inspetor.user.id);
+    for (let i = 0; i < 4; i += 1) {
+      await criarDemanda({ demandanteId: demandante.id, fiscalId: fiscal.id, assunto: 'minha', prazo: data(em(30)) });
+    }
+
+    const res = await pagina(inspetor.cookie, { pagina: '1', limite: '3' }).expect(200);
+    expect(res.body).toHaveLength(3);
+    expect(res.headers['x-total-count']).toBe('4');
+  });
+
+  it('"limite" sem "pagina" continua sendo um corte simples, e o total é o de tudo', async () => {
+    const { gestor } = await vinteECinco();
+    const res = await pagina(gestor.cookie, { limite: '5' }).expect(200);
+    expect(res.body).toHaveLength(5);
+    expect(res.headers['x-total-count']).toBe('25');
+  });
+
+  it('paginando as mais recentes, a página 2 continua de onde a 1 parou', async () => {
+    const { gestor } = await vinteECinco();
+    const primeira = idsDe((await pagina(gestor.cookie, { ordenar: 'recentes', pagina: '1', limite: '10' }).expect(200)).body);
+    const segunda = idsDe((await pagina(gestor.cookie, { ordenar: 'recentes', pagina: '2', limite: '10' }).expect(200)).body);
+
+    expect(Math.min(...primeira)).toBeGreaterThan(Math.max(...segunda));
+  });
+
+  it.each(['0', '-1', 'abc', '1.5', '100001'])('rejeita a página "%s"', async (valor) => {
+    const { gestor } = await vinteECinco();
+    const res = await pagina(gestor.cookie, { pagina: valor });
+    expect(res.status).toBe(400);
+    expect(res.body.erro).toBe('Página inválida.');
+  });
+});
+
+describe('GET /api/demandas/:id', () => {
+  const buscar = (cookie: string, id: number | string) =>
+    request(app).get(`/api/demandas/${id}`).set('Cookie', cookie);
+
+  it('exige login', async () => {
+    await request(app).get('/api/demandas/1').expect(401);
+  });
+
+  it('devolve a demanda no mesmo formato da lista', async () => {
+    const gestor = await criarUsuarioComSessao('gestor');
+    const demandante = await criarDemandante('Órgão Único');
+    const demanda = await criarDemanda({ demandanteId: demandante.id, assunto: 'Uma só', prazo: data(em(30)) });
+
+    const res = await buscar(gestor.cookie, demanda.id).expect(200);
+
+    expect(res.body).toMatchObject({
+      id: demanda.id,
+      assunto: 'Uma só',
+      demandante: 'Órgão Único',
+      status: 'aberta',
+      statusSalvo: 'aberta',
+      prazo: em(30),
+    });
+    expect(res.body.numero).toMatch(/^DEM-\d{4}$/);
+  });
+
+  it('respeita o escopo de cada perfil: fora dele, responde 404', async () => {
+    const inspetor = await criarUsuarioComSessao('inspetor');
+    const meuFiscal = await criarFiscal('Meu', inspetor.user.id);
+    const outroFiscal = await criarFiscal('Outro');
+    const demandante = await criarDemandante();
+    const outroOrgao = await criarDemandante('Outro órgão');
+    const representante = await criarUsuarioComSessao('representante', { demandanteId: demandante.id });
+    const base = { demandanteId: demandante.id, assunto: 'x', prazo: data(em(30)) };
+
+    const minha = await criarDemanda({ ...base, fiscalId: meuFiscal.id });
+    const alheia = await criarDemanda({ ...base, fiscalId: outroFiscal.id });
+    const emAnalise = await criarDemanda({ ...base, status: 'em_analise', origem: 'campo' });
+    const deOutroOrgao = await criarDemanda({ ...base, demandanteId: outroOrgao.id });
+
+    await buscar(inspetor.cookie, minha.id).expect(200);
+    await buscar(inspetor.cookie, alheia.id).expect(404);
+    await buscar(representante.cookie, minha.id).expect(200); // do órgão dele
+    await buscar(representante.cookie, emAnalise.id).expect(404); // em análise é interno
+    await buscar(representante.cookie, deOutroOrgao.id).expect(404);
+  });
+
+  it('id inexistente ou inválido responde 404', async () => {
+    const gestor = await criarUsuarioComSessao('gestor');
+    await buscar(gestor.cookie, 999999).expect(404);
+    await buscar(gestor.cookie, 'abc').expect(404);
+  });
+});

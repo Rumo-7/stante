@@ -52,19 +52,45 @@ async function buscarFiscal(fiscalId: number | null | undefined) {
 
 const prazoIso = (demanda: { prazo: Date }) => demanda.prazo.toISOString().slice(0, 10);
 
+const TAMANHO_PADRAO_DA_PAGINA = 20;
+
 demandasRouter.get('/', async (req, res) => {
   const consulta = validar(listarDemandasQuerySchema, req.query);
   const hoje = hojeNoFuso(env.TZ_NEGOCIO);
+  const where = montarWhere(consulta, req.usuario!, hoje);
 
-  const demandas = await prisma.demanda.findMany({
-    where: montarWhere(consulta, req.usuario!, hoje),
-    include: INCLUIR_RELACOES,
-    orderBy:
-      consulta.ordenar === 'recentes' ? [{ id: 'desc' }] : [{ prazo: 'asc' }, { id: 'asc' }],
-    take: consulta.limite,
-  });
+  // "pagina" pede a fatia; sem ela, "limite" continua valendo como um corte simples (ex.: as 5 mais recentes)
+  const limite = consulta.limite ?? (consulta.pagina ? TAMANHO_PADRAO_DA_PAGINA : undefined);
+  const pular = consulta.pagina && limite ? (consulta.pagina - 1) * limite : undefined;
 
+  // A mesma transação garante que o total e a fatia enxergam o mesmo estado do banco
+  const [demandas, total] = await prisma.$transaction([
+    prisma.demanda.findMany({
+      where,
+      include: INCLUIR_RELACOES,
+      // O id desempata: sem isso, prazos iguais poderiam repetir ou perder itens entre páginas
+      orderBy: consulta.ordenar === 'recentes' ? [{ id: 'desc' }] : [{ prazo: 'asc' }, { id: 'asc' }],
+      take: limite,
+      skip: pular,
+    }),
+    prisma.demanda.count({ where }),
+  ]);
+
+  // Total de resultados do filtro (ignorando a paginação): a resposta segue sendo só a lista
+  res.setHeader('X-Total-Count', String(total));
   res.json(demandas.map((demanda) => serializarDemanda(demanda, hoje)));
+});
+
+// Uma demanda só, respeitando o escopo do perfil (fora dele responde como se não existisse)
+demandasRouter.get('/:id', async (req, res) => {
+  const id = lerId(req.params.id);
+  const hoje = hojeNoFuso(env.TZ_NEGOCIO);
+  const demanda = await prisma.demanda.findFirst({
+    where: { AND: [{ id }, escopoDemandas(req.usuario!)] },
+    include: INCLUIR_RELACOES,
+  });
+  if (!demanda) throw new ErroHttp(404, 'Demanda não encontrada.');
+  res.json(serializarDemanda(demanda, hoje));
 });
 
 demandasRouter.post('/', exigirPerfil('gestor', 'inspetor'), receberAnexos, async (req, res) => {
