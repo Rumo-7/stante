@@ -59,18 +59,26 @@ const dataOpcional = z.preprocess(
   z.string().refine(dataIsoValida, 'Data inválida (use AAAA-MM-DD).').optional(),
 );
 
-export const listarDemandasQuerySchema = z.object({
+const idDeFiltro = (mensagem: string) =>
+  z.preprocess(
+    vazioParaUndefined,
+    z.coerce.number({ invalid_type_error: mensagem }).int(mensagem).positive(mensagem).optional(),
+  );
+
+const listarBase = z.object({
+  // Período do PRAZO da demanda
   de: dataOpcional,
   ate: dataOpcional,
+  // Período de CADASTRO (quando a demanda entrou no sistema)
+  criadasDe: dataOpcional,
+  criadasAte: dataOpcional,
   status: z.preprocess(
     vazioParaUndefined,
     z.enum(STATUS_EXIBICAO, { errorMap: () => ({ message: 'Status inválido.' }) }).optional(),
   ),
   busca: z.preprocess(vazioParaUndefined, z.string().trim().max(100).optional()),
-  fiscalId: z.preprocess(
-    vazioParaUndefined,
-    z.coerce.number({ invalid_type_error: 'Fiscal inválido.' }).int().positive('Fiscal inválido.').optional(),
-  ),
+  fiscalId: idDeFiltro('Fiscal inválido.'),
+  demandanteId: idDeFiltro('Órgão inválido.'),
   // "recentes" ordena pelas últimas cadastradas (padrão: pelo prazo, mais próximo primeiro)
   ordenar: z.preprocess(
     vazioParaUndefined,
@@ -92,7 +100,30 @@ export const listarDemandasQuerySchema = z.object({
   ),
 });
 
+const MSG_PERIODO = 'A data inicial não pode ser depois da final.';
+
+export const listarDemandasQuerySchema = listarBase
+  .refine((q) => !q.de || !q.ate || q.de <= q.ate, { message: MSG_PERIODO, path: ['ate'] })
+  .refine((q) => !q.criadasDe || !q.criadasAte || q.criadasDe <= q.criadasAte, {
+    message: MSG_PERIODO,
+    path: ['criadasAte'],
+  });
+
+/**
+ * Filtros do dashboard. O período é o de CADASTRO ("recebidas entre"): vale para os indicadores
+ * e as listas, mas não para a tendência mensal, que é sempre a série dos últimos meses.
+ */
+export const dashboardQuerySchema = z
+  .object({
+    de: dataOpcional,
+    ate: dataOpcional,
+    fiscalId: listarBase.shape.fiscalId,
+    demandanteId: listarBase.shape.demandanteId,
+  })
+  .refine((q) => !q.de || !q.ate || q.de <= q.ate, { message: MSG_PERIODO, path: ['ate'] });
+
 export type CriarDemandaInput = z.infer<typeof criarDemandaSchema>;
 export type AtualizarDemandaInput = z.infer<typeof atualizarDemandaSchema>;
 export type ValidarDemandaInput = z.infer<typeof validarDemandaSchema>;
 export type ListarDemandasQuery = z.infer<typeof listarDemandasQuerySchema>;
+export type DashboardQuery = z.infer<typeof dashboardQuerySchema>;

@@ -85,6 +85,29 @@ export function statusExibicao(status: StatusDemanda, prazo: string, hoje: strin
   return status;
 }
 
+/**
+ * O instante em que o dia `dataIso` começa no fuso do negócio (meia-noite local, em UTC).
+ * Serve para filtrar por "data de cadastro" respeitando o dia de quem usa o sistema:
+ * uma demanda cadastrada às 22h em Recife já é do dia seguinte em UTC.
+ */
+export function inicioDoDia(dataIso: string, fuso: string = FUSO_NEGOCIO): Date {
+  const meiaNoiteUtc = paraUtc(dataIso);
+  const partes = new Intl.DateTimeFormat('en-US', {
+    timeZone: fuso,
+    hourCycle: 'h23',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  }).formatToParts(new Date(meiaNoiteUtc));
+  const campo = (tipo: string) => Number(partes.find((p) => p.type === tipo)?.value);
+  // Que horas são, no fuso, naquele instante UTC: a diferença é o deslocamento do fuso
+  const comoLocal = Date.UTC(campo('year'), campo('month') - 1, campo('day'), campo('hour'), campo('minute'), campo('second'));
+  return new Date(meiaNoiteUtc - (comoLocal - meiaNoiteUtc));
+}
+
 /** Chave "YYYY-MM" de uma data ISO (usada na tendência mensal do dashboard). */
 export function chaveMes(dataIso: string): string {
   return dataIso.slice(0, 7);

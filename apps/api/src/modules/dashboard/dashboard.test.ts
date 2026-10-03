@@ -141,3 +141,117 @@ describe('GET /api/dashboard', () => {
     expect(res.body.tendenciaMensal.at(-1).concluidas).toBe(0);
   });
 });
+
+describe('filtros do dashboard', () => {
+  const dia = (diasAtras: number) => adicionarDias(hojeNoFuso(), -diasAtras);
+  // Instante em horário de Recife (UTC-3, sem horário de verão)
+  const instante = (diasAtras: number, hora = '12:00') => new Date(`${dia(diasAtras)}T${hora}:00-03:00`);
+
+  async function cenarioFiltros() {
+    const gestor = await criarUsuarioComSessao('gestor');
+    const orgaoA = await criarDemandante('Órgão A');
+    const orgaoB = await criarDemandante('Órgão B');
+    const fiscal1 = await criarFiscal('Fiscal 1');
+    const fiscal2 = await criarFiscal('Fiscal 2');
+    const nova = (demandanteId: number, fiscalId: number, createdAt: Date, extras = {}) =>
+      criarDemanda({ demandanteId, fiscalId, assunto: 'x', prazo: data(em(30)), createdAt, ...extras });
+
+    await nova(orgaoA.id, fiscal1.id, instante(40));
+    await nova(orgaoA.id, fiscal2.id, instante(20));
+    await nova(orgaoB.id, fiscal1.id, instante(10), { status: 'concluida', concluidaEm: instante(8) });
+    await nova(orgaoB.id, fiscal2.id, instante(5, '22:30')); // 22h30 em Recife já é "amanhã" em UTC
+    return { gestor, orgaoA, orgaoB, fiscal1, fiscal2 };
+  }
+
+  const consultar = (cookie: string, consulta: Record<string, string> = {}) =>
+    request(app).get('/api/dashboard').query(consulta).set('Cookie', cookie);
+
+  const totalRecebidoNaTendencia = (corpo: { tendenciaMensal: { recebidas: number }[] }) =>
+    corpo.tendenciaMensal.reduce((soma, mes) => soma + mes.recebidas, 0);
+
+  it('sem filtro conta tudo', async () => {
+    const { gestor } = await cenarioFiltros();
+    const res = await consultar(gestor.cookie).expect(200);
+    expect(res.body).toMatchObject({ total: 4, concluidas: 1 });
+  });
+
+  it('filtra por fiscal: indicadores, carga e tendência', async () => {
+    const { gestor, fiscal1 } = await cenarioFiltros();
+    const res = await consultar(gestor.cookie, { fiscalId: String(fiscal1.id) }).expect(200);
+
+    expect(res.body).toMatchObject({ total: 2, concluidas: 1 });
+    expect(res.body.cargaFiscais).toEqual([{ fiscal: 'Fiscal 1', quantidade: 1 }]);
+    expect(totalRecebidoNaTendencia(res.body)).toBe(2);
+  });
+
+  it('filtra por órgão', async () => {
+    const { gestor, orgaoB } = await cenarioFiltros();
+    const res = await consultar(gestor.cookie, { demandanteId: String(orgaoB.id) }).expect(200);
+    expect(res.body.total).toBe(2);
+    expect(totalRecebidoNaTendencia(res.body)).toBe(2);
+  });
+
+  it('filtra pelo período de cadastro, inclusive nas duas pontas', async () => {
+    const { gestor } = await cenarioFiltros();
+    const res = await consultar(gestor.cookie, { de: dia(20), ate: dia(5) }).expect(200);
+    expect(res.body.total).toBe(3); // as de 20, 10 e 5 dias atrás; a de 40 fica de fora
+  });
+
+  it('o período conta o dia de Recife, não o de UTC', async () => {
+    const { gestor } = await cenarioFiltros();
+
+    // A demanda foi cadastrada às 22h30 do dia -5 em Recife (01h30 do dia -4 em UTC)
+    const nesseDia = await consultar(gestor.cookie, { de: dia(5), ate: dia(5) }).expect(200);
+    expect(nesseDia.body.total).toBe(1);
+
+    const diaSeguinte = await consultar(gestor.cookie, { de: dia(4) }).expect(200);
+    expect(diaSeguinte.body.total).toBe(0);
+  });
+
+  it('o período não afeta a tendência mensal, que é sempre a série dos últimos meses', async () => {
+    const { gestor } = await cenarioFiltros();
+    const sem = await consultar(gestor.cookie).expect(200);
+    const com = await consultar(gestor.cookie, { de: dia(5), ate: dia(5) }).expect(200);
+
+    expect(com.body.tendenciaMensal).toEqual(sem.body.tendenciaMensal);
+    expect(totalRecebidoNaTendencia(com.body)).toBe(4);
+    expect(com.body.total).toBe(1);
+  });
+
+  it('combina os filtros', async () => {
+    const { gestor, orgaoB, fiscal2 } = await cenarioFiltros();
+    const res = await consultar(gestor.cookie, {
+      demandanteId: String(orgaoB.id),
+      fiscalId: String(fiscal2.id),
+      de: dia(20),
+    }).expect(200);
+    expect(res.body.total).toBe(1);
+  });
+
+  it('o filtro nunca amplia o escopo: o inspetor não vê demandas de outro fiscal por filtrar por ele', async () => {
+    const inspetor = await criarUsuarioComSessao('inspetor');
+    await criarFiscal('Meu Fiscal', inspetor.user.id);
+    const { fiscal1 } = await cenarioFiltros();
+
+    const res = await consultar(inspetor.cookie, { fiscalId: String(fiscal1.id) }).expect(200);
+    expect(res.body.total).toBe(0);
+  });
+
+  it.each([
+    ['data fora do formato', { de: '31/12/2026' }, 'Data inválida (use AAAA-MM-DD).'],
+    ['período invertido', { de: '2026-10-10', ate: '2026-10-01' }, 'A data inicial não pode ser depois da final.'],
+    ['fiscal inválido', { fiscalId: 'abc' }, 'Fiscal inválido.'],
+    ['órgão inválido', { demandanteId: '0' }, 'Órgão inválido.'],
+  ])('rejeita %s', async (_nome, consulta, mensagem) => {
+    const gestor = await criarUsuarioComSessao('gestor');
+    const res = await consultar(gestor.cookie, consulta);
+    expect(res.status).toBe(400);
+    expect(res.body.erro).toBe(mensagem);
+  });
+
+  it('filtros vazios, como os de um formulário em branco, são ignorados', async () => {
+    const { gestor } = await cenarioFiltros();
+    const res = await consultar(gestor.cookie, { de: '', ate: '', fiscalId: '', demandanteId: '' }).expect(200);
+    expect(res.body.total).toBe(4);
+  });
+});

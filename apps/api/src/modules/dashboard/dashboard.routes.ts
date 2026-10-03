@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client';
 import {
   adicionarDias,
   chaveMesNoFuso,
+  dashboardQuerySchema,
   diasParaPrazo,
   hojeNoFuso,
   numeroDemanda,
@@ -12,8 +13,9 @@ import {
 import { exigirLogin } from '../../auth/middleware';
 import { prisma } from '../../db';
 import { env } from '../../env';
+import { validar } from '../../http/validar';
 import { escopoDemandas } from '../demandas/escopo';
-import { filtroStatus, paraData } from '../demandas/filtros';
+import { filtroPeriodoDeCadastro, filtroStatus, paraData } from '../demandas/filtros';
 import { INCLUIR_RELACOES } from '../demandas/serializar';
 
 export const dashboardRouter = Router();
@@ -29,8 +31,20 @@ dashboardRouter.get('/', exigirLogin, async (req, res) => {
   const hoje = hojeNoFuso(env.TZ_NEGOCIO);
   const escopo = escopoDemandas(usuario);
 
+  const consulta = validar(dashboardQuerySchema, req.query);
+
+  // Fiscal e órgão valem para tudo, inclusive a tendência. O período de cadastro vale para os
+  // indicadores e as listas, mas não para a tendência (ela é sempre a série dos últimos meses).
+  const semPeriodo: Prisma.DemandaWhereInput[] = [];
+  if (consulta.fiscalId) semPeriodo.push({ fiscalId: consulta.fiscalId });
+  if (consulta.demandanteId) semPeriodo.push({ demandanteId: consulta.demandanteId });
+  const periodo = filtroPeriodoDeCadastro(consulta.de, consulta.ate);
+
+  const ondeTendencia = (...condicoes: Prisma.DemandaWhereInput[]): Prisma.DemandaWhereInput => ({
+    AND: [escopo, ...semPeriodo, ...condicoes],
+  });
   const onde = (...condicoes: Prisma.DemandaWhereInput[]): Prisma.DemandaWhereInput => ({
-    AND: [escopo, ...condicoes],
+    AND: [escopo, ...semPeriodo, ...periodo, ...condicoes],
   });
   const contar = (...condicoes: Prisma.DemandaWhereInput[]) =>
     prisma.demanda.count({ where: onde(...condicoes) });
@@ -78,7 +92,7 @@ dashboardRouter.get('/', exigirLogin, async (req, res) => {
       include: INCLUIR_RELACOES,
     }),
     prisma.demanda.findMany({
-      where: onde({
+      where: ondeTendencia({
         OR: [{ createdAt: { gte: inicioJanela } }, { concluidaEm: { gte: inicioJanela } }],
       }),
       select: { createdAt: true, concluidaEm: true },

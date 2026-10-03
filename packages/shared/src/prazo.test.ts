@@ -5,6 +5,7 @@ import {
   dataIsoValida,
   diasParaPrazo,
   hojeNoFuso,
+  inicioDoDia,
   numeroDemanda,
   statusExibicao,
   ultimosMeses,
@@ -59,6 +60,25 @@ describe('hojeNoFuso', () => {
     // 01:00 UTC do dia 04 ainda é 22:00 do dia 03 em Recife (UTC-3)
     expect(hojeNoFuso('America/Recife', new Date('2026-10-04T01:00:00Z'))).toBe('2026-10-03');
     expect(hojeNoFuso('America/Recife', new Date('2026-10-04T04:00:00Z'))).toBe('2026-10-04');
+  });
+});
+
+describe('inicioDoDia', () => {
+  it('é a meia-noite local convertida para UTC', () => {
+    expect(inicioDoDia('2026-10-03', 'America/Recife').toISOString()).toBe('2026-10-03T03:00:00.000Z'); // UTC-3
+    expect(inicioDoDia('2026-10-03', 'UTC').toISOString()).toBe('2026-10-03T00:00:00.000Z');
+    expect(inicioDoDia('2026-10-03', 'Asia/Tokyo').toISOString()).toBe('2026-10-02T15:00:00.000Z'); // UTC+9
+  });
+
+  it('uma demanda cadastrada às 22h em Recife pertence ao dia local, não ao dia seguinte em UTC', () => {
+    const cadastro = new Date('2026-10-04T01:00:00Z'); // 22:00 do dia 03 em Recife
+    expect(cadastro >= inicioDoDia('2026-10-03', 'America/Recife')).toBe(true);
+    expect(cadastro < inicioDoDia('2026-10-04', 'America/Recife')).toBe(true);
+  });
+
+  it('atravessa virada de mês e de ano', () => {
+    expect(inicioDoDia('2027-01-01', 'America/Recife').toISOString()).toBe('2027-01-01T03:00:00.000Z');
+    expect(inicioDoDia(adicionarDias('2026-12-31', 1), 'America/Recife').toISOString()).toBe('2027-01-01T03:00:00.000Z');
   });
 });
 

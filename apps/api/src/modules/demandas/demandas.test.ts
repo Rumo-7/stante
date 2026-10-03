@@ -537,3 +537,54 @@ describe('fiscais e demandantes', () => {
     expect(repetido.status).toBe(409);
   });
 });
+
+describe('GET /api/demandas — filtros de órgão e de data de cadastro', () => {
+  const dia = (diasAtras: number) => adicionarDias(hojeNoFuso(), -diasAtras);
+  const instante = (diasAtras: number, hora = '12:00') => new Date(`${dia(diasAtras)}T${hora}:00-03:00`);
+
+  async function cenario() {
+    const { cookie } = await criarUsuarioComSessao('gestor');
+    const orgaoA = await criarDemandante('Órgão A');
+    const orgaoB = await criarDemandante('Órgão B');
+    const nova = (demandanteId: number, assunto: string, createdAt: Date) =>
+      criarDemanda({ demandanteId, assunto, prazo: data(em(30)), createdAt });
+    await nova(orgaoA.id, 'a-antiga', instante(40));
+    await nova(orgaoA.id, 'a-recente', instante(3));
+    await nova(orgaoB.id, 'b-noite', instante(5, '22:30')); // 01h30 do dia seguinte em UTC
+    return { cookie, orgaoA, orgaoB };
+  }
+
+  const assuntos = async (cookie: string, consulta: Record<string, string>) => {
+    const res = await request(app).get('/api/demandas').query(consulta).set('Cookie', cookie);
+    return { status: res.status, erro: res.body.erro, assuntos: (res.body as { assunto: string }[]).map?.((d) => d.assunto).sort() };
+  };
+
+  it('filtra por órgão', async () => {
+    const { cookie, orgaoA } = await cenario();
+    const res = await assuntos(cookie, { demandanteId: String(orgaoA.id) });
+    expect(res.assuntos).toEqual(['a-antiga', 'a-recente']);
+  });
+
+  it('filtra pela data de cadastro, contando o dia de Recife', async () => {
+    const { cookie } = await cenario();
+
+    expect((await assuntos(cookie, { criadasDe: dia(10) })).assuntos).toEqual(['a-recente', 'b-noite']);
+    expect((await assuntos(cookie, { criadasAte: dia(10) })).assuntos).toEqual(['a-antiga']);
+    // A demanda cadastrada às 22h30 do dia -5 pertence ao dia -5, e não ao -4 (como seria em UTC)
+    expect((await assuntos(cookie, { criadasDe: dia(5), criadasAte: dia(5) })).assuntos).toEqual(['b-noite']);
+    expect((await assuntos(cookie, { criadasDe: dia(4), criadasAte: dia(4) })).assuntos).toEqual([]);
+  });
+
+  it('rejeita período invertido, no prazo e no cadastro', async () => {
+    const { cookie } = await cenario();
+    const prazo = await assuntos(cookie, { de: '2026-10-10', ate: '2026-10-01' });
+    const cadastro = await assuntos(cookie, { criadasDe: '2026-10-10', criadasAte: '2026-10-01' });
+    expect(prazo).toMatchObject({ status: 400, erro: 'A data inicial não pode ser depois da final.' });
+    expect(cadastro).toMatchObject({ status: 400, erro: 'A data inicial não pode ser depois da final.' });
+  });
+
+  it('rejeita órgão inválido', async () => {
+    const { cookie } = await cenario();
+    expect(await assuntos(cookie, { demandanteId: 'abc' })).toMatchObject({ status: 400, erro: 'Órgão inválido.' });
+  });
+});

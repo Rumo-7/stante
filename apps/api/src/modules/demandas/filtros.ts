@@ -2,10 +2,12 @@ import type { Prisma } from '@prisma/client';
 import {
   adicionarDias,
   DIAS_PRAZO_CRITICO,
+  inicioDoDia,
   type ListarDemandasQuery,
   type StatusExibicao,
 } from '@stante/shared';
 import type { UsuarioLogado } from '../../auth/sessao';
+import { env } from '../../env';
 import { escopoDemandas } from './escopo';
 
 /** "AAAA-MM-DD" -> Date em UTC, que é como o Postgres entrega colunas DATE. */
@@ -35,6 +37,17 @@ export function filtroStatus(status: StatusExibicao, hoje: string): Prisma.Deman
   }
 }
 
+/**
+ * Demandas cadastradas entre duas datas (inclusive), contando o dia no fuso do negócio:
+ * uma demanda cadastrada às 22h em Recife é do dia local, não do dia seguinte em UTC.
+ */
+export function filtroPeriodoDeCadastro(de?: string, ate?: string): Prisma.DemandaWhereInput[] {
+  const condicoes: Prisma.DemandaWhereInput[] = [];
+  if (de) condicoes.push({ createdAt: { gte: inicioDoDia(de, env.TZ_NEGOCIO) } });
+  if (ate) condicoes.push({ createdAt: { lt: inicioDoDia(adicionarDias(ate, 1), env.TZ_NEGOCIO) } });
+  return condicoes;
+}
+
 export function montarWhere(
   consulta: ListarDemandasQuery,
   usuario: UsuarioLogado,
@@ -46,6 +59,8 @@ export function montarWhere(
   if (consulta.ate) condicoes.push({ prazo: { lte: paraData(consulta.ate) } });
   if (consulta.status) condicoes.push(filtroStatus(consulta.status, hoje));
   if (consulta.fiscalId) condicoes.push({ fiscalId: consulta.fiscalId });
+  if (consulta.demandanteId) condicoes.push({ demandanteId: consulta.demandanteId });
+  condicoes.push(...filtroPeriodoDeCadastro(consulta.criadasDe, consulta.criadasAte));
   if (consulta.ativas) condicoes.push({ status: { in: [...FORMAIS] } });
 
   if (consulta.busca) {
