@@ -51,7 +51,8 @@ async function criarGestorInicial() {
 }
 
 async function main() {
-  if ((await prisma.fiscal.count()) === 0) {
+  // Em produção os fiscais reais são cadastrados pela tela; os de exemplo só servem para desenvolvimento
+  if (process.env.SEED_FISCAIS_EXEMPLO !== 'nao' && (await prisma.fiscal.count()) === 0) {
     await prisma.fiscal.createMany({ data: FISCAIS });
   }
 

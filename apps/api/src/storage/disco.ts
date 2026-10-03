@@ -2,7 +2,7 @@ import { createReadStream } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { Readable } from 'node:stream';
-import type { Armazenamento } from './armazenamento';
+import { validarChave, type Armazenamento } from './armazenamento';
 
 export class ArmazenamentoDisco implements Armazenamento {
   constructor(private readonly pasta: string) {}
@@ -14,15 +14,16 @@ export class ArmazenamentoDisco implements Armazenamento {
   }
 
   async existe(chave: string) {
+    const caminho = this.caminho(chave); // fora do try: chave inválida é erro, não "não existe"
     try {
-      await fs.access(this.caminho(chave));
+      await fs.access(caminho);
       return true;
     } catch {
       return false;
     }
   }
 
-  abrir(chave: string): Readable {
+  async abrir(chave: string): Promise<Readable> {
     return createReadStream(this.caminho(chave));
   }
 
@@ -31,11 +32,7 @@ export class ArmazenamentoDisco implements Armazenamento {
   }
 
   private caminho(chave: string) {
-    // As chaves são geradas por nós (uuid + extensão); isto barra qualquer
-    // tentativa de sair da pasta se um dia uma chave vier de fora.
-    if (chave !== path.basename(chave) || chave.startsWith('.')) {
-      throw new Error('Chave de arquivo inválida.');
-    }
+    validarChave(chave);
     return path.join(this.pasta, chave);
   }
 }

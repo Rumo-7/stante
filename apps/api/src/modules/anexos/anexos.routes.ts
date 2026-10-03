@@ -99,7 +99,7 @@ anexosRouter.get('/anexos/:id/download', exigirLogin, async (req, res) => {
   res.setHeader('Content-Type', anexo.mimeType ?? 'application/octet-stream');
   res.setHeader('X-Content-Type-Options', 'nosniff');
 
-  const leitura = armazenamento.abrir(anexo.chaveArquivo);
+  const leitura = await armazenamento.abrir(anexo.chaveArquivo);
   leitura.on('error', (erro) => {
     console.error(erro);
     if (!res.headersSent) res.status(500).json({ erro: 'Erro ao ler o arquivo.' });
