@@ -122,6 +122,11 @@ export const dashboardQuerySchema = z
   })
   .refine((q) => !q.de || !q.ate || q.de <= q.ate, { message: MSG_PERIODO, path: ['ate'] });
 
+/** Período de cadastro usado nas estatísticas por órgão. */
+export const periodoQuerySchema = z
+  .object({ de: dataOpcional, ate: dataOpcional })
+  .refine((q) => !q.de || !q.ate || q.de <= q.ate, { message: MSG_PERIODO, path: ['ate'] });
+
 export type CriarDemandaInput = z.infer<typeof criarDemandaSchema>;
 export type AtualizarDemandaInput = z.infer<typeof atualizarDemandaSchema>;
 export type ValidarDemandaInput = z.infer<typeof validarDemandaSchema>;
