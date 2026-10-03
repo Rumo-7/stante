@@ -21,6 +21,8 @@
     align-items: center;
     gap: 12px;
     padding: 20px 20px 16px;
+    /* Altura mínima para três linhas de texto: os números dos cartões ficam alinhados entre si */
+    min-height: 104px;
 }
 
 .app-shell .fiscal-avatar {
