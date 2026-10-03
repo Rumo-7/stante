@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { sair } from '../api/auth';
+import { useUsuarios } from '../api/usuarios';
 import logo from '../assets/logo_stante.png';
 import { ROTULO_PERFIL } from '../auth/perfis';
 import { useUsuarioLogado } from '../auth/rotas';
@@ -9,6 +10,10 @@ export function AppLayout() {
   const usuario = useUsuarioLogado();
   const clienteQuery = useQueryClient();
   const navegar = useNavigate();
+
+  const ehGestor = usuario.perfil === 'gestor';
+  const pendentes = useUsuarios('pendente', ehGestor);
+  const quantidadePendentes = pendentes.data?.length ?? 0;
 
   const logout = useMutation({
     mutationFn: sair,
@@ -37,10 +42,20 @@ export function AppLayout() {
           <NavLink to="/prazos" className={classeDoLink}>
             Prazos
           </NavLink>
-          {usuario.perfil === 'gestor' && (
-            <NavLink to="/fiscais" className={classeDoLink}>
-              Fiscais
-            </NavLink>
+          {ehGestor && (
+            <>
+              <NavLink to="/fiscais" className={classeDoLink}>
+                Fiscais
+              </NavLink>
+              <NavLink to="/usuarios" className={classeDoLink}>
+                Usuários
+                {quantidadePendentes > 0 && (
+                  <span className="nav-contagem" title="Cadastros aguardando aprovação">
+                    {quantidadePendentes}
+                  </span>
+                )}
+              </NavLink>
+            </>
           )}
         </div>
         <div className="navbar-user">

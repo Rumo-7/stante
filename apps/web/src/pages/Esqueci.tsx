@@ -39,7 +39,7 @@ export function Esqueci() {
 
           <p className="helper-text">
             {enviado
-              ? 'A recuperação de senha por e-mail ainda não está disponível. Peça a um gestor para redefinir o seu acesso.'
+              ? 'A recuperação de senha por e-mail ainda não está disponível. Em breve este recurso será liberado.'
               : 'Aguarde, esse processo pode demorar alguns segundos'}
           </p>
         </form>

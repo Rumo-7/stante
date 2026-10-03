@@ -4,21 +4,11 @@ import { RotaProtegida, RotaPublica, SomentePerfil } from './auth/rotas';
 import { Cadastro } from './pages/Cadastro';
 import { Dashboard } from './pages/Dashboard';
 import { Demandas } from './pages/Demandas';
+import { Fiscais } from './pages/Fiscais';
+import { Prazos } from './pages/Prazos';
+import { Usuarios } from './pages/Usuarios';
 import { Esqueci } from './pages/Esqueci';
 import { Login } from './pages/Login';
-
-function EmConstrucao({ titulo }: { titulo: string }) {
-  return (
-    <main className="page">
-      <header className="page-header">
-        <div>
-          <h1>{titulo}</h1>
-          <p className="page-subtitle">Esta tela ainda está sendo migrada para a nova versão.</p>
-        </div>
-      </header>
-    </main>
-  );
-}
 
 function NaoEncontrada() {
   return (
@@ -44,12 +34,20 @@ export function App() {
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/demandas" element={<Demandas />} />
-          <Route path="/prazos" element={<EmConstrucao titulo="Prazos" />} />
+          <Route path="/prazos" element={<Prazos />} />
           <Route
             path="/fiscais"
             element={
               <SomentePerfil perfis={['gestor']}>
-                <EmConstrucao titulo="Fiscais" />
+                <Fiscais />
+              </SomentePerfil>
+            }
+          />
+          <Route
+            path="/usuarios"
+            element={
+              <SomentePerfil perfis={['gestor']}>
+                <Usuarios />
               </SomentePerfil>
             }
           />

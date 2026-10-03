@@ -3,12 +3,12 @@ import { useAnexos, useEnviarAnexos, useRemoverAnexo } from '../api/anexos';
 import { mensagemDeErro } from '../api/cliente';
 import {
   useAtualizarDemanda,
-  useFiscais,
   useValidarDemanda,
   type AlteracaoDemanda,
   type Demanda,
   type StatusDemandaEditavel,
 } from '../api/demandas';
+import { useFiscais } from '../api/fiscais';
 import { useUsuarioLogado } from '../auth/rotas';
 import { formatarData } from '../util/data';
 import { formatarTamanho } from '../util/tamanho';

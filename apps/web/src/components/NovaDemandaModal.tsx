@@ -1,7 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { criarDemandaSchema } from '@stante/shared';
-import { criarDemandante, useCriarDemanda, useDemandantes, useFiscais } from '../api/demandas';
+import { criarDemandante, useCriarDemanda, useDemandantes } from '../api/demandas';
+import { useFiscais } from '../api/fiscais';
 import { mensagemDeErro } from '../api/cliente';
 import { useUsuarioLogado } from '../auth/rotas';
 import { Modal } from './Modal';

@@ -30,6 +30,8 @@ export interface FiltrosDemandas {
   fiscalId?: string;
   ordenar?: 'prazo' | 'recentes';
   limite?: number;
+  /** Só demandas formais em andamento: sem as concluídas e sem as em análise. */
+  ativas?: boolean;
 }
 
 export interface Demandante {
@@ -39,34 +41,24 @@ export interface Demandante {
   tipoRotulo: string;
 }
 
-export interface Fiscal {
-  id: number;
-  nome: string;
-  especialidade: string | null;
-  demandas_ativas: number;
-}
-
 function montarQuery(filtros: FiltrosDemandas): string {
   const parametros = new URLSearchParams();
   for (const [chave, valor] of Object.entries(filtros)) {
-    if (valor !== undefined && valor !== '') parametros.set(chave, String(valor));
+    if (valor !== undefined && valor !== '' && valor !== false) parametros.set(chave, String(valor));
   }
   const texto = parametros.toString();
   return texto ? `?${texto}` : '';
 }
 
-export const useDemandas = (filtros: FiltrosDemandas = {}) =>
+export const useDemandas = (filtros: FiltrosDemandas = {}, habilitado = true) =>
   useQuery({
     queryKey: ['demandas', filtros],
     queryFn: () => api.get<Demanda[]>(`/demandas${montarQuery(filtros)}`),
+    enabled: habilitado,
   });
 
 export const useDemandantes = () =>
   useQuery({ queryKey: ['demandantes'], queryFn: () => api.get<Demandante[]>('/demandantes') });
-
-/** A lista de fiscais é só do gestor; para os demais a consulta nem é feita. */
-export const useFiscais = (habilitado: boolean) =>
-  useQuery({ queryKey: ['fiscais'], queryFn: () => api.get<Fiscal[]>('/fiscais'), enabled: habilitado });
 
 export const criarDemandante = (nome: string) => api.post<Demandante>('/demandantes', { nome });
 
