@@ -11,6 +11,7 @@ import { anexosRouter } from './modules/anexos/anexos.routes';
 import { dashboardRouter } from './modules/dashboard/dashboard.routes';
 import { demandasRouter } from './modules/demandas/demandas.routes';
 import { referenciaRouter } from './modules/referencia/referencia.routes';
+import { usuariosRouter } from './modules/usuarios/usuarios.routes';
 
 export function createApp() {
   const app = express();
@@ -32,6 +33,7 @@ export function createApp() {
   app.use('/api', authRouter);
   app.use('/api/demandas', demandasRouter);
   app.use('/api/dashboard', dashboardRouter);
+  app.use('/api/usuarios', usuariosRouter);
   app.use('/api', anexosRouter);
   app.use('/api', referenciaRouter);
 

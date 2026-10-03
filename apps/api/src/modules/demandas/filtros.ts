@@ -46,6 +46,7 @@ export function montarWhere(
   if (consulta.ate) condicoes.push({ prazo: { lte: paraData(consulta.ate) } });
   if (consulta.status) condicoes.push(filtroStatus(consulta.status, hoje));
   if (consulta.fiscalId) condicoes.push({ fiscalId: consulta.fiscalId });
+  if (consulta.ativas) condicoes.push({ status: { in: [...FORMAIS] } });
 
   if (consulta.busca) {
     const termo = consulta.busca;

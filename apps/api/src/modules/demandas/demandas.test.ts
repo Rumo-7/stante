@@ -290,6 +290,18 @@ describe('GET /api/demandas — filtros em SQL (ponto 5 da revisão)', () => {
     expect(res.body[0]).toMatchObject({ status: 'vencida', statusSalvo: 'em_andamento' });
   });
 
+  it('"ativas" traz só abertas e em andamento (sem concluídas nem em análise)', async () => {
+    const { cookie } = await cenarioPrazos();
+    const { assuntos } = await listar(cookie, { ativas: 'true' });
+    expect(assuntos).toEqual(['vencida', 'critica-hoje', 'critica-limite', 'futura', 'em-andamento-futura']);
+  });
+
+  it('"ativas" combina com o período, como a lista de prazos usa', async () => {
+    const { cookie } = await cenarioPrazos();
+    const { assuntos } = await listar(cookie, { ativas: 'true', ate: em(30) });
+    expect(assuntos).toEqual(['vencida', 'critica-hoje', 'critica-limite', 'futura']);
+  });
+
   it('ordena pelas mais recentes e limita a quantidade', async () => {
     const { cookie } = await cenarioPrazos();
     const { assuntos } = await listar(cookie, { ordenar: 'recentes', limite: '2' });
@@ -304,6 +316,7 @@ describe('GET /api/demandas — filtros em SQL (ponto 5 da revisão)', () => {
     expect((await listar(cookie, { limite: '0' })).status).toBe(400);
     expect((await listar(cookie, { limite: '501' })).status).toBe(400);
     expect((await listar(cookie, { ordenar: 'aleatorio' })).status).toBe(400);
+    expect((await listar(cookie, { ativas: 'talvez' })).status).toBe(400);
   });
 });
 
@@ -489,7 +502,9 @@ describe('fiscais e demandantes', () => {
     await request(app).post('/api/fiscais').set('Cookie', inspetor.cookie).send({ nome: 'X' }).expect(403);
 
     const lista = await request(app).get('/api/fiscais').set('Cookie', gestor.cookie).expect(200);
-    expect(lista.body).toEqual([{ id: fiscal.id, nome: 'Fiscal Carga', especialidade: null, demandas_ativas: 2 }]);
+    expect(lista.body).toEqual([
+      { id: fiscal.id, nome: 'Fiscal Carga', especialidade: null, usuarioId: null, demandas_ativas: 2 },
+    ]);
 
     const criado = await request(app).post('/api/fiscais').set('Cookie', gestor.cookie).send({ nome: ' Novo ', especialidade: '' });
     expect(criado.status).toBe(201);

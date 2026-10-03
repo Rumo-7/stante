@@ -30,6 +30,8 @@ referenciaRouter.get('/fiscais', exigirPerfil('gestor'), async (_req, res) => {
       id: fiscal.id,
       nome: fiscal.nome,
       especialidade: fiscal.especialidade,
+      // Usuário que tem este fiscal como "ele mesmo" (inspetor com acesso ao sistema)
+      usuarioId: fiscal.userId,
       demandas_ativas: fiscal._count.demandas,
     })),
   );
@@ -42,6 +44,7 @@ referenciaRouter.post('/fiscais', exigirPerfil('gestor'), async (req, res) => {
     id: criado.id,
     nome: criado.nome,
     especialidade: criado.especialidade,
+    usuarioId: null,
     demandas_ativas: 0,
   });
 });
