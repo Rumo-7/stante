@@ -3,7 +3,7 @@ import express from 'express';
 import helmet from 'helmet';
 import fs from 'node:fs';
 import path from 'node:path';
-import { carregarUsuario, verificarOrigem } from './auth/middleware';
+import { carregarUsuario, exigirSenhaDefinitiva, verificarOrigem } from './auth/middleware';
 import { prisma } from './db';
 import { env } from './env';
 import { tratarErros } from './http/tratar-erros';
@@ -64,6 +64,8 @@ export function createApp({ pastaWeb = PASTA_WEB_PADRAO }: OpcoesApp = {}) {
 
   app.use('/api', carregarUsuario);
   app.use('/api', authRouter);
+  // Depois das rotas de conta (login, /me, trocar senha) e antes de todo o resto
+  app.use('/api', exigirSenhaDefinitiva);
   app.use('/api/demandas', demandasRouter);
   app.use('/api/dashboard', dashboardRouter);
   app.use('/api/usuarios', usuariosRouter);

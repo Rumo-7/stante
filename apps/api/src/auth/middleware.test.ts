@@ -16,6 +16,7 @@ const usuario = (perfil: 'gestor' | 'inspetor' | 'representante') => ({
   perfil,
   fiscalId: null,
   demandanteId: null,
+  precisaTrocarSenha: false,
 });
 
 describe('exigirPerfil', () => {

@@ -1,7 +1,7 @@
 import { Router, type CookieOptions } from 'express';
 import { Prisma } from '@prisma/client';
 import rateLimit from 'express-rate-limit';
-import { cadastroSchema, loginSchema } from '@stante/shared';
+import { cadastroSchema, loginSchema, trocarSenhaSchema } from '@stante/shared';
 import { prisma } from '../../db';
 import { env } from '../../env';
 import { ErroHttp } from '../../http/erros';
@@ -12,6 +12,7 @@ import {
   COOKIE_SESSAO,
   criarSessao,
   DURACAO_SESSAO_MS,
+  encerrarOutrasSessoes,
   encerrarSessao,
 } from '../../auth/sessao';
 
@@ -97,6 +98,29 @@ authRouter.post('/logout', async (req, res) => {
 });
 
 authRouter.get('/me', exigirLogin, (req, res) => {
-  const { id, nome, email, perfil } = req.usuario!;
-  res.json({ id, nome, email, perfil });
+  const { id, nome, email, perfil, precisaTrocarSenha } = req.usuario!;
+  res.json({ id, nome, email, perfil, precisaTrocarSenha });
+});
+
+authRouter.post('/me/senha', exigirLogin, limitarTentativas, async (req, res) => {
+  const dados = validar(trocarSenhaSchema, req.body);
+  const usuario = req.usuario!;
+
+  const user = await prisma.user.findUniqueOrThrow({ where: { id: usuario.id } });
+  // Exigir a senha atual protege contra quem encontrar a sessão aberta num computador alheio.
+  // 400 e não 401: 401 faria o front achar que a pessoa foi deslogada.
+  if (!(await confereSenha(dados.senhaAtual, user.senhaHash))) {
+    throw new ErroHttp(400, 'Senha atual incorreta.');
+  }
+
+  await prisma.user.update({
+    where: { id: usuario.id },
+    data: { senhaHash: await hashSenha(dados.novaSenha), precisaTrocarSenha: false },
+  });
+
+  // Quem tinha a senha antiga (ou a provisória) não pode continuar logado em outro lugar
+  const tokenAtual: unknown = req.cookies?.[COOKIE_SESSAO];
+  if (typeof tokenAtual === 'string' && tokenAtual) await encerrarOutrasSessoes(usuario.id, tokenAtual);
+
+  res.json({ ok: true });
 });

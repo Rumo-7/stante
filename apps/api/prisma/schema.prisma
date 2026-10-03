@@ -70,6 +70,8 @@ model User {
   senhaHash String        @map("senha_hash")
   perfil    Perfil
   status    StatusUsuario @default(pendente)
+  // Verdadeiro depois que um gestor redefine a senha: a provisória só serve para entrar e trocá-la
+  precisaTrocarSenha Boolean @default(false) @map("precisa_trocar_senha")
   // Representante institucional: órgão cujas demandas ele pode acompanhar.
   demandanteId Int?       @map("demandante_id")
   createdAt DateTime      @default(now()) @map("created_at")

@@ -14,6 +14,8 @@ export interface UsuarioLogado {
   fiscalId: number | null;
   /** Preenchido para representantes: o órgão que eles acompanham. */
   demandanteId: number | null;
+  /** Depois de uma redefinição pelo gestor: a pessoa só pode trocar a senha, nada mais. */
+  precisaTrocarSenha: boolean;
 }
 
 const hashDoToken = (token: string) => createHash('sha256').update(token).digest('hex');
@@ -54,9 +56,15 @@ export async function usuarioDaSessao(token: string): Promise<UsuarioLogado | nu
     perfil: user.perfil,
     fiscalId: user.fiscal?.id ?? null,
     demandanteId: user.demandanteId,
+    precisaTrocarSenha: user.precisaTrocarSenha,
   };
 }
 
 export async function encerrarSessao(token: string): Promise<void> {
   await prisma.sessao.deleteMany({ where: { id: hashDoToken(token) } });
+}
+
+/** Encerra todas as sessões da pessoa, menos a atual (usado ao trocar a senha). */
+export async function encerrarOutrasSessoes(userId: number, tokenAtual: string): Promise<void> {
+  await prisma.sessao.deleteMany({ where: { userId, NOT: { id: hashDoToken(tokenAtual) } } });
 }

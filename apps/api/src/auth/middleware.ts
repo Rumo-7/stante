@@ -26,6 +26,17 @@ export function exigirLogin(req: Request, _res: Response, next: NextFunction) {
   next();
 }
 
+/**
+ * Quem acabou de receber uma senha provisória só pode trocá-la (rotas de conta,
+ * montadas antes deste guarda). Todo o resto da API fica fechado até lá.
+ */
+export function exigirSenhaDefinitiva(req: Request, _res: Response, next: NextFunction) {
+  if (req.usuario?.precisaTrocarSenha) {
+    throw new ErroHttp(403, 'Troque a senha provisória para continuar.');
+  }
+  next();
+}
+
 export function exigirPerfil(...perfis: Perfil[]) {
   return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.usuario) throw new ErroHttp(401, 'Faça login para continuar.');

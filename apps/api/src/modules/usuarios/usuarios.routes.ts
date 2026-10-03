@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { Prisma } from '@prisma/client';
 import { atualizarUsuarioSchema, listarUsuariosQuerySchema } from '@stante/shared';
 import { exigirPerfil } from '../../auth/middleware';
+import { gerarSenhaProvisoria, hashSenha } from '../../auth/senha';
 import { prisma } from '../../db';
 import { ErroHttp } from '../../http/erros';
 import { validar } from '../../http/validar';
@@ -49,6 +50,32 @@ usuariosRouter.get('/', exigirPerfil('gestor'), async (req, res) => {
     orderBy: [{ status: 'asc' }, { createdAt: 'desc' }],
   });
   res.json(usuarios.map(serializar));
+});
+
+// O gestor redefine a senha de alguém que a perdeu: o sistema sorteia uma senha provisória, mostrada
+// uma única vez (só o hash fica guardado), e a pessoa é obrigada a trocá-la no primeiro acesso.
+usuariosRouter.post('/:id/redefinir-senha', exigirPerfil('gestor'), async (req, res) => {
+  const id = lerId(req.params.id);
+  if (id === req.usuario!.id) {
+    throw new ErroHttp(403, 'Para trocar a sua própria senha, use "Alterar senha".');
+  }
+
+  const alvo = await prisma.user.findUnique({ where: { id }, select: { id: true } });
+  if (!alvo) throw new ErroHttp(404, 'Usuário não encontrado.');
+
+  const senhaProvisoria = gerarSenhaProvisoria();
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { id },
+      data: { senhaHash: await hashSenha(senhaProvisoria), precisaTrocarSenha: true },
+    }),
+    // Quem tinha a senha antiga é desconectado de todos os lugares
+    prisma.sessao.deleteMany({ where: { userId: id } }),
+  ]);
+
+  // Resposta com um segredo: nada de cache no navegador nem em intermediários
+  res.setHeader('Cache-Control', 'no-store');
+  res.json({ senhaProvisoria });
 });
 
 usuariosRouter.patch('/:id', exigirPerfil('gestor'), async (req, res) => {

@@ -43,3 +43,23 @@ export const cadastroSchema = z
 
 export type LoginInput = z.infer<typeof loginSchema>;
 export type CadastroInput = z.infer<typeof cadastroSchema>;
+
+export const trocarSenhaSchema = z
+  .object({
+    senhaAtual: z.string({ required_error: 'Informe a senha atual.' }).min(1, 'Informe a senha atual.').max(200),
+    novaSenha: z
+      .string({ required_error: 'Informe a nova senha.' })
+      .min(8, 'A nova senha deve ter pelo menos 8 caracteres.')
+      .max(72, 'A nova senha deve ter no máximo 72 caracteres.'),
+    confirmarNovaSenha: z.string({ required_error: 'Confirme a nova senha.' }),
+  })
+  .refine((dados) => dados.novaSenha === dados.confirmarNovaSenha, {
+    message: 'As senhas não coincidem.',
+    path: ['confirmarNovaSenha'],
+  })
+  .refine((dados) => dados.novaSenha !== dados.senhaAtual, {
+    message: 'A nova senha deve ser diferente da atual.',
+    path: ['novaSenha'],
+  });
+
+export type TrocarSenhaInput = z.infer<typeof trocarSenhaSchema>;
