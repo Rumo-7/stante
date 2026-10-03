@@ -68,6 +68,7 @@ function invalidarDemandas(clienteQuery: QueryClient) {
     clienteQuery.invalidateQueries({ queryKey: ['demandas'] }),
     clienteQuery.invalidateQueries({ queryKey: ['dashboard'] }),
     clienteQuery.invalidateQueries({ queryKey: ['fiscais'] }),
+    clienteQuery.invalidateQueries({ queryKey: ['historico'] }),
   ]);
 }
 
@@ -83,6 +84,8 @@ export function useCriarDemanda() {
 export interface AlteracaoDemanda {
   status?: StatusDemandaEditavel;
   fiscalId?: number | null;
+  /** Obrigatório ao reabrir uma demanda concluída (só o gestor pode). */
+  motivo?: string;
 }
 
 export function useAtualizarDemanda() {

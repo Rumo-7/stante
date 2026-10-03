@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { api } from './cliente';
 
 export interface Anexo {
@@ -15,6 +15,13 @@ export const useAnexos = (demandaId: number) =>
     queryFn: () => api.get<Anexo[]>(`/demandas/${demandaId}/anexos`),
   });
 
+/** Enviar ou remover anexo muda a lista de anexos e acrescenta uma linha ao histórico. */
+const atualizarAnexosEHistorico = (clienteQuery: QueryClient, demandaId: number) =>
+  Promise.all([
+    clienteQuery.invalidateQueries({ queryKey: ['anexos', demandaId] }),
+    clienteQuery.invalidateQueries({ queryKey: ['historico', demandaId] }),
+  ]);
+
 export function useEnviarAnexos(demandaId: number) {
   const clienteQuery = useQueryClient();
   return useMutation({
@@ -23,7 +30,7 @@ export function useEnviarAnexos(demandaId: number) {
       arquivos.forEach((arquivo) => formulario.append('anexos', arquivo));
       return api.post<Anexo[]>(`/demandas/${demandaId}/anexos`, formulario);
     },
-    onSuccess: () => clienteQuery.invalidateQueries({ queryKey: ['anexos', demandaId] }),
+    onSuccess: () => atualizarAnexosEHistorico(clienteQuery, demandaId),
   });
 }
 
@@ -31,6 +38,6 @@ export function useRemoverAnexo(demandaId: number) {
   const clienteQuery = useQueryClient();
   return useMutation({
     mutationFn: (anexoId: number) => api.delete<{ mensagem: string }>(`/anexos/${anexoId}`),
-    onSuccess: () => clienteQuery.invalidateQueries({ queryKey: ['anexos', demandaId] }),
+    onSuccess: () => atualizarAnexosEHistorico(clienteQuery, demandaId),
   });
 }

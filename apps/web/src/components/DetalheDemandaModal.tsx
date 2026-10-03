@@ -9,8 +9,9 @@ import {
   type StatusDemandaEditavel,
 } from '../api/demandas';
 import { useFiscais } from '../api/fiscais';
+import { useHistorico } from '../api/historico';
 import { useUsuarioLogado } from '../auth/rotas';
-import { formatarData } from '../util/data';
+import { formatarData, formatarInstante } from '../util/data';
 import { formatarTamanho } from '../util/tamanho';
 import { Modal } from './Modal';
 import { StatusBadge } from './StatusBadge';
@@ -22,6 +23,28 @@ const STATUS_EDITAVEIS: { valor: StatusDemandaEditavel; rotulo: string }[] = [
 ];
 
 const TAMANHO_MAXIMO = 10 * 1024 * 1024;
+
+function SecaoHistorico({ demandaId }: { demandaId: number }) {
+  const historico = useHistorico(demandaId);
+
+  return (
+    <details className="historico">
+      <summary>Histórico</summary>
+      {historico.isPending && <p className="empty-state">Carregando…</p>}
+      {historico.error && <p className="estado-erro">{mensagemDeErro(historico.error)}</p>}
+      {historico.data?.length === 0 && <p className="empty-state">Nenhum registro ainda.</p>}
+      <ol className="historico-lista">
+        {historico.data?.map((evento) => (
+          <li key={evento.id}>
+            <span className="historico-quando">{formatarInstante(evento.criadoEm)}</span>
+            <span>{evento.descricao}</span>
+            <span className="historico-autor">{evento.autor ?? 'Usuário removido'}</span>
+          </li>
+        ))}
+      </ol>
+    </details>
+  );
+}
 
 export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; onFechar: () => void }) {
   const usuario = useUsuarioLogado();
@@ -42,14 +65,26 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
   const [novosArquivos, setNovosArquivos] = useState<File[]>([]);
   const [inputArquivos, setInputArquivos] = useState(0); // muda para limpar o <input type="file">
   const [mensagem, setMensagem] = useState<string | null>(null);
+  const [motivo, setMotivo] = useState('');
 
   const fiscalOriginal = demanda.fiscalId ? String(demanda.fiscalId) : '';
   const converterFiscal = (valor: string) => (valor ? Number(valor) : null);
+
+  // Tirar uma demanda de "concluída" é reabrir: só o gestor, e o motivo fica no histórico
+  const reabrindo = demanda.statusSalvo === 'concluida' && status !== 'concluida';
+  const podeAlterarStatus = !(usuario.perfil === 'inspetor' && demanda.statusSalvo === 'concluida');
 
   function salvar() {
     setMensagem(null);
     const alteracoes: AlteracaoDemanda = {};
     if (status !== demanda.statusSalvo) alteracoes.status = status as StatusDemandaEditavel;
+    if (reabrindo) {
+      if (motivo.trim().length < 3) {
+        setMensagem('Informe o motivo da reabertura.');
+        return;
+      }
+      alteracoes.motivo = motivo.trim();
+    }
     if (ehGestor && fiscalId !== fiscalOriginal) alteracoes.fiscalId = converterFiscal(fiscalId);
 
     if (Object.keys(alteracoes).length === 0) {
@@ -162,7 +197,12 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
         <>
           <div className="field-group">
             <label htmlFor="status">Status</label>
-            <select id="status" value={status} onChange={(e) => setStatus(e.target.value)}>
+            <select
+              id="status"
+              value={status}
+              disabled={!podeAlterarStatus}
+              onChange={(e) => setStatus(e.target.value)}
+            >
               {STATUS_EDITAVEIS.map((opcao) => (
                 <option key={opcao.valor} value={opcao.valor}>
                   {opcao.rotulo}
@@ -170,6 +210,24 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
               ))}
             </select>
           </div>
+
+          {!podeAlterarStatus && (
+            <p className="modal-dica">Só o gestor pode reabrir uma demanda concluída.</p>
+          )}
+
+          {reabrindo && (
+            <div className="field-group">
+              <label htmlFor="motivo">Motivo da reabertura</label>
+              <textarea
+                id="motivo"
+                rows={3}
+                maxLength={500}
+                placeholder="Ex.: chegou um laudo complementar"
+                value={motivo}
+                onChange={(e) => setMotivo(e.target.value)}
+              />
+            </div>
+          )}
 
           {ehGestor && (
             <div className="field-group">
@@ -238,6 +296,8 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
           </div>
         )}
       </div>
+
+      {!somenteLeitura && <SecaoHistorico demandaId={demanda.id} />}
 
       <p className={`form-message ${mensagem ? 'error' : ''}`} role="alert">
         {mensagem}
