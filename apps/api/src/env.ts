@@ -28,7 +28,7 @@ export const esquemaEnv = z
         return chave && !chave.startsWith('COLE_') ? chave : undefined;
       }),
     // Os modelos gratuitos mudam com frequência: confira a lista atual em console.groq.com
-    GROQ_MODEL: z.string().min(1).default('llama-3.3-70b-versatile'),
+    GROQ_MODEL: z.string().min(1).default('openai/gpt-oss-120b'),
     // Nome da unidade que assina os pareceres
     UNIDADE_NOME: z.string().min(1).default('VISAT/CEREST Recife'),
   })

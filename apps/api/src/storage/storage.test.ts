@@ -147,7 +147,7 @@ describe('configuração do armazenamento (env)', () => {
 
   it('o modelo e a unidade têm valores padrão', () => {
     const r = esquemaEnv.parse({ ...base });
-    expect(r.GROQ_MODEL).toBe('llama-3.3-70b-versatile');
+    expect(r.GROQ_MODEL).toBe('openai/gpt-oss-120b');
     expect(r.UNIDADE_NOME).toBe('VISAT/CEREST Recife');
   });
 

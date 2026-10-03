@@ -242,7 +242,43 @@ describe('GeradorGroq', () => {
     expect(init.method).toBe('POST');
     expect((init.headers as Record<string, string>).Authorization).toBe(`Bearer ${CHAVE}`);
     const corpo = JSON.parse(init.body as string);
-    expect(corpo).toMatchObject({ model: 'modelo-de-teste', messages: MENSAGENS, temperature: 0.2 });
+    expect(corpo).toMatchObject({ model: 'modelo-de-teste', messages: MENSAGENS, temperature: 0.2, max_tokens: 4000 });
+    // Modelo comum não recebe parâmetros que ele poderia recusar
+    expect(corpo).not.toHaveProperty('reasoning_effort');
+  });
+
+  it('nos modelos gpt-oss pede raciocínio curto, para sobrar espaço para o texto', async () => {
+    const corpos: Record<string, unknown>[] = [];
+    const fetchFalso = (async (_url: string, init: RequestInit) => {
+      corpos.push(JSON.parse(init.body as string));
+      return resposta({ choices: [{ message: { content: 'ok' } }] });
+    }) as unknown as typeof fetch;
+
+    await new GeradorGroq({ chave: CHAVE, modelo: 'openai/gpt-oss-120b', fetchImpl: fetchFalso, url: 'https://exemplo.test/chat' }).gerar(MENSAGENS);
+
+    expect(corpos[0]).toMatchObject({ model: 'openai/gpt-oss-120b', reasoning_effort: 'low' });
+  });
+
+  it('avisa quando a resposta foi cortada pelo limite de tamanho', async () => {
+    const cortada = (async () =>
+      resposta({ choices: [{ message: { content: 'Texto pela metade' }, finish_reason: 'length' }] })) as unknown as typeof fetch;
+    const completa = (async () =>
+      resposta({ choices: [{ message: { content: 'Texto inteiro' }, finish_reason: 'stop' }] })) as unknown as typeof fetch;
+
+    expect((await gerador(cortada).gerar(MENSAGENS)).truncada).toBe(true);
+    expect((await gerador(completa).gerar(MENSAGENS)).truncada).toBe(false);
+  });
+
+  it('remove o raciocínio que alguns modelos devolvem entre <think> e </think>', async () => {
+    const fetchFalso = (async () =>
+      resposta({ choices: [{ message: { content: '<think>pensando em voz alta\nmais uma linha</think>\n## 1. Texto final' } }] })) as unknown as typeof fetch;
+    expect((await gerador(fetchFalso).gerar(MENSAGENS)).texto).toBe('## 1. Texto final');
+  });
+
+  it('uma resposta que é só raciocínio conta como vazia', async () => {
+    const fetchFalso = (async () =>
+      resposta({ choices: [{ message: { content: '<think>só isso</think>' } }] })) as unknown as typeof fetch;
+    await expect(gerador(fetchFalso).gerar(MENSAGENS)).rejects.toMatchObject({ status: 502 });
   });
 
   describe('falhas', () => {
@@ -264,8 +300,8 @@ describe('GeradorGroq', () => {
       [401, 502, /chave de acesso/],
       [403, 502, /chave de acesso/],
       [429, 429, /limite de uso/],
-      [400, 502, /modelo/],
-      [404, 502, /modelo/],
+      [400, 502, /recusou o pedido/],
+      [404, 502, /modelo de IA "modelo-de-teste"/],
       [500, 502, /indisponível/],
       [503, 502, /indisponível/],
     ])('status %i do serviço vira %i com mensagem clara', async (statusDoServico, statusNosso, mensagem) => {
@@ -275,6 +311,25 @@ describe('GeradorGroq', () => {
       // Nem a chave nem o detalhe do serviço chegam até quem usa o sistema
       expect(erro.message).not.toContain(CHAVE);
       expect(erro.message).not.toContain('detalhe interno');
+    });
+
+    it('modelo descontinuado: a mensagem diz qual modelo e como achar outro; o detalhe da Groq vai só para o log', async () => {
+      const fetchFalso = (async () =>
+        resposta(
+          { error: { message: 'The model `antigo` has been decommissioned', code: 'model_decommissioned' } },
+          400,
+        )) as unknown as typeof fetch;
+
+      const erro = await falhaCom(fetchFalso);
+
+      expect(erro.status).toBe(502);
+      expect(erro.message).toContain('"modelo-de-teste"');
+      expect(erro.message).toContain('npm run ia:modelos');
+      expect(erro.message).not.toContain('decommissioned');
+      // O motivo exato fica no log do servidor, sem a chave
+      const log = JSON.stringify(vi.mocked(console.error).mock.calls);
+      expect(log).toContain('decommissioned');
+      expect(log).not.toContain(CHAVE);
     });
 
     it('resposta sem texto ou que não é JSON é erro', async () => {
@@ -371,6 +426,22 @@ describe('API de pareceres', () => {
     const salvo = await prisma.relatorio.findUniqueOrThrow({ where: { id: res.body.id } });
     expect(salvo).toMatchObject({ modelo: 'modelo-falso', tokensEntrada: 300, tokensSaida: 150, geradoPorId: gestor.user.id });
     expect((salvo.fatos as unknown as FatosParecer).demandas.recebidas).toBe(5);
+  });
+
+  it('parecer que a IA deixou pela metade é marcado como incompleto dentro do próprio texto', async () => {
+    const gestor = await criarUsuarioComSessao('gestor');
+    await cenario();
+    const cortado: GeradorDeTexto = {
+      modelo: 'modelo-falso',
+      async gerar() {
+        return { texto: '## 1. IDENTIFICAÇÃO E OBJETIVO\nComeço do texto', modelo: 'modelo-falso', tokensEntrada: 1, tokensSaida: 4000, truncada: true };
+      },
+    };
+
+    const res = await gerarParecer(createApp({ gerador: cortado }), gestor.cookie).expect(201);
+
+    expect(res.body.texto).toContain('a IA interrompeu a resposta por limite de tamanho');
+    expect(res.body.texto).toContain('incompleto');
   });
 
   it('sem IA configurada responde 503 e não grava nada', async () => {

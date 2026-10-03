@@ -80,7 +80,10 @@ export function criarRelatoriosRouter(gerador: GeradorDeTexto | null): Router {
     const resposta = await gerador.gerar(montarMensagens(fatos));
     const numerosParaConferir = numerosForaDosDados(resposta.texto, fatos);
     // O aviso é acrescentado por nós, e não pedido à IA: não depende de ela obedecer
-    const texto = `${resposta.texto}\n\n---\n*${avisoDeMinuta(resposta.modelo)}*`;
+    const corte = resposta.truncada
+      ? '\n\n> **Atenção: a IA interrompeu a resposta por limite de tamanho. O texto acima está incompleto.** Gere de novo, com um período menor.'
+      : '';
+    const texto = `${resposta.texto}${corte}\n\n---\n*${avisoDeMinuta(resposta.modelo)}*`;
 
     const registro = await prisma.relatorio.create({
       data: {

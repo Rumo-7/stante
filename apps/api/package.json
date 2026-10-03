@@ -22,7 +22,8 @@
     "db:test:prepare": "node --env-file=.env.test ../../node_modules/prisma/build/index.js migrate deploy",
     "db:deploy:producao": "node --env-file=.env.producao ../../node_modules/prisma/build/index.js migrate deploy",
     "db:seed:producao": "tsx --env-file=.env.producao prisma/seed.ts",
-    "usuarios": "tsx --env-file=.env src/scripts/usuarios.ts"
+    "usuarios": "tsx --env-file=.env src/scripts/usuarios.ts",
+    "ia:modelos": "tsx --env-file=.env src/scripts/modelos-ia.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
