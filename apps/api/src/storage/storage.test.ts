@@ -137,6 +137,20 @@ describe('configuração do armazenamento (env)', () => {
     expect(r.success).toBe(true);
   });
 
+  it('a chave da IA: vazia ou com o texto de exemplo vale como não configurada; uma chave de verdade é mantida', () => {
+    expect(esquemaEnv.parse({ ...base }).GROQ_API_KEY).toBeUndefined();
+    expect(esquemaEnv.parse({ ...base, GROQ_API_KEY: '' }).GROQ_API_KEY).toBeUndefined();
+    expect(esquemaEnv.parse({ ...base, GROQ_API_KEY: '   ' }).GROQ_API_KEY).toBeUndefined();
+    expect(esquemaEnv.parse({ ...base, GROQ_API_KEY: 'COLE_SUA_CHAVE_AQUI' }).GROQ_API_KEY).toBeUndefined();
+    expect(esquemaEnv.parse({ ...base, GROQ_API_KEY: '  gsk_abc123  ' }).GROQ_API_KEY).toBe('gsk_abc123');
+  });
+
+  it('o modelo e a unidade têm valores padrão', () => {
+    const r = esquemaEnv.parse({ ...base });
+    expect(r.GROQ_MODEL).toBe('llama-3.3-70b-versatile');
+    expect(r.UNIDADE_NOME).toBe('VISAT/CEREST Recife');
+  });
+
   it('o endpoint precisa ser uma URL', () => {
     const r = esquemaEnv.safeParse({ ...base, ...s3Completo, S3_ENDPOINT: 'conta.r2.cloudflarestorage.com' });
     expect(r.success).toBe(false);

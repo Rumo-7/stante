@@ -17,6 +17,20 @@ export const esquemaEnv = z
     S3_ACCESS_KEY_ID: z.string().min(1).optional(),
     S3_SECRET_ACCESS_KEY: z.string().min(1).optional(),
     S3_REGION: z.string().default('auto'),
+
+    // Pareceres com IA (Groq). Sem a chave, a tela de relatórios avisa que o recurso não está configurado.
+    // Vazio ou ainda com o texto de exemplo (COLE_...) vale como "não configurado": a Sentinela avisa isso
+    GROQ_API_KEY: z
+      .string()
+      .optional()
+      .transform((valor) => {
+        const chave = valor?.trim();
+        return chave && !chave.startsWith('COLE_') ? chave : undefined;
+      }),
+    // Os modelos gratuitos mudam com frequência: confira a lista atual em console.groq.com
+    GROQ_MODEL: z.string().min(1).default('llama-3.3-70b-versatile'),
+    // Nome da unidade que assina os pareceres
+    UNIDADE_NOME: z.string().min(1).default('VISAT/CEREST Recife'),
   })
   .superRefine((valores, contexto) => {
     if (valores.STORAGE_DRIVER === 's3') {

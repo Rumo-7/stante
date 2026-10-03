@@ -4,6 +4,7 @@ import { COOKIE_SESSAO, criarSessao } from '../auth/sessao';
 import { prisma } from '../db';
 
 export async function limparBanco() {
+  await prisma.relatorio.deleteMany();
   await prisma.anexo.deleteMany();
   await prisma.demanda.deleteMany();
   await prisma.fiscal.deleteMany();

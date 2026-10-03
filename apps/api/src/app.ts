@@ -12,7 +12,10 @@ import { authRouter } from './modules/auth/auth.routes';
 import { dashboardRouter } from './modules/dashboard/dashboard.routes';
 import { demandasRouter } from './modules/demandas/demandas.routes';
 import { notificacoesRouter } from './modules/notificacoes/notificacoes.routes';
+import { radarRouter } from './modules/radar/radar.routes';
 import { referenciaRouter } from './modules/referencia/referencia.routes';
+import { criarGeradorPadrao, type GeradorDeTexto } from './modules/relatorios/gerador';
+import { criarRelatoriosRouter } from './modules/relatorios/relatorios.routes';
 import { usuariosRouter } from './modules/usuarios/usuarios.routes';
 
 // apps/api/src ou apps/api/dist -> apps/web/dist (o front compilado)
@@ -21,9 +24,11 @@ const PASTA_WEB_PADRAO = path.resolve(__dirname, '..', '..', 'web', 'dist');
 interface OpcoesApp {
   /** Pasta do front compilado. Se não existir (ex.: em desenvolvimento), só a API é servida. */
   pastaWeb?: string;
+  /** Gerador de texto por IA. Omitido: usa o configurado no ambiente. null: desligado. Nos testes entra um falso. */
+  gerador?: GeradorDeTexto | null;
 }
 
-export function createApp({ pastaWeb = PASTA_WEB_PADRAO }: OpcoesApp = {}) {
+export function createApp({ pastaWeb = PASTA_WEB_PADRAO, gerador = criarGeradorPadrao() }: OpcoesApp = {}) {
   const app = express();
 
   app.disable('x-powered-by');
@@ -70,6 +75,8 @@ export function createApp({ pastaWeb = PASTA_WEB_PADRAO }: OpcoesApp = {}) {
   app.use('/api/dashboard', dashboardRouter);
   app.use('/api/usuarios', usuariosRouter);
   app.use('/api/notificacoes', notificacoesRouter);
+  app.use('/api/relatorios', criarRelatoriosRouter(gerador));
+  app.use('/api/radar', radarRouter);
   app.use('/api', anexosRouter);
   app.use('/api', referenciaRouter);
 

@@ -85,6 +85,7 @@ model User {
   anexosEnviados    Anexo[]   @relation("AnexoEnviadoPor")
   historicos        HistoricoDemanda[] @relation("HistoricoAutor")
   notificacoes      Notificacao[]
+  relatorios        Relatorio[] @relation("RelatorioGeradoPor")
 
   @@map("users")
 }
@@ -213,4 +214,26 @@ model Notificacao {
   @@unique([userId, demandaId, tipo, chave])
   @@index([userId, lidaEm, createdAt])
   @@map("notificacoes")
+}
+
+// Pareceres técnicos redigidos com apoio de IA. Guardamos o texto E os números exatos que a IA recebeu,
+// para poder conferir depois o que embasou cada afirmação.
+model Relatorio {
+  id           Int      @id @default(autoincrement())
+  periodoDe    DateTime @map("periodo_de") @db.Date
+  periodoAte   DateTime @map("periodo_ate") @db.Date
+  fatos        Json
+  texto        String   @db.Text
+  modelo       String
+  tokensEntrada Int?    @map("tokens_entrada")
+  tokensSaida   Int?    @map("tokens_saida")
+  // Números que aparecem no texto mas não estavam nos dados: pontos para o gestor conferir
+  conferencia  Json     @default("[]")
+  geradoPorId  Int?     @map("gerado_por_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  geradoPor User? @relation("RelatorioGeradoPor", fields: [geradoPorId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@map("relatorios")
 }
