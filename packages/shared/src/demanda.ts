@@ -89,6 +89,16 @@ const listarBase = z.object({
     vazioParaUndefined,
     z.enum(['true'], { errorMap: () => ({ message: 'Valor inválido para "ativas".' }) }).optional(),
   ),
+  // Página (a partir de 1). Sem "limite", cada página tem 20 itens.
+  pagina: z.preprocess(
+    vazioParaUndefined,
+    z.coerce
+      .number({ invalid_type_error: 'Página inválida.' })
+      .int('Página inválida.')
+      .min(1, 'Página inválida.')
+      .max(100_000, 'Página inválida.')
+      .optional(),
+  ),
   limite: z.preprocess(
     vazioParaUndefined,
     z.coerce
