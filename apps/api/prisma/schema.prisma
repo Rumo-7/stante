@@ -25,6 +25,15 @@ enum OrigemDemanda {
   campo // registrada por um inspetor durante a fiscalização
 }
 
+enum TipoNotificacao {
+  aguardando_validacao // para os gestores: um inspetor abriu uma demanda em campo
+  demanda_validada // para quem abriu / o fiscal: o gestor validou
+  demanda_atribuida // para o fiscal: a demanda passou a ser dele
+  demanda_reaberta // para o fiscal: uma demanda concluída foi reaberta
+  prazo_critico // para o fiscal: faltam 5 dias ou menos
+  prazo_vencido // para o fiscal e os gestores: o prazo passou
+}
+
 enum TipoHistorico {
   criada
   validada
@@ -73,6 +82,7 @@ model User {
   demandasValidadas Demanda[] @relation("DemandaValidadaPor")
   anexosEnviados    Anexo[]   @relation("AnexoEnviadoPor")
   historicos        HistoricoDemanda[] @relation("HistoricoAutor")
+  notificacoes      Notificacao[]
 
   @@map("users")
 }
@@ -137,6 +147,7 @@ model Demanda {
   validadaPor  User?    @relation("DemandaValidadaPor", fields: [validadaPorId], references: [id], onDelete: SetNull)
   anexos     Anexo[]
   historico  HistoricoDemanda[]
+  notificacoes Notificacao[]
 
   @@index([prazo])
   @@index([status])
@@ -179,4 +190,25 @@ model HistoricoDemanda {
 
   @@index([demandaId, createdAt])
   @@map("historico_demandas")
+}
+
+// Avisos dentro do sistema (o "sino"). O texto é gravado na criação: é o retrato do momento.
+model Notificacao {
+  id        Int             @id @default(autoincrement())
+  userId    Int             @map("user_id")
+  demandaId Int?            @map("demanda_id")
+  tipo      TipoNotificacao
+  // Evita avisar duas vezes a mesma coisa: nos avisos de prazo é a data do prazo (se o prazo
+  // mudar, o aviso novo é permitido); nos avisos de evento é um valor único por ocorrência.
+  chave     String
+  mensagem  String
+  lidaEm    DateTime?       @map("lida_em")
+  createdAt DateTime        @default(now()) @map("created_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  demanda Demanda? @relation(fields: [demandaId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, demandaId, tipo, chave])
+  @@index([userId, lidaEm, createdAt])
+  @@map("notificacoes")
 }

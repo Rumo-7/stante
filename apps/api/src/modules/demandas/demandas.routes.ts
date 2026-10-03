@@ -20,6 +20,12 @@ import {
 } from '../anexos/arquivos';
 import { arquivosDaRequisicao, receberAnexos } from '../anexos/upload';
 import { listarHistorico, registrar, type EventoHistorico } from '../historico/historico';
+import {
+  notificarAbertaEmCampo,
+  notificarAtribuida,
+  notificarReaberta,
+  notificarValidada,
+} from '../notificacoes/notificacoes';
 import { escopoDemandas } from './escopo';
 import { montarWhere, paraData } from './filtros';
 import { INCLUIR_RELACOES, serializarDemanda } from './serializar';
@@ -119,6 +125,8 @@ demandasRouter.post('/', exigirPerfil('gestor', 'inspetor'), receberAnexos, asyn
         include: INCLUIR_RELACOES,
       });
       await registrar(tx, nova.id, usuario.id, eventos);
+      if (nova.status === 'em_analise') await notificarAbertaEmCampo(tx, nova, usuario);
+      else if (nova.fiscalId) await notificarAtribuida(tx, nova, nova.fiscalId, usuario.id);
       return nova;
     });
     res.status(201).json(serializarDemanda(criada, hoje));
@@ -204,6 +212,10 @@ demandasRouter.patch('/:id', exigirPerfil('gestor', 'inspetor'), async (req, res
       include: INCLUIR_RELACOES,
     });
     await registrar(tx, id, usuario.id, eventos);
+    if (dados.fiscalId && dados.fiscalId !== atual.fiscalId) {
+      await notificarAtribuida(tx, resultado, dados.fiscalId, usuario.id);
+    }
+    if (reabrindo) await notificarReaberta(tx, resultado, dados.motivo!, usuario.id);
     return resultado;
   });
   res.json(serializarDemanda(atualizada, hoje));
@@ -249,7 +261,9 @@ demandasRouter.post('/:id/validar', exigirPerfil('gestor'), async (req, res) => 
     const resultado = await tx.demanda.updateMany({ where: { id, status: 'em_analise' }, data: alteracoes });
     if (resultado.count === 0) throw new ErroHttp(409, 'Esta demanda já foi validada.');
     await registrar(tx, id, usuario.id, eventos);
-    return tx.demanda.findUniqueOrThrow({ where: { id }, include: INCLUIR_RELACOES });
+    const pronta = await tx.demanda.findUniqueOrThrow({ where: { id }, include: INCLUIR_RELACOES });
+    await notificarValidada(tx, pronta, usuario.id);
+    return pronta;
   });
   res.json(serializarDemanda(validada, hoje));
 });

@@ -11,6 +11,7 @@ import { anexosRouter } from './modules/anexos/anexos.routes';
 import { authRouter } from './modules/auth/auth.routes';
 import { dashboardRouter } from './modules/dashboard/dashboard.routes';
 import { demandasRouter } from './modules/demandas/demandas.routes';
+import { notificacoesRouter } from './modules/notificacoes/notificacoes.routes';
 import { referenciaRouter } from './modules/referencia/referencia.routes';
 import { usuariosRouter } from './modules/usuarios/usuarios.routes';
 
@@ -66,6 +67,7 @@ export function createApp({ pastaWeb = PASTA_WEB_PADRAO }: OpcoesApp = {}) {
   app.use('/api/demandas', demandasRouter);
   app.use('/api/dashboard', dashboardRouter);
   app.use('/api/usuarios', usuariosRouter);
+  app.use('/api/notificacoes', notificacoesRouter);
   app.use('/api', anexosRouter);
   app.use('/api', referenciaRouter);
 
