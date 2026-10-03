@@ -39,7 +39,7 @@ export function Esqueci() {
 
           <p className="helper-text">
             {enviado
-              ? 'A recuperação de senha por e-mail ainda não está disponível. Em breve este recurso será liberado.'
+              ? 'A recuperação por e-mail ainda não está disponível. Peça a um gestor da VISAT para redefinir a sua senha: ele gera uma senha provisória, que você troca no primeiro acesso.'
               : 'Aguarde, esse processo pode demorar alguns segundos'}
           </p>
         </form>

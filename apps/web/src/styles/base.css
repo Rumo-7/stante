@@ -176,6 +176,63 @@ body {
   resize: vertical;
 }
 
+/* Troca de senha e senha provisória */
+.pg-cadastro .form-intro {
+  margin: -16px 0 24px;
+  font-size: 14px;
+  color: #5a6b63;
+  text-align: center;
+}
+
+.pg-cadastro .botao-link {
+  width: fit-content;
+  height: auto;
+  margin: 0 auto;
+  padding: 0;
+  background: none;
+  color: #0088ff;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.pg-cadastro .botao-link:hover {
+  background: none;
+}
+
+.app-shell .acoes-conta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.app-shell .acoes-conta a {
+  color: #d5dcd9;
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+.app-shell .acoes-conta a:hover {
+  color: #fff;
+}
+
+.app-shell .acoes-conta .btn-sair {
+  margin-top: 0;
+}
+
+.app-shell .senha-provisoria {
+  margin: 4px 0 12px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: #142721;
+  color: #fff;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 22px;
+  letter-spacing: 2px;
+  text-align: center;
+  user-select: all;
+}
+
 /* Sugestão de fiscal */
 .app-shell .sugestao-fiscal {
   margin: 6px 0 0;

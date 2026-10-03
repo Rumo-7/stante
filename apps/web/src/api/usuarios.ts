@@ -36,3 +36,10 @@ export function useAtualizarUsuario() {
       ]),
   });
 }
+
+/** O gestor gera uma senha provisória para alguém que perdeu a sua. Ela só é devolvida esta vez. */
+export function useRedefinirSenha() {
+  return useMutation({
+    mutationFn: (id: number) => api.post<{ senhaProvisoria: string }>(`/usuarios/${id}/redefinir-senha`),
+  });
+}

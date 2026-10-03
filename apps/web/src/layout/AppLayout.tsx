@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { sair } from '../api/auth';
 import { useUsuarios } from '../api/usuarios';
 import logo from '../assets/logo_stante.png';
@@ -64,9 +64,12 @@ export function AppLayout() {
           <div className="user-info">
             <strong>{usuario.nome}</strong>
             <span>{ROTULO_PERFIL[usuario.perfil]}</span>
-            <button type="button" className="btn-sair" onClick={() => logout.mutate()}>
-              Sair
-            </button>
+            <div className="acoes-conta">
+              <Link to="/senha">Alterar senha</Link>
+              <button type="button" className="btn-sair" onClick={() => logout.mutate()}>
+                Sair
+              </button>
+            </div>
           </div>
         </div>
       </nav>

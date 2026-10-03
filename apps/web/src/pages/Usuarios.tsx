@@ -3,10 +3,45 @@ import type { Perfil, StatusUsuario } from '@stante/shared';
 import { api, mensagemDeErro } from '../api/cliente';
 import { useDemandantes } from '../api/demandas';
 import { useFiscais, type Fiscal } from '../api/fiscais';
-import { useAtualizarUsuario, useUsuarios, type UsuarioAdmin } from '../api/usuarios';
+import { useAtualizarUsuario, useRedefinirSenha, useUsuarios, type UsuarioAdmin } from '../api/usuarios';
 import { ROTULO_PERFIL } from '../auth/perfis';
 import { useUsuarioLogado } from '../auth/rotas';
+import { Modal } from '../components/Modal';
 import { formatarData } from '../util/data';
+
+/** A senha provisória aparece só aqui e só agora: o servidor guarda apenas o hash dela. */
+function ModalSenhaProvisoria({ nome, senha, onFechar }: { nome: string; senha: string; onFechar: () => void }) {
+  const [copiada, setCopiada] = useState(false);
+
+  async function copiar() {
+    try {
+      await navigator.clipboard.writeText(senha);
+      setCopiada(true);
+    } catch {
+      setCopiada(false); // sem permissão para copiar: a pessoa seleciona o texto na tela
+    }
+  }
+
+  return (
+    <Modal titulo="Senha provisória" subtitulo={`Para ${nome}`} onFechar={onFechar}>
+      <p className="senha-provisoria" aria-label="Senha provisória">
+        {senha}
+      </p>
+      <button type="button" className="btn-secondary" onClick={copiar}>
+        {copiada ? 'Copiada!' : 'Copiar senha'}
+      </button>
+      <p className="modal-dica">
+        Esta senha aparece <strong>só agora</strong> e não fica salva no sistema. Passe-a para a pessoa por um canal
+        seguro. Ela será obrigada a trocá-la no primeiro acesso, e foi desconectada de todos os lugares.
+      </p>
+      <div className="modal-actions">
+        <button type="button" className="btn-primary" onClick={onFechar}>
+          Fechar
+        </button>
+      </div>
+    </Modal>
+  );
+}
 
 const CLASSE_STATUS: Record<StatusUsuario, { rotulo: string; classe: string }> = {
   pendente: { rotulo: 'AGUARDANDO', classe: 'badge-amber' },
@@ -37,8 +72,20 @@ function LinhaUsuario({
   aoErro: (mensagem: string | null) => void;
 }) {
   const atualizar = useAtualizarUsuario();
+  const redefinirSenha = useRedefinirSenha();
   const [ocupado, setOcupado] = useState(false);
+  const [senhaProvisoria, setSenhaProvisoria] = useState<string | null>(null);
   const bloqueado = ocupado || atualizar.isPending;
+
+  function redefinir() {
+    aoErro(null);
+    // Redefinir desconecta a pessoa na hora, então pede confirmação
+    if (!window.confirm(`Redefinir a senha de ${usuario.nome}? Ela será desconectada de todos os lugares.`)) return;
+    redefinirSenha.mutate(usuario.id, {
+      onSuccess: (resposta) => setSenhaProvisoria(resposta.senhaProvisoria),
+      onError: (erro) => aoErro(mensagemDeErro(erro)),
+    });
+  }
 
   async function aplicar(dados: Parameters<typeof atualizar.mutateAsync>[0]['dados']) {
     aoErro(null);
@@ -143,6 +190,18 @@ function LinhaUsuario({
               <button type="button" className="btn-secondary" disabled={bloqueado} onClick={() => aplicar({ status: 'bloqueado' })}>
                 {usuario.status === 'pendente' ? 'Recusar' : 'Bloquear'}
               </button>
+            )}
+            {usuario.status === 'ativo' && (
+              <button type="button" className="btn-secondary" disabled={redefinirSenha.isPending} onClick={redefinir}>
+                Redefinir senha
+              </button>
+            )}
+            {senhaProvisoria && (
+              <ModalSenhaProvisoria
+                nome={usuario.nome}
+                senha={senhaProvisoria}
+                onFechar={() => setSenhaProvisoria(null)}
+              />
             )}
           </>
         )}
