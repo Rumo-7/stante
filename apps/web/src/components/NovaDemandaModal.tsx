@@ -1,9 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { criarDemandaSchema } from '@stante/shared';
 import { criarDemandante, useCriarDemanda, useDemandantes, useFiscais } from '../api/demandas';
 import { mensagemDeErro } from '../api/cliente';
 import { useUsuarioLogado } from '../auth/rotas';
+import { Modal } from './Modal';
 
 const TAMANHO_MAXIMO = 10 * 1024 * 1024;
 const CAMPOS_VAZIOS = { demandanteId: '', outroNome: '', assunto: '', fiscalId: '', prazo: '' };
@@ -22,12 +23,6 @@ export function NovaDemandaModal({ onFechar }: { onFechar: () => void }) {
   const [arquivos, setArquivos] = useState<File[]>([]);
   const [mensagem, setMensagem] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
-
-  useEffect(() => {
-    const aoTeclar = (e: KeyboardEvent) => e.key === 'Escape' && onFechar();
-    document.addEventListener('keydown', aoTeclar);
-    return () => document.removeEventListener('keydown', aoTeclar);
-  }, [onFechar]);
 
   const alterar = (campo: keyof typeof CAMPOS_VAZIOS) => (e: { target: { value: string } }) =>
     setCampos((atual) => ({ ...atual, [campo]: e.target.value }));
@@ -86,14 +81,8 @@ export function NovaDemandaModal({ onFechar }: { onFechar: () => void }) {
   }
 
   return (
-    <div
-      className="modal-overlay"
-      onMouseDown={(e) => e.target === e.currentTarget && onFechar()}
-    >
-      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-nova-demanda">
-        <h2 id="titulo-nova-demanda">Nova Demanda</h2>
-
-        <form onSubmit={aoEnviar} noValidate>
+    <Modal titulo="Nova Demanda" onFechar={onFechar}>
+      <form onSubmit={aoEnviar} noValidate>
           <div className="field-group">
             <label htmlFor="demandante">Demandante</label>
             <select id="demandante" value={campos.demandanteId} onChange={alterar('demandanteId')} required>
@@ -182,8 +171,7 @@ export function NovaDemandaModal({ onFechar }: { onFechar: () => void }) {
               {enviando ? 'Criando…' : 'Criar demanda'}
             </button>
           </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </Modal>
   );
 }

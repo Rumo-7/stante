@@ -3,6 +3,7 @@ import { AppLayout } from './layout/AppLayout';
 import { RotaProtegida, RotaPublica, SomentePerfil } from './auth/rotas';
 import { Cadastro } from './pages/Cadastro';
 import { Dashboard } from './pages/Dashboard';
+import { Demandas } from './pages/Demandas';
 import { Esqueci } from './pages/Esqueci';
 import { Login } from './pages/Login';
 
@@ -42,7 +43,7 @@ export function App() {
       <Route element={<RotaProtegida />}>
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/demandas" element={<EmConstrucao titulo="Demandas" />} />
+          <Route path="/demandas" element={<Demandas />} />
           <Route path="/prazos" element={<EmConstrucao titulo="Prazos" />} />
           <Route
             path="/fiscais"
