@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import type { StatusDemanda, StatusExibicao } from '@stante/shared';
+import { montarQuery } from '../util/query';
 import { api } from './cliente';
 
 /** Status que uma pessoa pode definir à mão ("em análise" só sai pela validação do gestor). */
@@ -28,6 +29,10 @@ export interface FiltrosDemandas {
   status?: string;
   busca?: string;
   fiscalId?: string;
+  demandanteId?: string;
+  /** Período em que a demanda foi cadastrada (o dia conta no fuso de Recife). */
+  criadasDe?: string;
+  criadasAte?: string;
   ordenar?: 'prazo' | 'recentes';
   limite?: number;
   /** Só demandas formais em andamento: sem as concluídas e sem as em análise. */
@@ -41,15 +46,6 @@ export interface Demandante {
   tipoRotulo: string;
 }
 
-function montarQuery(filtros: FiltrosDemandas): string {
-  const parametros = new URLSearchParams();
-  for (const [chave, valor] of Object.entries(filtros)) {
-    if (valor !== undefined && valor !== '' && valor !== false) parametros.set(chave, String(valor));
-  }
-  const texto = parametros.toString();
-  return texto ? `?${texto}` : '';
-}
-
 export const useDemandas = (filtros: FiltrosDemandas = {}, habilitado = true) =>
   useQuery({
     queryKey: ['demandas', filtros],
@@ -57,8 +53,13 @@ export const useDemandas = (filtros: FiltrosDemandas = {}, habilitado = true) =>
     enabled: habilitado,
   });
 
-export const useDemandantes = () =>
-  useQuery({ queryKey: ['demandantes'], queryFn: () => api.get<Demandante[]>('/demandantes') });
+/** Só gestor e inspetor listam órgãos; para o representante a consulta não deve ser feita. */
+export const useDemandantes = (habilitado = true) =>
+  useQuery({
+    queryKey: ['demandantes'],
+    queryFn: () => api.get<Demandante[]>('/demandantes'),
+    enabled: habilitado,
+  });
 
 export const criarDemandante = (nome: string) => api.post<Demandante>('/demandantes', { nome });
 

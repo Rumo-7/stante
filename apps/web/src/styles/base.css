@@ -176,6 +176,17 @@ body {
   resize: vertical;
 }
 
+/* Filtros do dashboard */
+.app-shell .filtros-nota {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: #5a6b63;
+}
+
+.app-shell .filtros-card select {
+  max-width: 260px;
+}
+
 /* Troca de senha e senha provisória */
 .pg-cadastro .form-intro {
   margin: -16px 0 24px;

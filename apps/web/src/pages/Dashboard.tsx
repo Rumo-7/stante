@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { mensagemDeErro } from '../api/cliente';
 import { useDashboard, type DadosDashboard } from '../api/dashboard';
-import { useDemandas } from '../api/demandas';
+import { useDemandantes, useDemandas } from '../api/demandas';
+import { useFiscais } from '../api/fiscais';
 import { useUsuarioLogado } from '../auth/rotas';
 import { GraficoTendencia } from '../components/GraficoTendencia';
 import { NovaDemandaModal } from '../components/NovaDemandaModal';
@@ -60,12 +61,46 @@ function ListaPrazos({ prazos }: { prazos: DadosDashboard['prazosProximos'] }) {
 
 export function Dashboard() {
   const usuario = useUsuarioLogado();
-  const dashboard = useDashboard();
-  const recentes = useDemandas({ ordenar: 'recentes', limite: 5 });
-  const [modalAberto, setModalAberto] = useState(false);
-
   const ehGestor = usuario.perfil === 'gestor';
   const podeCriar = usuario.perfil !== 'representante';
+
+  // Os filtros ficam na URL: dá para recarregar, voltar e compartilhar o link
+  const [parametros, setParametros] = useSearchParams();
+  const filtros = useMemo(
+    () => ({
+      de: parametros.get('de') ?? '',
+      ate: parametros.get('ate') ?? '',
+      fiscalId: parametros.get('fiscalId') ?? '',
+      demandanteId: parametros.get('demandanteId') ?? '',
+    }),
+    [parametros],
+  );
+  const temFiltro = Object.values(filtros).some(Boolean);
+
+  const definirFiltro = (nome: keyof typeof filtros, valor: string) =>
+    setParametros(
+      (atuais) => {
+        const novos = new URLSearchParams(atuais);
+        if (valor) novos.set(nome, valor);
+        else novos.delete(nome);
+        return novos;
+      },
+      { replace: true },
+    );
+
+  const dashboard = useDashboard(filtros);
+  // A tabela "recentes" segue os mesmos filtros (o período aqui é o de cadastro)
+  const recentes = useDemandas({
+    ordenar: 'recentes',
+    limite: 5,
+    fiscalId: filtros.fiscalId,
+    demandanteId: filtros.demandanteId,
+    criadasDe: filtros.de,
+    criadasAte: filtros.ate,
+  });
+  const fiscais = useFiscais(ehGestor);
+  const orgaos = useDemandantes(podeCriar);
+  const [modalAberto, setModalAberto] = useState(false);
   const dados = dashboard.data;
   const precisaAtencao = dados && (dados.vencidas > 0 || dados.prazoCritico > 0);
 
@@ -82,6 +117,58 @@ export function Dashboard() {
           </button>
         )}
       </header>
+
+      <section className="card filtros-card">
+        <div className="filtros-row">
+          <div className="field-group">
+            <label htmlFor="dash-de">Recebidas de</label>
+            <input type="date" id="dash-de" value={filtros.de} onChange={(e) => definirFiltro('de', e.target.value)} />
+          </div>
+          <div className="field-group">
+            <label htmlFor="dash-ate">até</label>
+            <input type="date" id="dash-ate" value={filtros.ate} onChange={(e) => definirFiltro('ate', e.target.value)} />
+          </div>
+          {ehGestor && (
+            <div className="field-group">
+              <label htmlFor="dash-fiscal">Fiscal</label>
+              <select id="dash-fiscal" value={filtros.fiscalId} onChange={(e) => definirFiltro('fiscalId', e.target.value)}>
+                <option value="">Todos</option>
+                {fiscais.data?.map((fiscal) => (
+                  <option key={fiscal.id} value={fiscal.id}>
+                    {fiscal.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          {podeCriar && (
+            <div className="field-group">
+              <label htmlFor="dash-orgao">Órgão</label>
+              <select
+                id="dash-orgao"
+                value={filtros.demandanteId}
+                onChange={(e) => definirFiltro('demandanteId', e.target.value)}
+              >
+                <option value="">Todos</option>
+                {orgaos.data?.map((orgao) => (
+                  <option key={orgao.id} value={orgao.id}>
+                    {orgao.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          <button type="button" className="btn-secondary" disabled={!temFiltro} onClick={() => setParametros({}, { replace: true })}>
+            Limpar filtros
+          </button>
+        </div>
+        {temFiltro && (
+          <p className="filtros-nota">
+            Indicadores e listas mostram só as demandas filtradas. A tendência mensal considera sempre os últimos
+            meses, sem o período.
+          </p>
+        )}
+      </section>
 
       {dashboard.isPending && <p>Carregando indicadores…</p>}
       {dashboard.error && <p className="estado-erro">{mensagemDeErro(dashboard.error)}</p>}
