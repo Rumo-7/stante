@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Perfil {
+  gestor
+  inspetor
+  representante
+}
+
+enum StatusDemanda {
+  em_analise // cadastrada em campo por um inspetor, aguardando validação do gestor
+  aberta
+  em_andamento
+  concluida
+}
+
+enum OrigemDemanda {
+  planejada // registrada pelo gestor
+  campo // registrada por um inspetor durante a fiscalização
+}
+
+enum TipoDemandante {
+  ministerio_publico
+  judiciario
+  sindicato
+  controle_social
+  fiscalizacao
+  saude
+  cidadao
+  outro
+}
+
+enum StatusUsuario {
+  pendente // cadastrou, aguardando aprovação de um gestor
+  ativo
+  bloqueado
+}
+
+model User {
+  id        Int           @id @default(autoincrement())
+  nome      String
+  email     String        @unique // sempre salvo em minúsculas
+  senhaHash String        @map("senha_hash")
+  perfil    Perfil
+  status    StatusUsuario @default(pendente)
+  // Representante institucional: órgão cujas demandas ele pode acompanhar.
+  demandanteId Int?       @map("demandante_id")
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  demandante Demandante? @relation(fields: [demandanteId], references: [id], onDelete: SetNull)
+  // Inspetor: o registro de fiscal que corresponde a este usuário.
+  fiscal     Fiscal?
+  sessoes    Sessao[]
+  demandasCriadas   Demanda[] @relation("DemandaCriadaPor")
+  demandasValidadas Demanda[] @relation("DemandaValidadaPor")
+  anexosEnviados    Anexo[]   @relation("AnexoEnviadoPor")
+
+  @@map("users")
+}
+
+// Sessão de login. O id é o SHA-256 do token que vai no cookie; o token em si
+// nunca é gravado, então um vazamento do banco não permite se passar por ninguém.
+model Sessao {
+  id        String   @id
+  userId    Int      @map("user_id")
+  expiraEm  DateTime @map("expira_em")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiraEm])
+  @@map("sessoes")
+}
+
+model Fiscal {
+  id            Int       @id @default(autoincrement())
+  nome          String
+  especialidade String?
+  userId        Int?      @unique @map("user_id")
+  demandas      Demanda[]
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("fiscais")
+}
+
+model Demandante {
+  id       Int            @id @default(autoincrement())
+  nome     String         @unique
+  tipo     TipoDemandante @default(outro)
+  demandas Demanda[]
+  usuarios User[]
+
+  @@map("demandantes")
+}
+
+model Demanda {
+  id           Int           @id @default(autoincrement())
+  demandanteId Int           @map("demandante_id")
+  fiscalId     Int?          @map("fiscal_id")
+  assunto      String
+  prazo        DateTime      @db.Date
+  status       StatusDemanda @default(aberta)
+  origem       OrigemDemanda @default(planejada)
+  criadaPorId  Int?          @map("criada_por_id")
+  validadaPorId Int?         @map("validada_por_id")
+  validadaEm   DateTime?     @map("validada_em")
+  // Preenchida quando a demanda é concluída; alimenta a tendência mensal do
+  // dashboard (antes usava updated_at, que muda a cada edição).
+  concluidaEm  DateTime?     @map("concluida_em")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  demandante Demandante @relation(fields: [demandanteId], references: [id])
+  fiscal     Fiscal?    @relation(fields: [fiscalId], references: [id], onDelete: SetNull)
+  criadaPor    User?    @relation("DemandaCriadaPor", fields: [criadaPorId], references: [id], onDelete: SetNull)
+  validadaPor  User?    @relation("DemandaValidadaPor", fields: [validadaPorId], references: [id], onDelete: SetNull)
+  anexos     Anexo[]
+
+  @@index([prazo])
+  @@index([status])
+  @@index([fiscalId])
+  @@index([demandanteId])
+  @@map("demandas")
+}
+
+model Anexo {
+  id           Int      @id @default(autoincrement())
+  demandaId    Int      @map("demanda_id")
+  nomeOriginal String   @map("nome_original")
+  // chave no storage (nome do arquivo em disco, ou objeto no bucket em produção)
+  chaveArquivo String   @map("chave_arquivo")
+  mimeType     String?  @map("mime_type")
+  tamanho      Int?
+  enviadoPorId Int?     @map("enviado_por_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  demanda   Demanda @relation(fields: [demandaId], references: [id], onDelete: Cascade)
+  enviadoPor User?  @relation("AnexoEnviadoPor", fields: [enviadoPorId], references: [id], onDelete: SetNull)
+
+  @@index([demandaId])
+  @@map("anexos")
+}
