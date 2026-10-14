@@ -187,7 +187,7 @@ A stack de desenvolvimento do produto ainda está em definição conforme o proj
 <tr>
 <td align="center">
 <a href="https://github.com/lopesyas"><img src="https://github.com/lopesyas.png" width="80" style="border-radius:50%"/></a><br/>
-<b><a href="https://github.com/lopesyas">Yasmin Lopes</a></b><br/><sub>Product Manager</sub>
+<b><a href="https://github.com/lopesyas">Yasmin Lopes</a></b><br/><sub>Product Owner</sub>
 </td>
 <td align="center">
 <a href="https://github.com/lucas-calixto-lemos"><img src="https://github.com/lucas-calixto-lemos.png" width="80" style="border-radius:50%"/></a><br/>
