@@ -18,7 +18,12 @@
   <a href="https://sharing.clickup.com/90171494885/b/h/5-901710774440-2/e2df639a3523910">
     <img src="https://img.shields.io/badge/📋_Ver_Board_Completo-Abrir_no_ClickUp-E0A526?style=for-the-badge" alt="board"/>
   </a>
+  <a href="https://drive.google.com/file/d/1KuRrKUckxbRy6CZpkiCz4VHuf7SGNOoQ/view?usp=drivesdk">
+    <img src="https://img.shields.io/badge/🎥_Abrir_Screencast_Stante-E0A526?style=for-the-badge" alt="screencast"/>
+  </a>
 </p>
+
+<img width="1518" height="874" alt="tela_principal" src="https://github.com/user-attachments/assets/a422eff5-fb39-40c9-88bb-a3470e3bc849" />
 
 ---
 
@@ -31,6 +36,8 @@
 - [Construído com](#construido-com)
 - [Evidências](#evidencias)
 - [Critérios atendidos](#criterios)
+- [Histórias Implementadas](#historias-implementadas)
+- [Pair Programming](#pair-programming)
 - [Como contribuir](#contribuir)
 - [Hall of Fame — Equipe](#hall-of-fame)
 - [Agradecimentos](#agradecimentos)
@@ -63,25 +70,57 @@ Estas instruções vão te orientar a acompanhar ou contribuir com o projeto.
 
 ### Pré-requisitos
 
-O projeto está na fase de descoberta e construção de backlog — ainda não há uma aplicação instalável. Para acompanhar ou contribuir, você precisa de:
-
 ```
+Node.js 20 ou superior (o projeto usa o 24, indicado no .nvmrc)
+PostgreSQL 16 ou 17
+Git
 Acesso ao Space "RUMO 7" no ClickUp (solicite a um PM da equipe)
-Git instalado, para quando o versionamento de código começar
 ```
 
-### Acessando o projeto
+### Rodando localmente
+
+```bash
+git clone https://github.com/Rumo-7/stante.git
+cd stante
+git checkout feat/migracao-ts-postgres   # até a migração ser integrada à main
+npm install
+
+createdb stante_dev                       # ou crie o banco pela sua ferramenta de PostgreSQL
+cp apps/api/.env.example apps/api/.env    # ajuste DATABASE_URL e defina SEED_ADMIN_SENHA
+cd apps/api
+npx prisma migrate dev                    # cria as tabelas
+npm run db:seed                           # órgãos, fiscais de exemplo e o primeiro gestor
+npm run db:seed:demo                      # (opcional) demandas e contas de demonstração
+npm run db:seed:apresentacao -- --confirmar  # (opcional) APAGA as demandas e recria o cenário de apresentação
+cd ../..
+
+npm run dev:api                           # API em http://127.0.0.1:4000
+npm run dev:web                           # abra http://localhost:5173
+```
+
+Entre com o e-mail e a senha do gestor definidos em `SEED_ADMIN_*`. Outras contas se cadastram pela tela de login e são aprovadas pelo gestor na tela **Usuários**.
+
+**Testes e verificação:** `npm run typecheck` (na raiz) e `npm test` (em `apps/api`). Os testes de integração usam um banco separado e **apagam os dados dele**: crie o `stante_test`, copie `apps/api/.env.test.example` para `apps/api/.env.test` e rode `npm run db:test:prepare` uma vez.
+
+**Estrutura:** `apps/api` (Node, Express, Prisma), `apps/web` (React, Vite), `packages/shared` (regras de prazo e schemas Zod usados pelos dois lados).
+
+**Já implementado:** login e cadastro com aprovação do gestor, perfis (gestor, inspetor de campo, representante), dashboard, demandas (filtros, ações em lote, anexos e o fluxo de demandas abertas em campo, que o gestor valida), prazos (lista e calendário), fiscais e gestão de usuários.
+
+**Ainda não implementado:** login com Google e gov.br, recuperação de senha, log de alterações (UH3), alertas de prazo (UH9), sugestão de inspetor (UH14), reabertura de demanda (UH15) e integração com o SEI (UH6).
+
+### Publicando para testes
+
+O projeto roda de graça no **Render** (aplicação), **Neon** (PostgreSQL) e um bucket S3-compatível como o **Cloudflare R2** (anexos). O passo a passo, com o que esperar do plano gratuito, está em [`docs/deploy.md`](docs/deploy.md), e a configuração do serviço em [`render.yaml`](render.yaml).
+
+### Acompanhando o projeto
 
 Acesse o board completo com todas as tarefas e status:
 
 **[📋 Abrir Board no ClickUp »](https://sharing.clickup.com/90171494885/b/h/5-901710774440-2/e2df639a3523910)**
 
-Quando o código-fonte for versionado neste repositório:
+### ScreenCast do Projeto
 
-```bash
-git clone <url-do-repositorio>
-cd stante
-```
+https://github.com/user-attachments/assets/9f1b4924-af34-40b4-bac9-eb5f91aa92e1
 
 <br/>
 
@@ -90,24 +129,23 @@ cd stante
 
 15 histórias de usuário, no padrão **3Cs** (Card, Conversation, Confirmation), organizadas no board por status (Backlog → Pendente → Em progresso → Review → Closed).
 
-| # | História de Usuário | Acessar |
-|---|---|---|
-| UH1 | ID único de rastreamento por demanda | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwpnq/TEVGXRVSX1Z0UCL) |
-| UH2 | Painel com contagem de demandas por status | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwt9e/LW6H9ZL78Z8HUDE) |
-| UH3 | Log de alterações (rastreabilidade) | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwu2k/HX8FUBPD5TZ7J3W) |
-| UH4 | Dashboard de indicadores com filtros | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwuf2/H4Z1MQ59PC71DPX) |
-| UH5 | Inspetor visualiza suas demandas e prazos | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwuya/DDAG9LLHH8HQRUG) |
-| UH6 | Recebimento de demandas via SEI | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwve0/M7GI6XM06WIWCF6) |
-| UH7 | Registro manual de demanda pelo gestor | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zww9r/8WNZ0CDT2BIU2KH) |
-| UH8 | Cálculo automático de prazo limite na entrada | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwx7k/07O24YECIB2IB9K) |
-| UH9 | Alertas automáticos de proximidade do vencimento | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx0bv/EFTB3O3R5X3YIZF) |
-| UH10 | Indicador de carga de trabalho para distribuição | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx12y/4F06LLYQ9E9COGR) |
-| UH11 | Central de documentos e anexos por demanda | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx261/16EJYW5UEKI3FWY) |
-| UH12 | Controle de acesso e permissões por perfil | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx2kv/PEPXM70PQM7NO3H) |
-| UH13 | Fluxo reversível de etapas da demanda | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx3j6/894KFFYP30Z29AP) |
-| UH14 | Sugestão automática de inspetor para atribuição | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx4d4/G7GNZB7HDHPAMRH) |
-| UH15 | Reabertura de demanda vinculada ao histórico | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx50v/0RICF5ILXO4O8TX) |
-
+| # | História de Usuário | Acessar | Diagrama |
+|---|---|---|---|
+| UH1 | ID único de rastreamento por demanda | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwpnq/TEVGXRVSX1Z0UCL) | [📊 Ver](./assets/diagramas/uh1_diagrama.png) |
+| UH2 | Painel com contagem de demandas por status | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwt9e/LW6H9ZL78Z8HUDE) | [📊 Ver](./assets/diagramas/uh2_diagrama.png) |
+| UH3 | Log de alterações (rastreabilidade) | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwu2k/HX8FUBPD5TZ7J3W) | [📊 Ver](./assets/diagramas/uh3_diagrama.png) |
+| UH4 | Dashboard de indicadores com filtros | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwuf2/H4Z1MQ59PC71DPX) | [📊 Ver](./assets/diagramas/uh4_diagrama.png) |
+| UH5 | Inspetor visualiza suas demandas e prazos | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwuya/DDAG9LLHH8HQRUG) | |
+| UH6 | Recebimento de demandas via SEI | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwve0/M7GI6XM06WIWCF6) | [📊 Ver](./assets/diagramas/uh6_diagrama.png) |
+| UH7 | Registro manual de demanda pelo gestor | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zww9r/8WNZ0CDT2BIU2KH) | [📊 Ver](./assets/diagramas/uh7_diagrama.png) |
+| UH8 | Cálculo automático de prazo limite na entrada | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwx7k/07O24YECIB2IB9K) | |
+| UH9 | Alertas automáticos de proximidade do vencimento | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx0bv/EFTB3O3R5X3YIZF) | [📊 Ver](./assets/diagramas/uh9_diagrama.png) |
+| UH10 | Indicador de carga de trabalho para distribuição | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx12y/4F06LLYQ9E9COGR) | [📊 Ver](./assets/diagramas/uh10_diagrama.png) |
+| UH11 | Central de documentos e anexos por demanda | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx261/16EJYW5UEKI3FWY) | [📊 Ver](./assets/diagramas/uh11_diagrama.png) |
+| UH12 | Controle de acesso e permissões por perfil | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx2kv/PEPXM70PQM7NO3H) | [📊 Ver](./assets/diagramas/uh12_diagrama.png) |
+| UH13 | Fluxo reversível de etapas da demanda | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx3j6/894KFFYP30Z29AP) | [📊 Ver](./assets/diagramas/uh13_diagrama.png) |
+| UH14 | Sugestão automática de inspetor para atribuição | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx4d4/G7GNZB7HDHPAMRH) | [📊 Ver](./assets/diagramas/uh14_diagrama.png) |
+| UH15 | Reabertura de demanda vinculada ao histórico | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx50v/0RICF5ILXO4O8TX) | [📊 Ver](./assets/diagramas/uh15_diagrama.png) |
 <br/>
 
 <a name="metodologia"></a>
@@ -128,7 +166,7 @@ O processo de descoberta seguiu o fluxo: **Pesquisa documental → Persona preli
 <a name="construido-com"></a>
 ## ⛏️ Construído com
 
-A stack de desenvolvimento do produto ainda está em definição conforme o projeto avança. As ferramentas abaixo já sustentam a construção do backlog e da documentação:
+Backend em Node.js (Express 5, TypeScript, Prisma, PostgreSQL), frontend em React (Vite, TanStack Query) e regras compartilhadas em um pacote próprio. Ferramentas de gestão e documentação:
 
 - [ClickUp](https://clickup.com) — board, backlog e sprints
 - [Markdown](https://www.markdownguide.org) — documentação
@@ -162,6 +200,28 @@ A stack de desenvolvimento do produto ainda está em definição conforme o proj
 
 <br/>
 
+<a name="historias-implementadas"></a>
+## 🎬 Histórias Implementadas
+
+As histórias abaixo foram implementadas e validadas por meio de screencasts, disponíveis para consulta:
+
+| # | História de Usuário | Screencast |
+|---|---|---|
+| UH1 | ID único de rastreamento por demanda | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/afa17fb6-07ad-40a4-88e4-b1b6f6d5c40e/Screen%20Recording%202026-10-21%20at%2015.35.53.mov?view=open) |
+| UH2 | Painel com contagem de demandas por status | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/18c8f4bf-ec29-45db-bcd0-66c8f4748219/Screen%20Recording%202026-10-21%20at%2015.37.43.mov?view=open) |
+| UH4 | Dashboard de indicadores com filtros | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/21faaaf5-5b36-42f4-843e-6060c594b854/Screen%20Recording%202026-10-21%20at%2015.39.15.mov?view=open) |
+| UH7 | Registro manual de demanda pelo gestor | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/61102377-4a94-4fca-a876-2c551e000a3f/Screen%20Recording%202026-10-21%20at%2015.39.52.mov?view=open) |
+| UH9 | Alertas automáticos de proximidade do vencimento | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/eba05906-4106-4f67-863a-85d59fc43847/Screen%20Recording%202026-10-21%20at%2015.42.40.mov?view=open) |
+
+<br/>
+
+<a name="pair-programming"></a>
+## 🤝 Pair Programming
+
+João Souza e Miguel Cabral realizaram alterações e correções no frontend, entre elas a reorganização das pastas dos arquivos, melhorias no código e atualizações no README. Nenhuma etapa foi executada de forma individual: todo o trabalho foi feito em pair programming, por meio de chamada no Google Meet com compartilhamento de tela, de modo que ambos pudessem se apoiar mutuamente durante o desenvolvimento.
+
+<br/>
+
 <a name="contribuir"></a>
 ## 🎈 Como contribuir
 
@@ -187,7 +247,7 @@ A stack de desenvolvimento do produto ainda está em definição conforme o proj
 <tr>
 <td align="center">
 <a href="https://github.com/lopesyas"><img src="https://github.com/lopesyas.png" width="80" style="border-radius:50%"/></a><br/>
-<b><a href="https://github.com/lopesyas">Yasmin Lopes</a></b><br/><sub>Product Owner</sub>
+<b><a href="https://github.com/lopesyas">Yasmin Lopes</a></b><br/><sub>Product Manager</sub>
 </td>
 <td align="center">
 <a href="https://github.com/lucas-calixto-lemos"><img src="https://github.com/lucas-calixto-lemos.png" width="80" style="border-radius:50%"/></a><br/>
