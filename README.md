@@ -18,7 +18,12 @@
   <a href="https://sharing.clickup.com/90171494885/b/h/5-901710774440-2/e2df639a3523910">
     <img src="https://img.shields.io/badge/📋_Ver_Board_Completo-Abrir_no_ClickUp-E0A526?style=for-the-badge" alt="board"/>
   </a>
+  <a href="https://drive.google.com/file/d/1KuRrKUckxbRy6CZpkiCz4VHuf7SGNOoQ/view?usp=drivesdk">
+    <img src="https://img.shields.io/badge/🎥_Abrir_Screencast_Stante-E0A526?style=for-the-badge" alt="screencast"/>
+  </a>
 </p>
+
+<img width="1518" height="874" alt="tela_principal" src="https://github.com/user-attachments/assets/a422eff5-fb39-40c9-88bb-a3470e3bc849" />
 
 ---
 
@@ -111,6 +116,10 @@ Acesse o board completo com todas as tarefas e status:
 
 **[📋 Abrir Board no ClickUp »](https://sharing.clickup.com/90171494885/b/h/5-901710774440-2/e2df639a3523910)**
 
+### ScreenCast do Projeto
+
+https://github.com/user-attachments/assets/9f1b4924-af34-40b4-bac9-eb5f91aa92e1
+
 <br/>
 
 <a name="backlog"></a>
@@ -118,24 +127,23 @@ Acesse o board completo com todas as tarefas e status:
 
 15 histórias de usuário, no padrão **3Cs** (Card, Conversation, Confirmation), organizadas no board por status (Backlog → Pendente → Em progresso → Review → Closed).
 
-| # | História de Usuário | Acessar |
-|---|---|---|
-| UH1 | ID único de rastreamento por demanda | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwpnq/TEVGXRVSX1Z0UCL) |
-| UH2 | Painel com contagem de demandas por status | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwt9e/LW6H9ZL78Z8HUDE) |
-| UH3 | Log de alterações (rastreabilidade) | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwu2k/HX8FUBPD5TZ7J3W) |
-| UH4 | Dashboard de indicadores com filtros | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwuf2/H4Z1MQ59PC71DPX) |
-| UH5 | Inspetor visualiza suas demandas e prazos | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwuya/DDAG9LLHH8HQRUG) |
-| UH6 | Recebimento de demandas via SEI | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwve0/M7GI6XM06WIWCF6) |
-| UH7 | Registro manual de demanda pelo gestor | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zww9r/8WNZ0CDT2BIU2KH) |
-| UH8 | Cálculo automático de prazo limite na entrada | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwx7k/07O24YECIB2IB9K) |
-| UH9 | Alertas automáticos de proximidade do vencimento | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx0bv/EFTB3O3R5X3YIZF) |
-| UH10 | Indicador de carga de trabalho para distribuição | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx12y/4F06LLYQ9E9COGR) |
-| UH11 | Central de documentos e anexos por demanda | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx261/16EJYW5UEKI3FWY) |
-| UH12 | Controle de acesso e permissões por perfil | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx2kv/PEPXM70PQM7NO3H) |
-| UH13 | Fluxo reversível de etapas da demanda | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx3j6/894KFFYP30Z29AP) |
-| UH14 | Sugestão automática de inspetor para atribuição | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx4d4/G7GNZB7HDHPAMRH) |
-| UH15 | Reabertura de demanda vinculada ao histórico | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx50v/0RICF5ILXO4O8TX) |
-
+| # | História de Usuário | Acessar | Diagrama |
+|---|---|---|---|
+| UH1 | ID único de rastreamento por demanda | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwpnq/TEVGXRVSX1Z0UCL) | [📊 Ver](./assets/diagramas/uh1_diagrama.png) |
+| UH2 | Painel com contagem de demandas por status | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwt9e/LW6H9ZL78Z8HUDE) | [📊 Ver](./assets/diagramas/uh2_diagrama.png) |
+| UH3 | Log de alterações (rastreabilidade) | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwu2k/HX8FUBPD5TZ7J3W) | [📊 Ver](./assets/diagramas/uh3_diagrama.png) |
+| UH4 | Dashboard de indicadores com filtros | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwuf2/H4Z1MQ59PC71DPX) | [📊 Ver](./assets/diagramas/uh4_diagrama.png) |
+| UH5 | Inspetor visualiza suas demandas e prazos | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwuya/DDAG9LLHH8HQRUG) | |
+| UH6 | Recebimento de demandas via SEI | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwve0/M7GI6XM06WIWCF6) | [📊 Ver](./assets/diagramas/uh6_diagrama.png) |
+| UH7 | Registro manual de demanda pelo gestor | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zww9r/8WNZ0CDT2BIU2KH) | [📊 Ver](./assets/diagramas/uh7_diagrama.png) |
+| UH8 | Cálculo automático de prazo limite na entrada | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zwx7k/07O24YECIB2IB9K) | |
+| UH9 | Alertas automáticos de proximidade do vencimento | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx0bv/EFTB3O3R5X3YIZF) | [📊 Ver](./assets/diagramas/uh9_diagrama.png) |
+| UH10 | Indicador de carga de trabalho para distribuição | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx12y/4F06LLYQ9E9COGR) | [📊 Ver](./assets/diagramas/uh10_diagrama.png) |
+| UH11 | Central de documentos e anexos por demanda | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx261/16EJYW5UEKI3FWY) | [📊 Ver](./assets/diagramas/uh11_diagrama.png) |
+| UH12 | Controle de acesso e permissões por perfil | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx2kv/PEPXM70PQM7NO3H) | [📊 Ver](./assets/diagramas/uh12_diagrama.png) |
+| UH13 | Fluxo reversível de etapas da demanda | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx3j6/894KFFYP30Z29AP) | [📊 Ver](./assets/diagramas/uh13_diagrama.png) |
+| UH14 | Sugestão automática de inspetor para atribuição | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx4d4/G7GNZB7HDHPAMRH) | [📊 Ver](./assets/diagramas/uh14_diagrama.png) |
+| UH15 | Reabertura de demanda vinculada ao histórico | [![ClickUp](https://img.shields.io/badge/Abrir_tarefa-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://sharing.clickup.com/90171494885/t/h/86e2zx50v/0RICF5ILXO4O8TX) | [📊 Ver](./assets/diagramas/uh15_diagrama.png) |
 <br/>
 
 <a name="metodologia"></a>
