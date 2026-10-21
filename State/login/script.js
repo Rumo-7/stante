@@ -46,7 +46,7 @@
                 }
 
                 const params = new URLSearchParams({ nome: data.nome, perfil: data.perfil });
-                window.location.href = `dashboard.html?${params.toString()}`;
+                window.location.href = `../dashboard/index.html?${params.toString()}`;
             } catch (err) {
                 loginMessage.textContent = 'Erro ao conectar com o servidor.';
                 loginMessage.className = 'form-message error';

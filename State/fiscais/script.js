@@ -47,7 +47,7 @@ function renderizarFiscais(fiscais) {
                     <span class="badge ${carga.className}">${carga.label}</span>
                 </div>
                 <div class="fiscal-footer">
-                    <img src="logo_stante.png" alt="Stante">
+                    <img src="../shared/logo_stante.png" alt="Stante">
                     <span>VISAT/CEREST Recife</span>
                 </div>
             </div>

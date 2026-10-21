@@ -11,7 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '..', 'State', 'tela_inicial')));
+app.use(express.static(path.join(__dirname, '..', 'State')));
 app.use('/api', authRoutes);
 app.use('/api/demandas', demandasRoutes);
 app.use('/api', referenceRoutes);
@@ -19,7 +19,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api', anexosRoutes);
 
 app.get('/', (req, res) => {
-  res.redirect('/ocorpo.html');
+  res.redirect('/login/');
 });
 
 initDb().then(() => {
