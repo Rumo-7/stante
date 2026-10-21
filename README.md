@@ -198,6 +198,15 @@ Backend em Node.js (Express 5, TypeScript, Prisma, PostgreSQL), frontend em Reac
 
 <br/>
 
+## HISTÓRIAS TESTADAS
+
+`as histórias testadas com Screencast foram: `
+uh1:[Clique aqui!](https://t90171494885.p.clickup-attachments.com/t90171494885/afa17fb6-07ad-40a4-88e4-b1b6f6d5c40e/Screen%20Recording%202026-10-21%20at%2015.35.53.mov?view=open)
+uh2:[Clique aqui!](https://t90171494885.p.clickup-attachments.com/t90171494885/18c8f4bf-ec29-45db-bcd0-66c8f4748219/Screen%20Recording%202026-10-21%20at%2015.37.43.mov?view=open)
+uh4:[Clique aqui!](https://t90171494885.p.clickup-attachments.com/t90171494885/21faaaf5-5b36-42f4-843e-6060c594b854/Screen%20Recording%202026-10-21%20at%2015.39.15.mov?view=open)
+uh7:[Clique aqui!](https://t90171494885.p.clickup-attachments.com/t90171494885/61102377-4a94-4fca-a876-2c551e000a3f/Screen%20Recording%202026-10-21%20at%2015.39.52.mov?view=open)
+uh9:[Clique aqui!](https://t90171494885.p.clickup-attachments.com/t90171494885/eba05906-4106-4f67-863a-85d59fc43847/Screen%20Recording%202026-10-21%20at%2015.42.40.mov?view=open)
+
 <a name="contribuir"></a>
 ## 🎈 Como contribuir
 
