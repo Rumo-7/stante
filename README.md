@@ -220,6 +220,14 @@ As histórias abaixo foram implementadas e validadas por meio de screencasts, di
 
 João Souza e Miguel Cabral realizaram alterações e correções no frontend, entre elas a reorganização das pastas dos arquivos, melhorias no código e atualizações no README. Nenhuma etapa foi executada de forma individual: todo o trabalho foi feito em pair programming, por meio de chamada no Google Meet com compartilhamento de tela, de modo que ambos pudessem se apoiar mutuamente durante o desenvolvimento.
 
+Yasmin Lopes e Lucas Calixto trabalharam na implementação da UH2
+
+Yasmin Lopes e Marcos Felipe trabalharam na implementação da UH4
+
+Yasmin Lopes e Jullya Medeiros trabalharam na implementação da UH7
+
+Yasmin Lopes e Leandro Carvalho trabalharam na implementação da UH9
+
 <br/>
 
 <a name="contribuir"></a>
