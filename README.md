@@ -84,6 +84,7 @@ cd apps/api
 npx prisma migrate dev                    # cria as tabelas
 npm run db:seed                           # órgãos, fiscais de exemplo e o primeiro gestor
 npm run db:seed:demo                      # (opcional) demandas e contas de demonstração
+npm run db:seed:apresentacao -- --confirmar  # (opcional) APAGA as demandas e recria o cenário de apresentação
 cd ../..
 
 npm run dev:api                           # API em http://127.0.0.1:4000

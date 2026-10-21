@@ -18,6 +18,7 @@
     "db:seed": "prisma db seed",
     "db:seed:demo": "tsx --env-file=.env prisma/seed-demo.ts",
     "db:seed:volume": "tsx --env-file=.env prisma/seed-volume.ts",
+    "db:seed:apresentacao": "tsx --env-file=.env prisma/seed-apresentacao.ts",
     "db:studio": "prisma studio",
     "db:test:prepare": "node --env-file=.env.test ../../node_modules/prisma/build/index.js migrate deploy",
     "db:deploy:producao": "node --env-file=.env.producao ../../node_modules/prisma/build/index.js migrate deploy",
