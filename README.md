@@ -215,7 +215,20 @@ As histórias abaixo foram implementadas e validadas por meio de screencasts, di
 
 <br/>
 
+- [Sprint 1](#sprint-1)
+
+<a name="sprint-1"></a>
+## 🏃 Sprint 1
+
+**Histórias da Sprint 1 — board**
+<img src="./assets/sprint-1-view.png" alt="Board da Sprint 1 no ClickUp" width="100%"/>
+
+**Backlog restante**
+<img src="./assets/backlog-restante-view.png" alt="Backlog restante no ClickUp" width="100%"/>
+
+<br/>
 <a name="pair-programming"></a>
+
 ## 🤝 Pair Programming
 
 João Souza e Miguel Cabral realizaram alterações e correções no frontend, entre elas a reorganização das pastas dos arquivos, melhorias no código e atualizações no README. Nenhuma etapa foi executada de forma individual: todo o trabalho foi feito em pair programming, por meio de chamada no Google Meet com compartilhamento de tela, de modo que ambos pudessem se apoiar mutuamente durante o desenvolvimento.
