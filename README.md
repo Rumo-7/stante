@@ -290,7 +290,7 @@ Yasmin Lopes e Leandro Carvalho trabalharam na implementação da UH9
 </td>
 <td align="center">
 <a href="https://github.com/itsjvsouza"><img src="https://github.com/itsjvsouza.png" width="80" style="border-radius:50%"/></a><br/>
-<b><a href="https://github.com/itsjvsouza">João Noya</a></b><br/><sub>Back-end Developer</sub>
+<b><a href="https://github.com/itsjvsouza">João Souza</a></b><br/><sub>Back-end Developer</sub>
 </td>
 <td align="center">
 <a href="https://github.com/leandrodev-sudo"><img src="https://github.com/leandrodev-sudo.png" width="80" style="border-radius:50%"/></a><br/>
