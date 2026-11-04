@@ -110,9 +110,24 @@ Entre com o e-mail e a senha do gestor definidos em `SEED_ADMIN_*`. Outras conta
 
 **Ainda não implementado:** login com Google e gov.br, recuperação de senha, log de alterações (UH3), alertas de prazo (UH9), sugestão de inspetor (UH14), reabertura de demanda (UH15) e integração com o SEI (UH6).
 
+### Demo online
+
+**[🚀 Acessar a demo »](https://stante-2tm9.onrender.com/login)**
+
+> A demo roda em planos gratuitos: após 15 minutos sem acesso o serviço "dorme", e o primeiro acesso seguinte leva de 30 a 60 segundos. Cadastre-se na tela de login; o gestor aprova a conta na tela **Usuários**.
+
+**Como funciona:** o código da branch `main` fica no **GitHub**. O **Render** puxa esse código, compila e publica um único serviço web (a API Node/Express também entrega o front React compilado). A cada push na `main` ele republica sozinho e aplica as migrações pendentes do banco.
+
+| Parte | Plataforma | Função |
+|---|---|---|
+| Código | GitHub (`Rumo-7/stante`) | Origem do deploy contínuo (`autoDeploy` na `main`) |
+| Aplicação (API + front) | Render | Serviço web gratuito, configurado em [`render.yaml`](render.yaml) |
+| Banco de dados | Neon | PostgreSQL gerenciado, acessado pelo Prisma |
+| Anexos (PDF, DOC, DOCX) | Backblaze B2 | Bucket S3-compatível privado; o disco do Render é descartável |
+
 ### Publicando para testes
 
-O projeto roda de graça no **Render** (aplicação), **Neon** (PostgreSQL) e um bucket S3-compatível como o **Cloudflare R2** (anexos). O passo a passo, com o que esperar do plano gratuito, está em [`docs/deploy.md`](docs/deploy.md), e a configuração do serviço em [`render.yaml`](render.yaml).
+O projeto roda de graça no **Render** (aplicação), **Neon** (PostgreSQL) e um bucket S3-compatível, como o **Cloudflare R2** ou o **Backblaze B2** (anexos). O passo a passo, com o que esperar do plano gratuito, está em [`docs/deploy.md`](docs/deploy.md), e a configuração do serviço em [`render.yaml`](render.yaml).
 
 ### Acompanhando o projeto
 
