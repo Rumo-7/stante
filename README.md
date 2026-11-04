@@ -238,10 +238,12 @@ As histórias abaixo foram implementadas e validadas por meio de screencasts, di
 ## 🏃 Sprint 2
 
 **Histórias da Sprint 2 — board**
-<img src="./assets/sprint-2-view.png" alt="Board da Sprint 2 no ClickUp" width="100%"/>
+<img width="1024" height="765" alt="image" src="https://github.com/user-attachments/assets/66487cf7-6b0d-4c6b-9956-bef0c3af1116" />
+
 
 **Backlog restante (Sprints 4 a 6)**
-<img src="./assets/backlog-sprints-futuras-view.png" alt="Backlog restante das sprints 4 a 6 no ClickUp" width="100%"/>
+<img width="1191" height="359" alt="image" src="https://github.com/user-attachments/assets/9e4d533b-0960-4d63-8a37-5ca457a6a926" />
+
 
 <br/>
 
@@ -275,7 +277,7 @@ Yasmin Lopes e Lucas Calixto trabalharam na implementação da UH14
 Bugs e melhorias técnicas identificados no código são registrados como issues no próprio repositório.
 
 **Issues abertas**
-<img src="./assets/bug-tracker-view.png" alt="Issues abertas no GitHub (bug tracker)" width="100%"/>
+<img width="1600" height="375" alt="image" src="https://github.com/user-attachments/assets/51157973-21c0-4e8b-aeff-fe36fb2cf5ee" />
 
 **[🔗 Ver todas as issues »](https://github.com/Rumo-7/stante/issues)**
 
