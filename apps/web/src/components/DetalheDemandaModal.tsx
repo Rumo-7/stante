@@ -256,6 +256,9 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
                 {anexo.nomeOriginal}
               </a>
               <span className="anexo-tamanho">{formatarTamanho(anexo.tamanho)}</span>
+              <span className="anexo-autoria">
+                {anexo.autor ?? 'Usuário removido'} · {formatarInstante(anexo.criadoEm)}
+              </span>
               {podeRemover(anexo.enviadoPorId) && (
                 <button
                   type="button"

@@ -7,9 +7,17 @@ import {
   hojeNoFuso,
   inicioDoDia,
   numeroDemanda,
+  prazoPadrao,
   statusExibicao,
   ultimosMeses,
 } from './prazo';
+
+describe('prazoPadrao', () => {
+  it('soma os dias padrão à data de entrada, atravessando mês e ano', () => {
+    expect(prazoPadrao('2026-10-03')).toBe('2026-11-02');
+    expect(prazoPadrao('2026-12-15')).toBe('2027-01-14');
+  });
+});
 
 describe('diasParaPrazo', () => {
   it('retorna 0 para o próprio dia, 1 para amanhã e -1 para ontem', () => {

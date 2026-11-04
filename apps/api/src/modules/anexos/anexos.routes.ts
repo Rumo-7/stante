@@ -16,14 +16,19 @@ type AnexoBanco = {
   nomeOriginal: string;
   tamanho: number | null;
   enviadoPorId: number | null;
+  enviadoPor: { nome: string } | null;
   createdAt: Date;
 };
+
+const COM_AUTOR = { enviadoPor: { select: { nome: true } } } as const;
 
 const serializar = (anexo: AnexoBanco) => ({
   id: anexo.id,
   nomeOriginal: anexo.nomeOriginal,
   tamanho: anexo.tamanho,
   enviadoPorId: anexo.enviadoPorId,
+  /** Null quando o usuário que enviou foi removido. */
+  autor: anexo.enviadoPor?.nome ?? null,
   criadoEm: anexo.createdAt.toISOString(),
 });
 
@@ -42,7 +47,7 @@ anexosRouter.get('/demandas/:demandaId/anexos', exigirLogin, async (req, res) =>
   });
   if (!demanda) throw new ErroHttp(404, 'Demanda não encontrada.');
 
-  const anexos = await prisma.anexo.findMany({ where: { demandaId }, orderBy: { id: 'asc' } });
+  const anexos = await prisma.anexo.findMany({ where: { demandaId }, orderBy: { id: 'asc' }, include: COM_AUTOR });
   res.json(anexos.map(serializar));
 });
 
@@ -83,7 +88,7 @@ anexosRouter.post(
       throw erro;
     }
 
-    const anexos = await prisma.anexo.findMany({ where: { demandaId }, orderBy: { id: 'asc' } });
+    const anexos = await prisma.anexo.findMany({ where: { demandaId }, orderBy: { id: 'asc' }, include: COM_AUTOR });
     res.status(201).json(anexos.map(serializar));
   },
 );
