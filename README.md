@@ -42,6 +42,8 @@
 - [Hall of Fame — Equipe](#hall-of-fame)
 - [Agradecimentos](#agradecimentos)
 - [Licença](#licenca)
+- [Sprint 1](#sprint-1)
+- [Sprint 2](#sprint-2)
 
 <br/>
 
@@ -220,8 +222,6 @@ As histórias abaixo foram implementadas e validadas por meio de screencasts, di
 
 <br/>
 
-- [Sprint 1](#sprint-1)
-
 <a name="sprint-1"></a>
 ## 🏃 Sprint 1
 
@@ -234,6 +234,17 @@ As histórias abaixo foram implementadas e validadas por meio de screencasts, di
 <br/>
 <a name="pair-programming"></a>
 
+<a name="sprint-2"></a>
+## 🏃 Sprint 2
+
+**Histórias da Sprint 2 — board**
+<img src="./assets/sprint-2-view.png" alt="Board da Sprint 2 no ClickUp" width="100%"/>
+
+**Backlog restante (Sprints 4 a 6)**
+<img src="./assets/backlog-sprints-futuras-view.png" alt="Backlog restante das sprints 4 a 6 no ClickUp" width="100%"/>
+
+<br/>
+
 ## 🤝 Pair Programming
 
 João Souza e Miguel Cabral realizaram alterações e correções no frontend, entre elas a reorganização das pastas dos arquivos, melhorias no código e atualizações no README. Nenhuma etapa foi executada de forma individual: todo o trabalho foi feito em pair programming, por meio de chamada no Google Meet com compartilhamento de tela, de modo que ambos pudessem se apoiar mutuamente durante o desenvolvimento.
@@ -245,6 +256,16 @@ Yasmin Lopes e Marcos Felipe trabalharam na implementação da UH4
 Yasmin Lopes e Jullya Medeiros trabalharam na implementação da UH7
 
 Yasmin Lopes e Leandro Carvalho trabalharam na implementação da UH9
+
+Yasmin Lopes e Miguel Cabral trabalharam na implementação da UH8
+
+Yasmin Lopes e João Vitor trabalharam na implementação da UH10
+
+Yasmin Lopes e Marcos Felipe trabalharam na implementação da UH11
+
+Yasmin Lopes e Leandro Carvalho trabalharam na implementação da UH12
+
+Yasmin Lopes e Lucas Calixto trabalharam na implementação da UH14
 
 <br/>
 
