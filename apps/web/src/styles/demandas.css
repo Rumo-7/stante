@@ -130,6 +130,12 @@
     margin: 0 8px;
 }
 
+.app-shell .anexo-autoria {
+    color: #5a6b63;
+    font-size: 12px;
+    margin-right: auto;
+}
+
 .app-shell .anexo-remover {
     background: none;
     border: none;

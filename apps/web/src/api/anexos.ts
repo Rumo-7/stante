@@ -6,6 +6,8 @@ export interface Anexo {
   nomeOriginal: string;
   tamanho: number | null;
   enviadoPorId: number | null;
+  /** Null quando o usuário que enviou foi removido. */
+  autor: string | null;
   criadoEm: string;
 }
 

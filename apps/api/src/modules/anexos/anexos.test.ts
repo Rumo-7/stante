@@ -131,6 +131,8 @@ describe('envio de anexos', () => {
     const { demanda } = await demandaBase();
     const res = await enviar(gestor.cookie, demanda.id, PDF).expect(201);
     expect(res.body[0].enviadoPorId).toBe(gestor.user.id);
+    expect(res.body[0].autor).toBe(gestor.user.nome);
+    expect(res.body[0].criadoEm).toEqual(expect.any(String));
   });
 
   it('preserva acentos no nome do arquivo', async () => {
