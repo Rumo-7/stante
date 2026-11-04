@@ -210,8 +210,12 @@ As histórias abaixo foram implementadas e validadas por meio de screencasts, di
 | UH1 | ID único de rastreamento por demanda | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/afa17fb6-07ad-40a4-88e4-b1b6f6d5c40e/Screen%20Recording%202026-10-21%20at%2015.35.53.mov?view=open) |
 | UH2 | Painel com contagem de demandas por status | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/18c8f4bf-ec29-45db-bcd0-66c8f4748219/Screen%20Recording%202026-10-21%20at%2015.37.43.mov?view=open) |
 | UH4 | Dashboard de indicadores com filtros | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/21faaaf5-5b36-42f4-843e-6060c594b854/Screen%20Recording%202026-10-21%20at%2015.39.15.mov?view=open) |
+| UH5 | Inspetor visualiza suas demandas e prazos | _Screencast em breve_ |
 | UH7 | Registro manual de demanda pelo gestor | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/61102377-4a94-4fca-a876-2c551e000a3f/Screen%20Recording%202026-10-21%20at%2015.39.52.mov?view=open) |
 | UH9 | Alertas automáticos de proximidade do vencimento | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/eba05906-4106-4f67-863a-85d59fc43847/Screen%20Recording%202026-10-21%20at%2015.42.40.mov?view=open) |
+| UH11 | Central de documentos e anexos por demanda | _Screencast em breve_ |
+| UH12 | Controle de acesso e permissões por perfil | _Screencast em breve_ |
+| UH14 | Sugestão automática de inspetor para atribuição | _Screencast em breve_ |
 
 <br/>
 
