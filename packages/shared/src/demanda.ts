@@ -13,6 +13,8 @@ const idObrigatorio = (mensagemInvalido: string) =>
       .positive(mensagemInvalido),
   );
 
+const vazioParaUndefined = (valor: unknown) => (valor === '' ? undefined : valor);
+
 const prazo = z
   .string({ required_error: MSG_OBRIGATORIOS, invalid_type_error: 'Informe um prazo válido (AAAA-MM-DD).' })
   .refine(dataIsoValida, 'Informe um prazo válido (AAAA-MM-DD).');
@@ -30,7 +32,8 @@ export const criarDemandaSchema = z.object({
   demandanteId: idObrigatorio('Demandante inválido.'),
   assunto,
   fiscalId: idOpcional,
-  prazo,
+  /** Opcional: sem prazo informado, o servidor aplica o prazo padrão a partir da entrada. */
+  prazo: z.preprocess(vazioParaUndefined, prazo.optional()),
 });
 
 export const atualizarDemandaSchema = z
@@ -53,7 +56,6 @@ export const validarDemandaSchema = z.object({
   prazo: prazo.optional(),
 });
 
-const vazioParaUndefined = (valor: unknown) => (valor === '' ? undefined : valor);
 const dataOpcional = z.preprocess(
   vazioParaUndefined,
   z.string().refine(dataIsoValida, 'Data inválida (use AAAA-MM-DD).').optional(),

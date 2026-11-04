@@ -5,6 +5,8 @@
 
 export const FUSO_NEGOCIO = 'America/Recife';
 export const DIAS_PRAZO_CRITICO = 5;
+/** Prazo dado a uma demanda quando ninguém informa outro: dias corridos a partir da entrada. */
+export const DIAS_PRAZO_PADRAO = 30;
 
 export type StatusDemanda = 'em_analise' | 'aberta' | 'em_andamento' | 'concluida';
 export type StatusExibicao = StatusDemanda | 'prazo_critico' | 'vencida';
@@ -65,6 +67,11 @@ export function hojeNoFuso(fuso: string = FUSO_NEGOCIO, agora: Date = new Date()
 
 export function adicionarDias(dataIso: string, dias: number): string {
   return new Date(paraUtc(dataIso) + dias * MS_POR_DIA).toISOString().slice(0, 10);
+}
+
+/** Prazo limite calculado automaticamente para uma demanda que entra em `hoje`. */
+export function prazoPadrao(hoje: string): string {
+  return adicionarDias(hoje, DIAS_PRAZO_PADRAO);
 }
 
 /** Dias entre hoje e o prazo. Negativo = já venceu; 0 = vence hoje. */

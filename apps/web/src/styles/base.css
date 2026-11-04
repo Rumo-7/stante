@@ -75,6 +75,13 @@ body {
   margin-bottom: 12px;
 }
 
+.app-shell .campo-dica {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #5a6b63;
+}
+
 .app-shell .tag-campo {
   display: inline-block;
   margin-left: 6px;

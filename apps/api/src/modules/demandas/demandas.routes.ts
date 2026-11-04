@@ -4,6 +4,7 @@ import {
   atualizarDemandaSchema,
   criarDemandaSchema,
   hojeNoFuso,
+  prazoPadrao,
   listarDemandasQuerySchema,
   validarDemandaSchema,
 } from '@stante/shared';
@@ -97,6 +98,8 @@ demandasRouter.post('/', exigirPerfil('gestor', 'inspetor'), receberAnexos, asyn
   const dados = validar(criarDemandaSchema, req.body);
   const usuario = req.usuario!;
   const hoje = hojeNoFuso(env.TZ_NEGOCIO);
+  // Sem prazo informado, vale o padrão contado a partir do dia da entrada
+  const prazo = paraData(dados.prazo ?? prazoPadrao(hoje));
   // O formulário pode enviar arquivos junto (multipart); tudo é validado antes de gravar qualquer coisa
   const arquivos = validarArquivos(arquivosDaRequisicao(req));
 
@@ -117,7 +120,7 @@ demandasRouter.post('/', exigirPerfil('gestor', 'inspetor'), receberAnexos, asyn
     dadosCriacao = {
       demandanteId: dados.demandanteId,
       assunto: dados.assunto,
-      prazo: paraData(dados.prazo),
+      prazo,
       fiscalId: usuario.fiscalId,
       status: 'em_analise',
       origem: 'campo',
@@ -128,7 +131,7 @@ demandasRouter.post('/', exigirPerfil('gestor', 'inspetor'), receberAnexos, asyn
     dadosCriacao = {
       demandanteId: dados.demandanteId,
       assunto: dados.assunto,
-      prazo: paraData(dados.prazo),
+      prazo,
       fiscalId: dados.fiscalId ?? null,
       status: 'aberta',
       origem: 'planejada',

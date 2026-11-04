@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
-import { criarDemandaSchema } from '@stante/shared';
+import { criarDemandaSchema, DIAS_PRAZO_PADRAO, hojeNoFuso, prazoPadrao } from '@stante/shared';
 import { criarDemandante, useCriarDemanda, useDemandantes } from '../api/demandas';
 import { mensagemDeErro } from '../api/cliente';
 import { useUsuarioLogado } from '../auth/rotas';
@@ -8,7 +8,14 @@ import { Modal } from './Modal';
 import { SeletorFiscal } from './SeletorFiscal';
 
 const TAMANHO_MAXIMO = 10 * 1024 * 1024;
-const CAMPOS_VAZIOS = { demandanteId: '', outroNome: '', assunto: '', fiscalId: '', prazo: '' };
+/** Campos de um formulário novo: o prazo já vem calculado a partir de hoje e pode ser ajustado. */
+const camposIniciais = () => ({
+  demandanteId: '',
+  outroNome: '',
+  assunto: '',
+  fiscalId: '',
+  prazo: prazoPadrao(hojeNoFuso()),
+});
 
 /** Formulário de nova demanda, usado no dashboard e na tela de demandas. */
 export function NovaDemandaModal({ onFechar }: { onFechar: () => void }) {
@@ -19,12 +26,12 @@ export function NovaDemandaModal({ onFechar }: { onFechar: () => void }) {
   const demandantes = useDemandantes();
   const criarDemanda = useCriarDemanda();
 
-  const [campos, setCampos] = useState(CAMPOS_VAZIOS);
+  const [campos, setCampos] = useState(camposIniciais);
   const [arquivos, setArquivos] = useState<File[]>([]);
   const [mensagem, setMensagem] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
-  const alterar = (campo: keyof typeof CAMPOS_VAZIOS) => (e: { target: { value: string } }) =>
+  const alterar = (campo: keyof ReturnType<typeof camposIniciais>) => (e: { target: { value: string } }) =>
     setCampos((atual) => ({ ...atual, [campo]: e.target.value }));
 
   async function aoEnviar(evento: FormEvent) {
@@ -140,6 +147,9 @@ export function NovaDemandaModal({ onFechar }: { onFechar: () => void }) {
           <div className="field-group">
             <label htmlFor="prazo">Prazo</label>
             <input type="date" id="prazo" value={campos.prazo} onChange={alterar('prazo')} required />
+            <small className="campo-dica">
+              Calculado automaticamente: {DIAS_PRAZO_PADRAO} dias a partir de hoje. Ajuste se o órgão indicou outra data.
+            </small>
           </div>
 
           <div className="field-group">

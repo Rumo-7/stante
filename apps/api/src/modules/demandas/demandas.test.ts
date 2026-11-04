@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { adicionarDias, hojeNoFuso } from '@stante/shared';
+import { adicionarDias, DIAS_PRAZO_PADRAO, hojeNoFuso, prazoPadrao } from '@stante/shared';
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../app';
 import { prisma } from '../../db';
@@ -123,9 +123,55 @@ describe('POST /api/demandas', () => {
     expect(semFiscal.body.erro).toBe('Fiscal não encontrado.');
   });
 
+  it('sem prazo informado, calcula o prazo padrão a partir da entrada', async () => {
+    const { cookie } = await criarUsuarioComSessao('gestor');
+    const demandante = await criarDemandante();
+
+    const res = await request(app)
+      .post('/api/demandas')
+      .set('Cookie', cookie)
+      .send({ demandanteId: demandante.id, assunto: 'Sem prazo' });
+
+    expect(res.status).toBe(201);
+    expect(res.body.prazo).toBe(prazoPadrao(hojeNoFuso()));
+    expect(res.body.prazo).toBe(em(DIAS_PRAZO_PADRAO));
+  });
+
+  it('prazo vazio (formulário multipart) também usa o padrão; um prazo informado é respeitado', async () => {
+    const { cookie } = await criarUsuarioComSessao('gestor');
+    const demandante = await criarDemandante();
+
+    const vazio = await request(app)
+      .post('/api/demandas')
+      .set('Cookie', cookie)
+      .field('demandanteId', String(demandante.id))
+      .field('assunto', 'Prazo vazio')
+      .field('prazo', '');
+    expect(vazio.status).toBe(201);
+    expect(vazio.body.prazo).toBe(em(DIAS_PRAZO_PADRAO));
+
+    const informado = await request(app)
+      .post('/api/demandas')
+      .set('Cookie', cookie)
+      .send({ demandanteId: demandante.id, assunto: 'Prazo próprio', prazo: em(7) });
+    expect(informado.body.prazo).toBe(em(7));
+  });
+
+  it('inspetor também recebe o prazo padrão ao abrir a demanda em campo', async () => {
+    const { user, cookie } = await criarUsuarioComSessao('inspetor');
+    await criarFiscal('Meu Fiscal', user.id);
+    const demandante = await criarDemandante();
+
+    const res = await request(app)
+      .post('/api/demandas')
+      .set('Cookie', cookie)
+      .send({ demandanteId: demandante.id, assunto: 'Campo' });
+    expect(res.status).toBe(201);
+    expect(res.body.prazo).toBe(em(DIAS_PRAZO_PADRAO));
+  });
+
   it.each([
     ['sem assunto', { assunto: '  ' }, 'Preencha demandante, assunto e prazo.'],
-    ['sem prazo', { prazo: undefined }, 'Preencha demandante, assunto e prazo.'],
     ['prazo inexistente', { prazo: '2026-02-30' }, 'Informe um prazo válido (AAAA-MM-DD).'],
     ['prazo em outro formato', { prazo: '03/10/2026' }, 'Informe um prazo válido (AAAA-MM-DD).'],
     ['demandante em texto não numérico', { demandanteId: 'abc' }, 'Demandante inválido.'],
