@@ -269,6 +269,18 @@ Yasmin Lopes e Lucas Calixto trabalharam na implementação da UH14
 
 <br/>
 
+<a name="bug-tracker"></a>
+## 🐛 Bug Tracker
+
+Bugs e melhorias técnicas identificados no código são registrados como issues no próprio repositório.
+
+**Issues abertas**
+<img src="./assets/bug-tracker-view.png" alt="Issues abertas no GitHub (bug tracker)" width="100%"/>
+
+**[🔗 Ver todas as issues »](https://github.com/Rumo-7/stante/issues)**
+
+<br/>
+
 <a name="contribuir"></a>
 ## 🎈 Como contribuir
 
