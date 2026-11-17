@@ -38,6 +38,7 @@
 - [Critérios atendidos](#criterios)
 - [Histórias Implementadas](#historias-implementadas)
 - [Pair Programming](#pair-programming)
+- [Bug Tracker](#bug-tracker)
 - [Como contribuir](#contribuir)
 - [Hall of Fame — Equipe](#hall-of-fame)
 - [Agradecimentos](#agradecimentos)
@@ -84,7 +85,6 @@ Acesso ao Space "RUMO 7" no ClickUp (solicite a um PM da equipe)
 ```bash
 git clone https://github.com/Rumo-7/stante.git
 cd stante
-git checkout feat/migracao-ts-postgres   # até a migração ser integrada à main
 npm install
 
 createdb stante_dev                       # ou crie o banco pela sua ferramenta de PostgreSQL
@@ -106,9 +106,20 @@ Entre com o e-mail e a senha do gestor definidos em `SEED_ADMIN_*`. Outras conta
 
 **Estrutura:** `apps/api` (Node, Express, Prisma), `apps/web` (React, Vite), `packages/shared` (regras de prazo e schemas Zod usados pelos dois lados).
 
-**Já implementado:** login e cadastro com aprovação do gestor, perfis (gestor, inspetor de campo, representante), dashboard, demandas (filtros, ações em lote, anexos e o fluxo de demandas abertas em campo, que o gestor valida), prazos (lista e calendário), fiscais e gestão de usuários.
+**Já implementado:**
 
-**Ainda não implementado:** login com Google e gov.br, recuperação de senha, log de alterações (UH3), alertas de prazo (UH9), sugestão de inspetor (UH14), reabertura de demanda (UH15) e integração com o SEI (UH6).
+- Login e cadastro com aprovação do gestor, troca de senha e senha provisória redefinida pelo gestor
+- Perfis com permissões próprias: gestor, inspetor de campo e representante institucional
+- Dashboard de indicadores com filtros
+- Demandas: filtros, paginação, ações em lote, anexos, cálculo automático do prazo limite e o fluxo de demandas abertas em campo, que o gestor valida
+- Histórico de cada demanda: quem fez o quê e quando (UH3)
+- Reabertura de demanda concluída pelo gestor, com motivo registrado no histórico (UH15)
+- Prazos em lista e calendário, com alertas automáticos de prazo crítico e vencido no sino de notificações (UH9)
+- Sugestão de fiscal na atribuição da demanda (UH14)
+- Fiscais, demandantes (com estatísticas por órgão) e gestão de usuários
+- **Sentinela:** radar de prazos com selos de risco e parecer técnico de efetividade redigido com apoio de IA
+
+**Ainda não implementado:** login com Google e gov.br (os botões já aparecem na tela de login), recuperação de senha por e-mail (a tela existe, mas falta o envio de e-mails no backend) e integração com o SEI (UH6).
 
 ### Demo online
 
@@ -226,6 +237,7 @@ As histórias abaixo foram implementadas e validadas por meio de screencasts, di
 |---|---|---|
 | UH1 | ID único de rastreamento por demanda | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/afa17fb6-07ad-40a4-88e4-b1b6f6d5c40e/Screen%20Recording%202026-10-21%20at%2015.35.53.mov?view=open) |
 | UH2 | Painel com contagem de demandas por status | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/18c8f4bf-ec29-45db-bcd0-66c8f4748219/Screen%20Recording%202026-10-21%20at%2015.37.43.mov?view=open) |
+| UH3 | Log de alterações (rastreabilidade) | _Screencast em breve_ |
 | UH4 | Dashboard de indicadores com filtros | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/21faaaf5-5b36-42f4-843e-6060c594b854/Screen%20Recording%202026-10-21%20at%2015.39.15.mov?view=open) |
 | UH5 | Inspetor visualiza suas demandas e prazos | _Screencast em breve_ |
 | UH7 | Registro manual de demanda pelo gestor | [![Screencast](https://img.shields.io/badge/Assistir-1B2B22?style=for-the-badge&logo=clickup&logoColor=E0A526)](https://t90171494885.p.clickup-attachments.com/t90171494885/61102377-4a94-4fca-a876-2c551e000a3f/Screen%20Recording%202026-10-21%20at%2015.39.52.mov?view=open) |
@@ -234,6 +246,7 @@ As histórias abaixo foram implementadas e validadas por meio de screencasts, di
 | UH11 | Central de documentos e anexos por demanda | _Screencast em breve_ |
 | UH12 | Controle de acesso e permissões por perfil | _Screencast em breve_ |
 | UH14 | Sugestão automática de inspetor para atribuição | _Screencast em breve_ |
+| UH15 | Reabertura de demanda vinculada ao histórico | _Screencast em breve_ |
 
 <br/>
 
@@ -247,7 +260,6 @@ As histórias abaixo foram implementadas e validadas por meio de screencasts, di
 <img src="./assets/backlog-restante-view.png" alt="Backlog restante no ClickUp" width="100%"/>
 
 <br/>
-<a name="pair-programming"></a>
 
 <a name="sprint-2"></a>
 ## 🏃 Sprint 2
@@ -262,6 +274,7 @@ As histórias abaixo foram implementadas e validadas por meio de screencasts, di
 
 <br/>
 
+<a name="pair-programming"></a>
 ## 🤝 Pair Programming
 
 João Souza e Miguel Cabral realizaram alterações e correções no frontend, entre elas a reorganização das pastas dos arquivos, melhorias no código e atualizações no README. Nenhuma etapa foi executada de forma individual: todo o trabalho foi feito em pair programming, por meio de chamada no Google Meet com compartilhamento de tela, de modo que ambos pudessem se apoiar mutuamente durante o desenvolvimento.
