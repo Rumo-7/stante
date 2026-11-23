@@ -6,6 +6,7 @@ import {
   hojeNoFuso,
   prazoPadrao,
   listarDemandasQuerySchema,
+  novoCicloSchema,
   validarDemandaSchema,
 } from '@stante/shared';
 import { exigirLogin, exigirPerfil } from '../../auth/middleware';
@@ -308,3 +309,44 @@ demandasRouter.get('/:id/historico', exigirPerfil('gestor', 'inspetor'), async (
 
   res.json(await listarHistorico(id));
 });
+
+// Reincidência (UH15): uma nova solicitação sobre um caso encerrado vira um NOVO CICLO,
+// uma demanda nova ligada à original. A original não muda (diferente da reabertura do
+// PATCH, que serve para correções e reaproveita o mesmo id).
+demandasRouter.post('/:id/novo-ciclo', exigirPerfil('gestor'), async (req, res) => {
+  const id = lerId(req.params.id);
+  const dados = validar(novoCicloSchema, req.body);
+  const usuario = req.usuario!;
+  const hoje = hojeNoFuso(env.TZ_NEGOCIO);
+
+  const existente = await prisma.demanda.findUnique({ where: { id } });
+  if (!existente) throw new ErroHttp(404, 'Demanda não encontrada.');
+  if (existente.status !== 'concluida') {
+    throw new ErroHttp(409, 'Só uma demanda concluída pode ganhar um novo ciclo.');
+  }
+
+  // Todos os ciclos apontam para a primeira demanda do caso, mesmo vindo de outro ciclo
+  const raizId = existente.demandaOrigemId ?? id;
+  // fiscalId omitido herda o fiscal; null explícito deixa o novo ciclo sem fiscal
+  const fiscalId = dados.fiscalId === undefined ? existente.fiscalId : dados.fiscalId;
+  if (dados.fiscalId !== undefined) await buscarFiscal(dados.fiscalId);
+
+  const criada = await prisma.$transaction(async (tx) => {
+    const nova = await tx.demanda.create({
+      data: {
+        demandanteId: existente.demandanteId,
+        assunto: dados.assunto ?? existente.assunto,
+        prazo: paraData(dados.prazo ?? prazoPadrao(hoje)),
+        fiscalId,
+        status: 'aberta',
+        origem: 'planejada',
+        criadaPorId: usuario.id,
+        demandaOrigemId: raizId,
+      },
+      include: INCLUIR_RELACOES,
+    });
+    return nova;
+  });
+  res.status(201).json(serializarDemanda(criada, hoje));
+});
+
