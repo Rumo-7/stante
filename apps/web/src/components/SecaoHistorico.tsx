@@ -1,6 +1,7 @@
 import { mensagemDeErro } from '../api/cliente';
 import { useHistorico } from '../api/historico';
 import { formatarInstante } from '../util/data';
+import { rotuloTipoHistorico } from '../util/historico';
 
 /**
  * Histórico da demanda (UH3): quem mudou o quê e quando. Os registros são gravados
@@ -21,7 +22,12 @@ export function SecaoHistorico({ demandaId }: { demandaId: number }) {
         {historico.data?.map((evento) => (
           <li key={evento.id}>
             <span className="historico-quando">{formatarInstante(evento.criadoEm)}</span>
-            <span>{evento.descricao}</span>
+            <span>
+              <span className={`historico-tipo historico-tipo-${evento.tipo}`}>
+                {rotuloTipoHistorico(evento.tipo)}
+              </span>
+              {evento.descricao}
+            </span>
             <span className="historico-autor">{evento.autor ?? 'Usuário removido'}</span>
           </li>
         ))}
