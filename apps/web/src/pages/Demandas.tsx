@@ -371,7 +371,8 @@ export function Demandas() {
       </section>
 
       {idAberto !== null && detalhe.data && (
-        <DetalheDemandaModal demanda={detalhe.data} onFechar={() => setIdAberto(null)} />
+        // key: ao trocar de demanda (ex.: link de um ciclo), o modal recomeça sem o estado da anterior
+        <DetalheDemandaModal key={detalhe.data.id} demanda={detalhe.data} onFechar={() => setIdAberto(null)} />
       )}
       {novaAberta && <NovaDemandaModal onFechar={() => setNovaAberta(false)} />}
     </main>
