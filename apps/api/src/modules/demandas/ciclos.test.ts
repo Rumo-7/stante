@@ -173,4 +173,24 @@ describe('histórico, raiz e notificação do novo ciclo', () => {
     expect((await historico(gestor.cookie, original.id)).filter((e) => e.tipo === 'ciclo_vinculado')).toHaveLength(2);
     expect((await historico(gestor.cookie, primeiro)).map((e) => e.tipo)).toEqual(['novo_ciclo']);
   });
+
+  it('o fiscal herdado recebe a notificação de atribuição', async () => {
+    const inspetor = await criarUsuarioComSessao('inspetor');
+    const { gestor, fiscal, original } = await casoEncerrado();
+    await prisma.fiscal.update({ where: { id: fiscal.id }, data: { userId: inspetor.user.id } });
+
+    const res = await novoCiclo(gestor.cookie, original.id, { motivo: 'Reincidência' }).expect(201);
+
+    const avisos = await prisma.notificacao.findMany({ where: { userId: inspetor.user.id } });
+    expect(avisos).toEqual([expect.objectContaining({ tipo: 'demanda_atribuida', demandaId: res.body.id })]);
+  });
+
+  it('sem fiscal (null explícito) o novo ciclo fica sem fiscal e ninguém é notificado', async () => {
+    const { gestor, original } = await casoEncerrado();
+
+    const res = await novoCiclo(gestor.cookie, original.id, { motivo: 'Reincidência', fiscalId: null }).expect(201);
+
+    expect(res.body.fiscalId).toBeNull();
+    expect(await prisma.notificacao.count()).toBe(0);
+  });
 });
