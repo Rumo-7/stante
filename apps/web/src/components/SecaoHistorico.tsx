@@ -8,10 +8,12 @@ import { formatarInstante } from '../util/data';
  */
 export function SecaoHistorico({ demandaId }: { demandaId: number }) {
   const historico = useHistorico(demandaId);
+  // Enquanto carrega ainda não sabemos quantos são: mostra só "Histórico"
+  const quantidade = historico.data ? ` (${historico.data.length})` : '';
 
   return (
     <details className="historico">
-      <summary>Histórico</summary>
+      <summary>Histórico{quantidade}</summary>
       {historico.isPending && <p className="empty-state">Carregando…</p>}
       {historico.error && <p className="estado-erro">{mensagemDeErro(historico.error)}</p>}
       {historico.data?.length === 0 && <p className="empty-state">Nenhum registro ainda.</p>}
