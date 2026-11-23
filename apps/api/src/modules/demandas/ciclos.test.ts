@@ -85,4 +85,40 @@ describe('POST /api/demandas/:id/novo-ciclo', () => {
       prazo: em(15),
     });
   });
+
+  it('sem motivo ou com motivo curto responde 400 e não cria nada', async () => {
+    const { gestor, original } = await casoEncerrado();
+
+    for (const corpo of [{}, { motivo: '' }, { motivo: 'ab' }, { motivo: '   ' }]) {
+      const res = await novoCiclo(gestor.cookie, original.id, corpo).expect(400);
+      expect(res.body.erro).toBe('Campo obrigatório: informe o motivo do novo ciclo.');
+    }
+    expect(await prisma.demanda.count()).toBe(1);
+  });
+
+  it('demanda não concluída responde 409 e não cria nada', async () => {
+    const { gestor, original } = await casoEncerrado({ status: 'em_andamento', concluidaEm: null });
+
+    const res = await novoCiclo(gestor.cookie, original.id, { motivo: 'Reincidência' }).expect(409);
+
+    expect(res.body.erro).toBe('Só uma demanda concluída pode ganhar um novo ciclo.');
+    expect(await prisma.demanda.count()).toBe(1);
+    expect(await prisma.historicoDemanda.count()).toBe(0);
+  });
+
+  it('demanda inexistente responde 404', async () => {
+    const gestor = await criarUsuarioComSessao('gestor');
+    await novoCiclo(gestor.cookie, 999_999, { motivo: 'Reincidência' }).expect(404);
+  });
+
+  it('inspetor e representante recebem 403', async () => {
+    const { demandante, original } = await casoEncerrado();
+    const inspetor = await criarUsuarioComSessao('inspetor');
+    await prisma.fiscal.update({ where: { id: original.fiscalId! }, data: { userId: inspetor.user.id } });
+    const representante = await criarUsuarioComSessao('representante', { demandanteId: demandante.id });
+
+    await novoCiclo(inspetor.cookie, original.id, { motivo: 'Reincidência' }).expect(403);
+    await novoCiclo(representante.cookie, original.id, { motivo: 'Reincidência' }).expect(403);
+    expect(await prisma.demanda.count()).toBe(1);
+  });
 });
