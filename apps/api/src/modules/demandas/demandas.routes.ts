@@ -354,6 +354,7 @@ demandasRouter.post('/:id/novo-ciclo', exigirPerfil('gestor'), async (req, res) 
     await registrar(tx, raizId, usuario.id, [
       { tipo: 'ciclo_vinculado', dados: { novo: numeroDemanda(nova.id), motivo: dados.motivo } },
     ]);
+    if (nova.fiscalId) await notificarAtribuida(tx, nova, nova.fiscalId, usuario.id);
     return nova;
   });
   res.status(201).json(serializarDemanda(criada, hoje));
