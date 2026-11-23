@@ -7,6 +7,7 @@ import {
   prazoPadrao,
   listarDemandasQuerySchema,
   novoCicloSchema,
+  numeroDemanda,
   validarDemandaSchema,
 } from '@stante/shared';
 import { exigirLogin, exigirPerfil } from '../../auth/middleware';
@@ -345,6 +346,14 @@ demandasRouter.post('/:id/novo-ciclo', exigirPerfil('gestor'), async (req, res) 
       },
       include: INCLUIR_RELACOES,
     });
+    // Um evento em cada ponta: a nova sabe de onde veio, e a raiz guarda o vínculo
+    // sem perder nada do que já estava no seu histórico.
+    await registrar(tx, nova.id, usuario.id, [
+      { tipo: 'novo_ciclo', dados: { origem: numeroDemanda(raizId), motivo: dados.motivo } },
+    ]);
+    await registrar(tx, raizId, usuario.id, [
+      { tipo: 'ciclo_vinculado', dados: { novo: numeroDemanda(nova.id), motivo: dados.motivo } },
+    ]);
     return nova;
   });
   res.status(201).json(serializarDemanda(criada, hoje));
