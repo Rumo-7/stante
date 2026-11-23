@@ -17,7 +17,7 @@ export function SecaoHistorico({ demandaId }: { demandaId: number }) {
       <summary>Histórico{quantidade}</summary>
       {historico.isPending && <p className="empty-state">Carregando…</p>}
       {historico.error && <p className="estado-erro">{mensagemDeErro(historico.error)}</p>}
-      {historico.data?.length === 0 && <p className="empty-state">Nenhum registro ainda.</p>}
+      {historico.data?.length === 0 && <p className="empty-state">Nenhuma alteração registrada ainda.</p>}
       <ol className="historico-lista">
         {historico.data?.map((evento) => (
           <li key={evento.id}>
