@@ -360,3 +360,30 @@ demandasRouter.post('/:id/novo-ciclo', exigirPerfil('gestor'), async (req, res) 
   res.status(201).json(serializarDemanda(criada, hoje));
 });
 
+// Todos os ciclos de um caso (a raiz e os ciclos ligados a ela), a partir de qualquer um deles.
+demandasRouter.get('/:id/ciclos', async (req, res) => {
+  const id = lerId(req.params.id);
+  const escopo = escopoDemandas(req.usuario!);
+  const demanda = await prisma.demanda.findFirst({
+    where: { AND: [{ id }, escopo] },
+    select: { id: true, demandaOrigemId: true },
+  });
+  if (!demanda) throw new ErroHttp(404, 'Demanda não encontrada.');
+
+  const raizId = demanda.demandaOrigemId ?? demanda.id;
+  // O escopo vale também para a lista: um ciclo de outro fiscal não aparece para o inspetor
+  const ciclos = await prisma.demanda.findMany({
+    where: { AND: [{ OR: [{ id: raizId }, { demandaOrigemId: raizId }] }, escopo] },
+    select: { id: true, status: true, createdAt: true },
+    orderBy: { id: 'asc' },
+  });
+
+  res.json(
+    ciclos.map((ciclo) => ({
+      id: ciclo.id,
+      numero: numeroDemanda(ciclo.id),
+      status: ciclo.status,
+      criadoEm: ciclo.createdAt.toISOString(),
+    })),
+  );
+});
