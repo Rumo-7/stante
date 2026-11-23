@@ -194,3 +194,77 @@ describe('histórico, raiz e notificação do novo ciclo', () => {
     expect(await prisma.notificacao.count()).toBe(0);
   });
 });
+
+describe('GET /api/demandas/:id/ciclos', () => {
+  const ciclos = (cookie: string, id: number) =>
+    request(app).get(`/api/demandas/${id}/ciclos`).set('Cookie', cookie);
+
+  /** Raiz concluída com dois ciclos: o primeiro herda o fiscal, o segundo vai para outro fiscal. */
+  async function casoComCiclos() {
+    const caso = await casoEncerrado();
+    const outroFiscal = await criarFiscal('Outro Fiscal');
+    const primeiro = (await novoCiclo(caso.gestor.cookie, caso.original.id, { motivo: 'Reincidência 1' }).expect(201))
+      .body.id as number;
+    const segundo = (
+      await novoCiclo(caso.gestor.cookie, caso.original.id, { motivo: 'Reincidência 2', fiscalId: outroFiscal.id }).expect(
+        201,
+      )
+    ).body.id as number;
+    return { ...caso, outroFiscal, primeiro, segundo };
+  }
+
+  it('gestor vê a raiz e todos os ciclos, a partir de qualquer um deles, em ordem', async () => {
+    const { gestor, original, primeiro, segundo } = await casoComCiclos();
+
+    for (const id of [original.id, primeiro, segundo]) {
+      const res = await ciclos(gestor.cookie, id).expect(200);
+      expect(res.body.map((c: { id: number }) => c.id)).toEqual([original.id, primeiro, segundo]);
+    }
+    const res = await ciclos(gestor.cookie, original.id).expect(200);
+    expect(res.body[0]).toMatchObject({ id: original.id, numero: numeroDemanda(original.id), status: 'concluida' });
+    expect(res.body[1]).toMatchObject({ status: 'aberta' });
+    expect(typeof res.body[1].criadoEm).toBe('string');
+  });
+
+  it('demanda sem ciclos devolve só ela mesma', async () => {
+    const { gestor, original } = await casoEncerrado();
+    const res = await ciclos(gestor.cookie, original.id).expect(200);
+    expect(res.body.map((c: { id: number }) => c.id)).toEqual([original.id]);
+  });
+
+  it('inspetor de outro fiscal recebe 404; o do fiscal só vê os ciclos dele', async () => {
+    const { original, outroFiscal, fiscal, primeiro, segundo } = await casoComCiclos();
+    const estranho = await criarUsuarioComSessao('inspetor');
+    await criarFiscal('Fiscal Sem Relação', estranho.user.id);
+    const doOutro = await criarUsuarioComSessao('inspetor');
+    await prisma.fiscal.update({ where: { id: outroFiscal.id }, data: { userId: doOutro.user.id } });
+    const doOriginal = await criarUsuarioComSessao('inspetor');
+    await prisma.fiscal.update({ where: { id: fiscal.id }, data: { userId: doOriginal.user.id } });
+
+    await ciclos(estranho.cookie, original.id).expect(404);
+    await ciclos(doOutro.cookie, original.id).expect(404);
+
+    const doSegundo = await ciclos(doOutro.cookie, segundo).expect(200);
+    expect(doSegundo.body.map((c: { id: number }) => c.id)).toEqual([segundo]);
+
+    const daRaiz = await ciclos(doOriginal.cookie, original.id).expect(200);
+    expect(daRaiz.body.map((c: { id: number }) => c.id)).toEqual([original.id, primeiro]);
+  });
+
+  it('representante vê os ciclos do seu órgão e recebe 404 nos de outro órgão', async () => {
+    const { demandante, original, primeiro, segundo } = await casoComCiclos();
+    const representante = await criarUsuarioComSessao('representante', { demandanteId: demandante.id });
+    const outroOrgao = await criarDemandante();
+    const deFora = await criarUsuarioComSessao('representante', { demandanteId: outroOrgao.id });
+
+    const res = await ciclos(representante.cookie, primeiro).expect(200);
+    expect(res.body.map((c: { id: number }) => c.id)).toEqual([original.id, primeiro, segundo]);
+    await ciclos(deFora.cookie, original.id).expect(404);
+  });
+
+  it('id inválido responde 404', async () => {
+    const gestor = await criarUsuarioComSessao('gestor');
+    await ciclos(gestor.cookie, 999_999).expect(404);
+    await request(app).get('/api/demandas/abc/ciclos').set('Cookie', gestor.cookie).expect(404);
+  });
+});
