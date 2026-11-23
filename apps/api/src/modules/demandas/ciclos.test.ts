@@ -122,3 +122,55 @@ describe('POST /api/demandas/:id/novo-ciclo', () => {
     expect(await prisma.demanda.count()).toBe(1);
   });
 });
+
+describe('histórico, raiz e notificação do novo ciclo', () => {
+  const historico = async (cookie: string, id: number) =>
+    (await request(app).get(`/api/demandas/${id}/historico`).set('Cookie', cookie).expect(200)).body as {
+      tipo: string;
+      descricao: string;
+    }[];
+
+  it('registra novo_ciclo na nova e ciclo_vinculado na raiz, sem apagar o histórico anterior', async () => {
+    const { gestor, original } = await casoEncerrado();
+    // O histórico que a original já tinha antes do novo ciclo
+    await prisma.historicoDemanda.createMany({
+      data: [
+        { demandaId: original.id, autorId: gestor.user.id, tipo: 'criada', dados: { origem: 'planejada' } },
+        {
+          demandaId: original.id,
+          autorId: gestor.user.id,
+          tipo: 'status_alterado',
+          dados: { de: 'aberta', para: 'concluida' },
+        },
+      ],
+    });
+
+    const res = await novoCiclo(gestor.cookie, original.id, { motivo: 'Nova denúncia' }).expect(201);
+    const nova = res.body.id as number;
+
+    expect(await historico(gestor.cookie, nova)).toEqual([
+      expect.objectContaining({
+        tipo: 'novo_ciclo',
+        descricao: `Novo ciclo aberto a partir de ${numeroDemanda(original.id)}. Motivo: Nova denúncia`,
+      }),
+    ]);
+
+    const daRaiz = await historico(gestor.cookie, original.id);
+    expect(daRaiz.map((e) => e.tipo)).toEqual(['ciclo_vinculado', 'status_alterado', 'criada']);
+    expect(daRaiz[0]?.descricao).toBe(`Novo ciclo vinculado: ${numeroDemanda(nova)}. Motivo: Nova denúncia`);
+  });
+
+  it('um ciclo aberto a partir de outro ciclo aponta para a raiz', async () => {
+    const { gestor, original } = await casoEncerrado();
+    const primeiro = (await novoCiclo(gestor.cookie, original.id, { motivo: 'Primeira reincidência' }).expect(201))
+      .body.id as number;
+    await prisma.demanda.update({ where: { id: primeiro }, data: { status: 'concluida', concluidaEm: new Date() } });
+
+    const segundo = await novoCiclo(gestor.cookie, primeiro, { motivo: 'Segunda reincidência' }).expect(201);
+
+    expect(segundo.body).toMatchObject({ demandaOrigemId: original.id, numeroOrigem: numeroDemanda(original.id) });
+    // O vínculo fica registrado na raiz, não no ciclo intermediário
+    expect((await historico(gestor.cookie, original.id)).filter((e) => e.tipo === 'ciclo_vinculado')).toHaveLength(2);
+    expect((await historico(gestor.cookie, primeiro)).map((e) => e.tipo)).toEqual(['novo_ciclo']);
+  });
+});
