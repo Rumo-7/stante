@@ -65,6 +65,10 @@ export function descrever(tipo: TipoHistorico, dados: Dados): string {
       return `Anexo adicionado: ${texto(dados.nome)}`;
     case 'anexo_removido':
       return `Anexo removido: ${texto(dados.nome)}`;
+    case 'novo_ciclo':
+      return `Novo ciclo aberto a partir de ${texto(dados.origem)}. Motivo: ${texto(dados.motivo)}`;
+    case 'ciclo_vinculado':
+      return `Novo ciclo vinculado: ${texto(dados.novo)}. Motivo: ${texto(dados.motivo)}`;
   }
 }
 
