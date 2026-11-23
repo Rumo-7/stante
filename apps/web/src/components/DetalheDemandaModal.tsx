@@ -13,6 +13,7 @@ import { useUsuarioLogado } from '../auth/rotas';
 import { formatarData, formatarInstante } from '../util/data';
 import { formatarTamanho } from '../util/tamanho';
 import { Modal } from './Modal';
+import { SecaoCiclos } from './SecaoCiclos';
 import { SeletorFiscal } from './SeletorFiscal';
 import { StatusBadge } from './StatusBadge';
 
@@ -297,6 +298,8 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
           </div>
         )}
       </div>
+
+      <SecaoCiclos demanda={demanda} />
 
       {!somenteLeitura && <SecaoHistorico demandaId={demanda.id} />}
 

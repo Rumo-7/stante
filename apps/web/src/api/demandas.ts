@@ -21,6 +21,17 @@ export interface Demanda {
   statusSalvo: StatusDemanda;
   origem: 'planejada' | 'campo';
   validadaEm: string | null;
+  /** Novo ciclo (reincidência): id da demanda original do caso, ou null se esta é a original. */
+  demandaOrigemId: number | null;
+  numeroOrigem: string | null;
+}
+
+/** Um ciclo do caso (a original ou um novo ciclo ligado a ela). */
+export interface CicloDemanda {
+  id: number;
+  numero: string;
+  status: StatusDemanda;
+  criadoEm: string;
 }
 
 export interface FiltrosDemandas {
@@ -126,6 +137,23 @@ export function useValidarDemanda() {
   return useMutation({
     mutationFn: ({ id, dados }: { id: number; dados: { fiscalId?: number | null; prazo?: string } }) =>
       api.post<Demanda>(`/demandas/${id}/validar`, dados),
+    onSuccess: () => invalidarDemandas(clienteQuery),
+  });
+}
+
+/** A original e os novos ciclos do mesmo caso, a partir de qualquer um deles. */
+export const useCiclos = (id: number) =>
+  useQuery({
+    queryKey: ['demandas', 'ciclos', id],
+    queryFn: () => api.get<CicloDemanda[]>(`/demandas/${id}/ciclos`),
+  });
+
+/** Abre um novo ciclo (reincidência) de uma demanda concluída; só o gestor pode. */
+export function useNovoCiclo() {
+  const clienteQuery = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, motivo }: { id: number; motivo: string }) =>
+      api.post<Demanda>(`/demandas/${id}/novo-ciclo`, { motivo }),
     onSuccess: () => invalidarDemandas(clienteQuery),
   });
 }

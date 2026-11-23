@@ -56,6 +56,23 @@ export const validarDemandaSchema = z.object({
   prazo: prazo.optional(),
 });
 
+const MSG_MOTIVO_CICLO = 'Campo obrigatório: informe o motivo do novo ciclo.';
+
+/**
+ * Novo ciclo (reincidência) de uma demanda concluída. Só o motivo é obrigatório:
+ * assunto e fiscal são herdados da demanda original, e o prazo segue o padrão.
+ */
+export const novoCicloSchema = z.object({
+  motivo: z
+    .string({ required_error: MSG_MOTIVO_CICLO, invalid_type_error: MSG_MOTIVO_CICLO })
+    .trim()
+    .min(3, MSG_MOTIVO_CICLO)
+    .max(500, 'O motivo deve ter no máximo 500 caracteres.'),
+  assunto: assunto.optional(),
+  fiscalId: idOpcional,
+  prazo: z.preprocess(vazioParaUndefined, prazo.optional()),
+});
+
 const dataOpcional = z.preprocess(
   vazioParaUndefined,
   z.string().refine(dataIsoValida, 'Data inválida (use AAAA-MM-DD).').optional(),
@@ -142,5 +159,6 @@ export const periodoQuerySchema = z
 export type CriarDemandaInput = z.infer<typeof criarDemandaSchema>;
 export type AtualizarDemandaInput = z.infer<typeof atualizarDemandaSchema>;
 export type ValidarDemandaInput = z.infer<typeof validarDemandaSchema>;
+export type NovoCicloInput = z.infer<typeof novoCicloSchema>;
 export type ListarDemandasQuery = z.infer<typeof listarDemandasQuerySchema>;
 export type DashboardQuery = z.infer<typeof dashboardQuerySchema>;

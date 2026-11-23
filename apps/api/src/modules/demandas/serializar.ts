@@ -22,5 +22,8 @@ export function serializarDemanda(demanda: DemandaComRelacoes, hoje: string) {
     statusSalvo: demanda.status,
     origem: demanda.origem,
     validadaEm: demanda.validadaEm?.toISOString() ?? null,
+    // Novo ciclo (reincidência): a demanda original do caso, ou null se esta é a original
+    demandaOrigemId: demanda.demandaOrigemId,
+    numeroOrigem: demanda.demandaOrigemId ? numeroDemanda(demanda.demandaOrigemId) : null,
   };
 }

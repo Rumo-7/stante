@@ -159,3 +159,35 @@
     padding: 8px;
     font-size: 12px;
 }
+
+/* Ciclos de um caso (UH15: novo ciclo / reincidência) */
+.app-shell .ciclos-lista {
+    list-style: none;
+    margin: 6px 0 12px;
+    padding: 0;
+}
+
+.app-shell .ciclos-lista li {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    padding: 6px 0;
+    border-top: 1px solid #f2f2f2;
+    font-size: 13px;
+}
+
+.app-shell .ciclos-original,
+.app-shell .ciclos-info {
+    color: #5a6b63;
+    font-size: 12px;
+}
+
+.app-shell .ciclos-info {
+    margin-left: auto;
+}
+
+.app-shell .ciclos-acoes {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
