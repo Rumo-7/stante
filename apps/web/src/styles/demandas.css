@@ -186,3 +186,8 @@
     margin-left: auto;
 }
 
+.app-shell .ciclos-acoes {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
