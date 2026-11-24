@@ -8,12 +8,12 @@ import {
   type Demanda,
   type StatusDemandaEditavel,
 } from '../api/demandas';
-import { useHistorico } from '../api/historico';
 import { useUsuarioLogado } from '../auth/rotas';
 import { formatarData, formatarInstante } from '../util/data';
 import { formatarTamanho } from '../util/tamanho';
 import { Modal } from './Modal';
 import { SecaoCiclos } from './SecaoCiclos';
+import { SecaoHistorico } from './SecaoHistorico';
 import { SeletorFiscal } from './SeletorFiscal';
 import { StatusBadge } from './StatusBadge';
 
@@ -24,28 +24,6 @@ const STATUS_EDITAVEIS: { valor: StatusDemandaEditavel; rotulo: string }[] = [
 ];
 
 const TAMANHO_MAXIMO = 10 * 1024 * 1024;
-
-function SecaoHistorico({ demandaId }: { demandaId: number }) {
-  const historico = useHistorico(demandaId);
-
-  return (
-    <details className="historico">
-      <summary>Histórico</summary>
-      {historico.isPending && <p className="empty-state">Carregando…</p>}
-      {historico.error && <p className="estado-erro">{mensagemDeErro(historico.error)}</p>}
-      {historico.data?.length === 0 && <p className="empty-state">Nenhum registro ainda.</p>}
-      <ol className="historico-lista">
-        {historico.data?.map((evento) => (
-          <li key={evento.id}>
-            <span className="historico-quando">{formatarInstante(evento.criadoEm)}</span>
-            <span>{evento.descricao}</span>
-            <span className="historico-autor">{evento.autor ?? 'Usuário removido'}</span>
-          </li>
-        ))}
-      </ol>
-    </details>
-  );
-}
 
 export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; onFechar: () => void }) {
   const usuario = useUsuarioLogado();
