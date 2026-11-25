@@ -227,6 +227,7 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
                 value={justificativa}
                 onChange={(e) => setJustificativa(e.target.value)}
               />
+              <p className="modal-dica">A justificativa fica registrada no histórico</p>
             </div>
           )}
 
