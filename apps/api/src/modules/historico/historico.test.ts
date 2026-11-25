@@ -130,7 +130,7 @@ describe('registro das alterações', () => {
     const [d, m, a] = [novoPrazo.slice(8, 10), novoPrazo.slice(5, 7), novoPrazo.slice(0, 4)];
     const original = em(30);
     expect(await descricoes(gestor.cookie, demanda.id)).toEqual([
-      'Assunto alterado',
+      'Assunto alterado de "Assunto original" para "Assunto corrigido"',
       `Prazo alterado de ${original.slice(8, 10)}/${original.slice(5, 7)}/${original.slice(0, 4)} para ${d}/${m}/${a}`,
     ]);
   });
