@@ -57,3 +57,14 @@ describe('anexos', () => {
     expect(descrever('anexo_removido', { nome: 'laudo.pdf' })).toBe('Anexo removido: laudo.pdf');
   });
 });
+describe('assunto alterado', () => {
+  it('mostra o assunto de antes e o de depois', () => {
+    expect(descrever('assunto_alterado', { de: 'Assunto original', para: 'Assunto corrigido' })).toBe(
+      'Assunto alterado de "Assunto original" para "Assunto corrigido"',
+    );
+  });
+
+  it('sem o antes e o depois guardados, mostra só o aviso', () => {
+    expect(descrever('assunto_alterado', {})).toBe('Assunto alterado');
+  });
+});
