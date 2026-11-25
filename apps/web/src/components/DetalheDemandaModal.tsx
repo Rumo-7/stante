@@ -207,10 +207,16 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
           )}
 
           {ehGestor && (
-            <div className="field-group">
-              <label htmlFor="fiscal">Fiscal responsável</label>
-              {seletorFiscal}
-            </div>
+            <>
+              <div className="field-group">
+                <label htmlFor="fiscal">Fiscal responsável</label>
+                {seletorFiscal}
+              </div>
+              <div className="field-group">
+                <label htmlFor="prazo">Prazo</label>
+                <input type="date" id="prazo" value={prazo} onChange={(e) => setPrazo(e.target.value)} />
+              </div>
+            </>
           )}
         </>
       )}
