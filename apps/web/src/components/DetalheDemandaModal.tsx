@@ -52,10 +52,16 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
   const reabrindo = demanda.statusSalvo === 'concluida' && status !== 'concluida';
   const podeAlterarStatus = !(usuario.perfil === 'inspetor' && demanda.statusSalvo === 'concluida');
 
+  // O que mudou em relação ao salvo: sem nenhuma mudança, não há o que salvar (o botão nem aparece)
+  const alterouStatus = status !== demanda.statusSalvo;
+  const alterouFiscal = ehGestor && fiscalId !== fiscalOriginal;
+  const alterouPrazo = ehGestor && prazo !== demanda.prazo;
+  const temAlteracao = alterouStatus || alterouFiscal || alterouPrazo;
+
   function salvar() {
     setMensagem(null);
     const alteracoes: AlteracaoDemanda = {};
-    if (status !== demanda.statusSalvo) alteracoes.status = status as StatusDemandaEditavel;
+    if (alterouStatus) alteracoes.status = status as StatusDemandaEditavel;
     if (reabrindo) {
       if (motivo.trim().length < 3) {
         setMensagem('Informe o motivo da reabertura.');
@@ -63,8 +69,8 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
       }
       alteracoes.motivo = motivo.trim();
     }
-    if (ehGestor && fiscalId !== fiscalOriginal) alteracoes.fiscalId = converterFiscal(fiscalId);
-    if (ehGestor && prazo !== demanda.prazo) {
+    if (alterouFiscal) alteracoes.fiscalId = converterFiscal(fiscalId);
+    if (alterouPrazo) {
       if (!prazo) {
         setMensagem('Informe o prazo.');
         return;
@@ -304,7 +310,7 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
         <button type="button" className="btn-secondary" onClick={onFechar}>
           Fechar
         </button>
-        {!emAnalise && !somenteLeitura && (
+        {!emAnalise && !somenteLeitura && temAlteracao && (
           <button type="button" className="btn-primary" onClick={salvar} disabled={atualizar.isPending}>
             {atualizar.isPending ? 'Salvando…' : 'Salvar alterações'}
           </button>
