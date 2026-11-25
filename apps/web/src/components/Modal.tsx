@@ -4,11 +4,14 @@ import { useEffect, useId, type ReactNode } from 'react';
 export function Modal({
   titulo,
   subtitulo,
+  largo = false,
   onFechar,
   children,
 }: {
   titulo: string;
   subtitulo?: string;
+  /** Para conteúdo em tabela (ex.: a prévia da importação). */
+  largo?: boolean;
   onFechar: () => void;
   children: ReactNode;
 }) {
@@ -22,7 +25,7 @@ export function Modal({
 
   return (
     <div className="modal-overlay" onMouseDown={(e) => e.target === e.currentTarget && onFechar()}>
-      <div className="modal" role="dialog" aria-modal="true" aria-labelledby={idTitulo}>
+      <div className={`modal ${largo ? 'modal-largo' : ''}`} role="dialog" aria-modal="true" aria-labelledby={idTitulo}>
         <h2 id={idTitulo}>{titulo}</h2>
         {subtitulo && <p className="card-subtitle">{subtitulo}</p>}
         {children}

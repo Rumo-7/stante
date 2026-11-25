@@ -21,6 +21,10 @@ export interface Demanda {
   statusSalvo: StatusDemanda;
   origem: 'planejada' | 'campo';
   validadaEm: string | null;
+  /** Número do processo no SEI (demandas importadas da planilha). */
+  processoSei: string | null;
+  /** Dia em que o órgão enviou a demanda ("AAAA-MM-DD"), quando informado. */
+  recebidaEm: string | null;
 }
 
 export interface FiltrosDemandas {
@@ -86,7 +90,7 @@ export const useDemandantes = (habilitado = true) =>
 export const criarDemandante = (nome: string) => api.post<Demandante>('/demandantes', { nome });
 
 /** Atualiza as telas que dependem das demandas (lista, indicadores e carga dos fiscais). */
-function invalidarDemandas(clienteQuery: QueryClient) {
+export function invalidarDemandas(clienteQuery: QueryClient) {
   return Promise.all([
     clienteQuery.invalidateQueries({ queryKey: ['demandas'] }),
     clienteQuery.invalidateQueries({ queryKey: ['dashboard'] }),

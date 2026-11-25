@@ -22,5 +22,7 @@ export function serializarDemanda(demanda: DemandaComRelacoes, hoje: string) {
     statusSalvo: demanda.status,
     origem: demanda.origem,
     validadaEm: demanda.validadaEm?.toISOString() ?? null,
+    processoSei: demanda.processoSei,
+    recebidaEm: demanda.recebidaEm?.toISOString().slice(0, 10) ?? null,
   };
 }

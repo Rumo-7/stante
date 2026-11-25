@@ -158,6 +158,18 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
           <span className="detalhe-label">Origem</span>
           <p>{demanda.origem === 'campo' ? 'Aberta em campo' : 'Planejada'}</p>
         </div>
+        {demanda.processoSei && (
+          <div>
+            <span className="detalhe-label">Processo SEI</span>
+            <p>{demanda.processoSei}</p>
+          </div>
+        )}
+        {demanda.recebidaEm && (
+          <div>
+            <span className="detalhe-label">Recebida em</span>
+            <p>{formatarData(demanda.recebidaEm)}</p>
+          </div>
+        )}
       </div>
 
       {demanda.validadaEm && (

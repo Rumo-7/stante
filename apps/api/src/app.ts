@@ -11,6 +11,7 @@ import { anexosRouter } from './modules/anexos/anexos.routes';
 import { authRouter } from './modules/auth/auth.routes';
 import { dashboardRouter } from './modules/dashboard/dashboard.routes';
 import { demandasRouter } from './modules/demandas/demandas.routes';
+import { importacaoRouter } from './modules/importacao/importacao.routes';
 import { notificacoesRouter } from './modules/notificacoes/notificacoes.routes';
 import { radarRouter } from './modules/radar/radar.routes';
 import { referenciaRouter } from './modules/referencia/referencia.routes';
@@ -71,6 +72,8 @@ export function createApp({ pastaWeb = PASTA_WEB_PADRAO, gerador = criarGeradorP
   app.use('/api', authRouter);
   // Depois das rotas de conta (login, /me, trocar senha) e antes de todo o resto
   app.use('/api', exigirSenhaDefinitiva);
+  // Antes de /api/demandas, para "importacao" não ser lido como o id de uma demanda
+  app.use('/api/demandas/importacao', importacaoRouter);
   app.use('/api/demandas', demandasRouter);
   app.use('/api/dashboard', dashboardRouter);
   app.use('/api/usuarios', usuariosRouter);
