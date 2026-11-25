@@ -48,3 +48,12 @@ describe('prazo alterado', () => {
     );
   });
 });
+describe('anexos', () => {
+  it('anexo adicionado mostra o nome do arquivo', () => {
+    expect(descrever('anexo_adicionado', { nome: 'laudo.pdf' })).toBe('Anexo adicionado: laudo.pdf');
+  });
+
+  it('anexo removido mostra o nome do arquivo', () => {
+    expect(descrever('anexo_removido', { nome: 'laudo.pdf' })).toBe('Anexo removido: laudo.pdf');
+  });
+});
