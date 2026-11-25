@@ -46,8 +46,15 @@ export function descrever(tipo: TipoHistorico, dados: Dados): string {
         : 'Demanda criada';
     case 'validada':
       return 'Demanda validada pelo gestor';
-    case 'status_alterado':
-      return `Status alterado de ${rotuloStatus(dados.de)} para ${rotuloStatus(dados.para)}`;
+    case 'status_alterado': {
+      const de = rotuloStatus(dados.de);
+      const para = rotuloStatus(dados.para);
+      const justificativa = texto(dados.justificativa).trim();
+      if (justificativa) {
+        return `Etapa retornada de ${de} para ${para}. Justificativa: ${justificativa}`;
+      }
+      return `Status alterado de ${de} para ${para}`;
+    }
     case 'reaberta':
       return `Demanda reaberta (${rotuloStatus(dados.para)}). Motivo: ${texto(dados.motivo)}`;
     case 'fiscal_alterado': {
