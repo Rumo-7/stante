@@ -225,6 +225,8 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
               </div>
             </>
           )}
+
+          <p className="modal-dica">Mudanças de status, prazo e fiscal ficam registradas no histórico.</p>
         </>
       )}
 
