@@ -41,3 +41,10 @@ describe('fiscal alterado', () => {
     );
   });
 });
+describe('prazo alterado', () => {
+  it('mostra as duas datas no formato dia/mês/ano', () => {
+    expect(descrever('prazo_alterado', { de: '2026-03-05', para: '2026-12-31' })).toBe(
+      'Prazo alterado de 05/03/2026 para 31/12/2026',
+    );
+  });
+});
