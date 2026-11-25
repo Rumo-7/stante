@@ -58,3 +58,80 @@ describe('bloqueio de retorno sem justificativa', () => {
     expect(await descricoes(gestor.cookie, demanda.id)).toEqual([]);
   });
 });
+
+describe('retorno com justificativa, avanço e reabertura', () => {
+  it('gestor retorna com justificativa e registra o texto esperado no histórico', async () => {
+    const { gestor, demanda } = await demandaDoGestor({ status: 'em_andamento' });
+
+    const res = await alterar(gestor.cookie, demanda.id, {
+      status: 'aberta',
+      justificativa: '  Relatório técnico precisa de ajustes antes da validação final  ',
+    }).expect(200);
+
+    expect(res.body.statusSalvo).toBe('aberta');
+    expect(await descricoes(gestor.cookie, demanda.id)).toEqual([
+      'Etapa retornada de Em andamento para Aberta. Justificativa: Relatório técnico precisa de ajustes antes da validação final',
+    ]);
+  });
+
+  it('inspetor dono da demanda também consegue retornar com justificativa', async () => {
+    const inspetor = await criarUsuarioComSessao('inspetor');
+    const fiscal = await criarFiscal('Inspetor Dono', inspetor.user.id);
+    const { demanda } = await demandaDoGestor({ status: 'em_andamento', fiscalId: fiscal.id });
+
+    const res = await alterar(inspetor.cookie, demanda.id, {
+      status: 'aberta',
+      justificativa: 'Necessário revisar vistoria em campo',
+    }).expect(200);
+
+    expect(res.body.statusSalvo).toBe('aberta');
+    expect(await descricoes(inspetor.cookie, demanda.id)).toEqual([
+      'Etapa retornada de Em andamento para Aberta. Justificativa: Necessário revisar vistoria em campo',
+    ]);
+  });
+
+  it('avançar aberta -> em_andamento não exige justificativa e ignora se enviada', async () => {
+    const { gestor, demanda } = await demandaDoGestor({ status: 'aberta' });
+
+    await alterar(gestor.cookie, demanda.id, {
+      status: 'em_andamento',
+      justificativa: 'Justificativa indevida em avanço',
+    }).expect(200);
+
+    expect(await descricoes(gestor.cookie, demanda.id)).toEqual([
+      'Status alterado de Aberta para Em andamento',
+    ]);
+  });
+
+  it('reabertura a partir de concluída continua exigindo motivo e só gestor, sem pedir justificativa', async () => {
+    const inspetor = await criarUsuarioComSessao('inspetor');
+    const fiscal = await criarFiscal('Meu Fiscal', inspetor.user.id);
+    const { gestor, demanda } = await demandaDoGestor({
+      status: 'concluida',
+      concluidaEm: new Date(),
+      fiscalId: fiscal.id,
+    });
+
+    // Inspetor não pode reabrir
+    const tentativaInspetor = await alterar(inspetor.cookie, demanda.id, {
+      status: 'aberta',
+      motivo: 'Tentativa do inspetor',
+    });
+    expect(tentativaInspetor.status).toBe(403);
+
+    // Gestor sem motivo recebe erro de reabertura, não de justificativa
+    const semMotivo = await alterar(gestor.cookie, demanda.id, { status: 'aberta' });
+    expect(semMotivo.status).toBe(400);
+    expect(semMotivo.body.erro).toBe('Informe o motivo da reabertura.');
+
+    // Gestor com motivo reabre sem precisar de justificativa
+    await alterar(gestor.cookie, demanda.id, {
+      status: 'aberta',
+      motivo: 'Chegou novo documento complementar',
+    }).expect(200);
+
+    expect(await descricoes(gestor.cookie, demanda.id)).toEqual([
+      'Demanda reaberta (Aberta). Motivo: Chegou novo documento complementar',
+    ]);
+  });
+});
