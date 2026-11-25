@@ -64,6 +64,13 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
       alteracoes.motivo = motivo.trim();
     }
     if (ehGestor && fiscalId !== fiscalOriginal) alteracoes.fiscalId = converterFiscal(fiscalId);
+    if (ehGestor && prazo !== demanda.prazo) {
+      if (!prazo) {
+        setMensagem('Informe o prazo.');
+        return;
+      }
+      alteracoes.prazo = prazo;
+    }
 
     if (Object.keys(alteracoes).length === 0) {
       onFechar();
