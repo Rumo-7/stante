@@ -1,0 +1,70 @@
+import { describe, expect, it } from 'vitest';
+import { descrever } from './historico';
+
+// Testes só do texto: a partir do tipo e dos dados guardados, sem banco nem HTTP.
+
+describe('demanda criada', () => {
+  it('planejada pelo gestor', () => {
+    expect(descrever('criada', { origem: 'planejada' })).toBe('Demanda criada');
+  });
+
+  it('aberta em campo avisa que aguarda validação', () => {
+    expect(descrever('criada', { origem: 'campo' })).toBe(
+      'Demanda aberta em campo (aguardando validação do gestor)',
+    );
+  });
+
+  it('sem a origem guardada, vale como criada normalmente', () => {
+    expect(descrever('criada', {})).toBe('Demanda criada');
+  });
+});
+
+describe('demanda validada', () => {
+  it('diz que foi o gestor quem validou', () => {
+    expect(descrever('validada', {})).toBe('Demanda validada pelo gestor');
+  });
+});
+describe('fiscal alterado', () => {
+  it('atribuir um fiscal a uma demanda sem fiscal', () => {
+    expect(descrever('fiscal_alterado', { de: null, para: 'Carla Fiscal' })).toBe('Fiscal atribuído: Carla Fiscal');
+  });
+
+  it('remover o fiscal mostra quem era', () => {
+    expect(descrever('fiscal_alterado', { de: 'Carla Fiscal', para: null })).toBe(
+      'Fiscal removido (era Carla Fiscal)',
+    );
+  });
+
+  it('trocar de fiscal mostra o antes e o depois', () => {
+    expect(descrever('fiscal_alterado', { de: 'Primeiro', para: 'Segundo' })).toBe(
+      'Fiscal alterado de Primeiro para Segundo',
+    );
+  });
+});
+describe('prazo alterado', () => {
+  it('mostra as duas datas no formato dia/mês/ano', () => {
+    expect(descrever('prazo_alterado', { de: '2026-03-05', para: '2026-12-31' })).toBe(
+      'Prazo alterado de 05/03/2026 para 31/12/2026',
+    );
+  });
+});
+describe('anexos', () => {
+  it('anexo adicionado mostra o nome do arquivo', () => {
+    expect(descrever('anexo_adicionado', { nome: 'laudo.pdf' })).toBe('Anexo adicionado: laudo.pdf');
+  });
+
+  it('anexo removido mostra o nome do arquivo', () => {
+    expect(descrever('anexo_removido', { nome: 'laudo.pdf' })).toBe('Anexo removido: laudo.pdf');
+  });
+});
+describe('assunto alterado', () => {
+  it('mostra o assunto de antes e o de depois', () => {
+    expect(descrever('assunto_alterado', { de: 'Assunto original', para: 'Assunto corrigido' })).toBe(
+      'Assunto alterado de "Assunto original" para "Assunto corrigido"',
+    );
+  });
+
+  it('sem o antes e o depois guardados, mostra só o aviso', () => {
+    expect(descrever('assunto_alterado', {})).toBe('Assunto alterado');
+  });
+});

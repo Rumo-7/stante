@@ -119,6 +119,8 @@ export function useCriarDemanda() {
 export interface AlteracaoDemanda {
   status?: StatusDemandaEditavel;
   fiscalId?: number | null;
+  /** Novo prazo (AAAA-MM-DD); só o gestor pode alterar. */
+  prazo?: string;
   /** Obrigatório ao reabrir uma demanda concluída (só o gestor pode). */
   motivo?: string;
 }

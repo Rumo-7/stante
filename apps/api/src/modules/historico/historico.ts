@@ -59,8 +59,13 @@ export function descrever(tipo: TipoHistorico, dados: Dados): string {
     }
     case 'prazo_alterado':
       return `Prazo alterado de ${formatarDataBr(texto(dados.de))} para ${formatarDataBr(texto(dados.para))}`;
-    case 'assunto_alterado':
-      return 'Assunto alterado';
+    case 'assunto_alterado': {
+      const de = texto(dados.de);
+      const para = texto(dados.para);
+      // Sem o antes e o depois guardados, fica só o aviso
+      if (!de || !para) return 'Assunto alterado';
+      return `Assunto alterado de "${de}" para "${para}"`;
+    }
     case 'anexo_adicionado':
       return `Anexo adicionado: ${texto(dados.nome)}`;
     case 'anexo_removido':
