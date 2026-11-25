@@ -121,6 +121,8 @@ export interface AlteracaoDemanda {
   fiscalId?: number | null;
   /** Obrigatório ao reabrir uma demanda concluída (só o gestor pode). */
   motivo?: string;
+  /** Obrigatória ao retornar uma demanda para etapa anterior. */
+  justificativa?: string;
 }
 
 export function useAtualizarDemanda() {

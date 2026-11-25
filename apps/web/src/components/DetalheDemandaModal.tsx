@@ -66,6 +66,13 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
       }
       alteracoes.motivo = motivo.trim();
     }
+    if (retornando) {
+      if (!justificativa.trim()) {
+        setMensagem('Campo obrigatório: informe a justificativa');
+        return;
+      }
+      alteracoes.justificativa = justificativa.trim();
+    }
     if (ehGestor && fiscalId !== fiscalOriginal) alteracoes.fiscalId = converterFiscal(fiscalId);
 
     if (Object.keys(alteracoes).length === 0) {
