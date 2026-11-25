@@ -141,6 +141,11 @@ model Demanda {
   // Preenchida quando a demanda é concluída; alimenta a tendência mensal do
   // dashboard (antes usava updated_at, que muda a cada edição).
   concluidaEm  DateTime?     @map("concluida_em")
+  // Número do processo no SEI, quando a demanda chegou por lá (ex.: importada da planilha da VISAT).
+  // Único: importar a mesma planilha duas vezes não duplica demandas.
+  processoSei  String?       @unique @map("processo_sei")
+  // Dia em que o órgão enviou a demanda. Pode ser anterior ao cadastro no Stante (created_at).
+  recebidaEm   DateTime?     @map("recebida_em") @db.Date
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
 
