@@ -24,3 +24,20 @@ describe('demanda validada', () => {
     expect(descrever('validada', {})).toBe('Demanda validada pelo gestor');
   });
 });
+describe('fiscal alterado', () => {
+  it('atribuir um fiscal a uma demanda sem fiscal', () => {
+    expect(descrever('fiscal_alterado', { de: null, para: 'Carla Fiscal' })).toBe('Fiscal atribuído: Carla Fiscal');
+  });
+
+  it('remover o fiscal mostra quem era', () => {
+    expect(descrever('fiscal_alterado', { de: 'Carla Fiscal', para: null })).toBe(
+      'Fiscal removido (era Carla Fiscal)',
+    );
+  });
+
+  it('trocar de fiscal mostra o antes e o depois', () => {
+    expect(descrever('fiscal_alterado', { de: 'Primeiro', para: 'Segundo' })).toBe(
+      'Fiscal alterado de Primeiro para Segundo',
+    );
+  });
+});
