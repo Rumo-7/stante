@@ -18,3 +18,9 @@ describe('demanda criada', () => {
     expect(descrever('criada', {})).toBe('Demanda criada');
   });
 });
+
+describe('demanda validada', () => {
+  it('diz que foi o gestor quem validou', () => {
+    expect(descrever('validada', {})).toBe('Demanda validada pelo gestor');
+  });
+});
