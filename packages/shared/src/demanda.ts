@@ -28,6 +28,20 @@ const assunto = z
 /** Status que podem ser definidos manualmente. "em_analise" só sai via validação do gestor. */
 export const STATUS_EDITAVEIS = ['aberta', 'em_andamento', 'concluida'] as const;
 
+const ORDEM_ETAPAS: Record<string, number> = {
+  aberta: 0,
+  em_andamento: 1,
+  concluida: 2,
+};
+
+/** Indica se a mudança de status retorna a demanda para uma etapa anterior do fluxo. */
+export function ehRetornoDeEtapa(de: string, para: string): boolean {
+  const origem = ORDEM_ETAPAS[de];
+  const destino = ORDEM_ETAPAS[para];
+  if (origem === undefined || destino === undefined) return false;
+  return destino < origem;
+}
+
 export const criarDemandaSchema = z.object({
   demandanteId: idObrigatorio('Demandante inválido.'),
   assunto,
@@ -44,6 +58,8 @@ export const atualizarDemandaSchema = z
     assunto: assunto.optional(),
     /** Obrigatório (e só o gestor pode) ao reabrir uma demanda concluída; fica registrado no histórico. */
     motivo: z.string().trim().max(500, 'O motivo deve ter no máximo 500 caracteres.').optional(),
+    /** Obrigatória ao retornar a demanda para uma etapa anterior; fica registrada no histórico. */
+    justificativa: z.string().trim().max(500, 'A justificativa deve ter no máximo 500 caracteres.').optional(),
   })
   .refine(
     // O motivo sozinho não é uma alteração: ele só acompanha uma mudança de status
