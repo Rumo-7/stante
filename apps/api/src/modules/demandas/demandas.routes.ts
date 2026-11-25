@@ -217,7 +217,12 @@ demandasRouter.patch('/:id', exigirPerfil('gestor', 'inspetor'), async (req, res
     eventos.push(
       reabrindo
         ? { tipo: 'reaberta', dados: { para: dados.status, motivo: dados.motivo! } }
-        : { tipo: 'status_alterado', dados: { de: atual.status, para: dados.status } },
+        : {
+            tipo: 'status_alterado',
+            dados: retornando
+              ? { de: atual.status, para: dados.status, justificativa: dados.justificativa! }
+              : { de: atual.status, para: dados.status },
+          },
     );
   }
   if (dados.fiscalId !== undefined && (dados.fiscalId ?? null) !== atual.fiscalId) {
