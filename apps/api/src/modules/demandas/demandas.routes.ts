@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client';
 import {
   atualizarDemandaSchema,
   criarDemandaSchema,
+  ehRetornoDeEtapa,
   hojeNoFuso,
   prazoPadrao,
   listarDemandasQuerySchema,
@@ -200,6 +201,12 @@ demandasRouter.patch('/:id', exigirPerfil('gestor', 'inspetor'), async (req, res
     if (!dados.motivo || dados.motivo.length < 3) {
       throw new ErroHttp(400, 'Informe o motivo da reabertura.');
     }
+  }
+
+  // Retornar para uma etapa anterior exige justificativa obrigatória
+  const retornando = !reabrindo && dados.status !== undefined && ehRetornoDeEtapa(atual.status, dados.status);
+  if (retornando && !dados.justificativa) {
+    throw new ErroHttp(400, 'Campo obrigatório');
   }
 
   const novoFiscal = await buscarFiscal(dados.fiscalId);
