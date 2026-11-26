@@ -10,6 +10,7 @@ import {
 } from '../api/demandas';
 import { useUsuarioLogado } from '../auth/rotas';
 import { formatarData, formatarInstante } from '../util/data';
+import { ehEtapaAnterior } from '../util/etapas';
 import { formatarTamanho } from '../util/tamanho';
 import { Modal } from './Modal';
 import { SecaoCiclos } from './SecaoCiclos';
@@ -44,12 +45,14 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
   const [inputArquivos, setInputArquivos] = useState(0); // muda para limpar o <input type="file">
   const [mensagem, setMensagem] = useState<string | null>(null);
   const [motivo, setMotivo] = useState('');
+  const [justificativa, setJustificativa] = useState('');
 
   const fiscalOriginal = demanda.fiscalId ? String(demanda.fiscalId) : '';
   const converterFiscal = (valor: string) => (valor ? Number(valor) : null);
 
   // Tirar uma demanda de "concluída" é reabrir: só o gestor, e o motivo fica no histórico
   const reabrindo = demanda.statusSalvo === 'concluida' && status !== 'concluida';
+  const retornando = !reabrindo && ehEtapaAnterior(demanda.statusSalvo, status);
   const podeAlterarStatus = !(usuario.perfil === 'inspetor' && demanda.statusSalvo === 'concluida');
 
   // O que mudou em relação ao salvo: sem nenhuma mudança, não há o que salvar (o botão nem aparece)
@@ -68,6 +71,13 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
         return;
       }
       alteracoes.motivo = motivo.trim();
+    }
+    if (retornando) {
+      if (!justificativa.trim()) {
+        setMensagem('Campo obrigatório: informe a justificativa');
+        return;
+      }
+      alteracoes.justificativa = justificativa.trim();
     }
     if (alterouFiscal) alteracoes.fiscalId = converterFiscal(fiscalId);
     if (alterouPrazo) {
@@ -216,6 +226,21 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
                 value={motivo}
                 onChange={(e) => setMotivo(e.target.value)}
               />
+            </div>
+          )}
+
+          {retornando && (
+            <div className="field-group">
+              <label htmlFor="justificativa">Justificativa do retorno (obrigatória)</label>
+              <textarea
+                id="justificativa"
+                rows={3}
+                maxLength={500}
+                placeholder="Ex.: relatório técnico precisa de ajustes antes da validação final"
+                value={justificativa}
+                onChange={(e) => setJustificativa(e.target.value)}
+              />
+              <p className="modal-dica">A justificativa fica registrada no histórico</p>
             </div>
           )}
 

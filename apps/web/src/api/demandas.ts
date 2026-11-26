@@ -123,6 +123,8 @@ export interface AlteracaoDemanda {
   prazo?: string;
   /** Obrigatório ao reabrir uma demanda concluída (só o gestor pode). */
   motivo?: string;
+  /** Obrigatória ao retornar uma demanda para etapa anterior. */
+  justificativa?: string;
 }
 
 export function useAtualizarDemanda() {
