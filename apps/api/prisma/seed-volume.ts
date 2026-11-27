@@ -5,11 +5,11 @@
 // As demandas geradas levam "[demo]" no assunto, e só elas são apagadas pelo --refazer.
 import { PrismaClient } from '@prisma/client';
 import { adicionarDias, hojeNoFuso } from '@stante/shared';
+import { DIA_MS } from '../src/utils/tempo';
 
 const prisma = new PrismaClient();
 
 const TOTAL = 90;
-const DIA_MS = 24 * 60 * 60 * 1000;
 
 // Gerador pseudoaleatório com semente fixa: rodar de novo produz os mesmos números
 function criarSorteio(semente: number) {
