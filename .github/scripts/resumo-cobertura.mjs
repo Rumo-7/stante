@@ -5,6 +5,7 @@ import { existsSync, readFileSync } from 'node:fs';
 const workspaces = [
   ['API (apps/api)', 'apps/api/coverage/coverage-summary.json'],
   ['Web (apps/web)', 'apps/web/coverage/coverage-summary.json'],
+  ['Shared (packages/shared)', 'packages/shared/coverage/coverage-summary.json'],
 ];
 const pct = (m) => `${m.pct.toFixed(1)}% (${m.covered}/${m.total})`;
 
