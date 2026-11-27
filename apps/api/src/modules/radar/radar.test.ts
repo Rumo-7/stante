@@ -12,6 +12,7 @@ import {
   data,
   limparBanco,
 } from '../../test/fixtures';
+import { DIA_MS } from '../../utils/tempo';
 import { avaliarRisco, type ContextoDeRisco, type DemandaParaRisco } from './risco';
 
 const contexto = (extras: Partial<ContextoDeRisco> = {}): ContextoDeRisco => ({
@@ -180,7 +181,6 @@ describe('avaliarRisco', () => {
 
 describe('GET /api/radar', () => {
   const app = createApp({ gerador: null });
-  const DIA_MS = 24 * 60 * 60 * 1000;
   const em = (dias: number) => adicionarDias(hojeNoFuso(), dias);
 
   beforeEach(limparBanco);

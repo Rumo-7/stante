@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { exigirLogin } from '../../auth/middleware';
 import { prisma } from '../../db';
 import { ErroHttp } from '../../http/erros';
+import { ehIdValido } from '../../utils/validacao';
 
 // Cada pessoa só enxerga e altera os próprios avisos.
 // Sem `router.use`, para não barrar rotas de outros módulos montadas depois.
@@ -47,7 +48,7 @@ notificacoesRouter.post('/lidas', exigirLogin, async (req, res) => {
 
 notificacoesRouter.post('/:id/lida', exigirLogin, async (req, res) => {
   const id = typeof req.params.id === 'string' ? Number(req.params.id) : NaN;
-  if (!Number.isInteger(id) || id <= 0 || id > 2_147_483_647) {
+  if (!ehIdValido(id)) {
     throw new ErroHttp(404, 'Aviso não encontrado.');
   }
 

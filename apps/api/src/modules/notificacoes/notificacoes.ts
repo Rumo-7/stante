@@ -10,6 +10,7 @@ import {
 } from '@stante/shared';
 import { prisma } from '../../db';
 import { env } from '../../env';
+import { DIA_MS } from '../../utils/tempo';
 import { paraData } from '../demandas/filtros';
 
 type Cliente = Prisma.TransactionClient;
@@ -180,7 +181,7 @@ export async function gerarAlertasDePrazo(hoje: string = hojeNoFuso(env.TZ_NEGOC
 
   // Faxina: avisos já lidos e antigos não precisam ficar para sempre
   await prisma.notificacao.deleteMany({
-    where: { lidaEm: { not: null, lt: new Date(Date.now() - GUARDAR_LIDAS_DIAS * 24 * 60 * 60 * 1000) } },
+    where: { lidaEm: { not: null, lt: new Date(Date.now() - GUARDAR_LIDAS_DIAS * DIA_MS) } },
   });
 
   return criados;

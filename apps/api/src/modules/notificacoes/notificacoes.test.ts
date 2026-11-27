@@ -12,11 +12,11 @@ import {
   data,
   limparBanco,
 } from '../../test/fixtures';
+import { DIA_MS } from '../../utils/tempo';
 import { gerarAlertasDePrazo } from './notificacoes';
 
 const app = createApp();
 const em = (dias: number) => adicionarDias(hojeNoFuso(), dias);
-const DIA_MS = 24 * 60 * 60 * 1000;
 
 beforeEach(async () => {
   await prisma.notificacao.deleteMany();
