@@ -85,7 +85,8 @@ porque o plano gratuito do Render não tem terminal.
 
 ## 5. Conferir o ambiente
 
-1. `https://<sua-url>/api/health` deve responder `{"ok":true}`.
+1. `https://<sua-url>/api/health` deve responder `{"ok":true,"commit":"...","iniciadoEm":"..."}`,
+   com `commit` igual ao último commit da `main`.
 2. Entre com o gestor criado no passo 3.
 3. Crie uma demanda com um PDF anexado, depois **baixe o anexo de volta**.
 4. Confira que o arquivo apareceu no bucket (painel do R2).
@@ -102,3 +103,47 @@ porque o plano gratuito do Render não tem terminal.
 - **Login funciona e a próxima tela volta ao login**: confira se o acesso é por
   `https://` (o cookie de sessão é `Secure` em produção).
 - **Primeiro acesso lento**: é o plano gratuito acordando.
+
+## Quando o deploy não atualiza
+
+Sintoma: a `main` recebeu commits, mas a produção continua com a versão antiga. O
+workflow **Verificar deploy** (aba Actions do GitHub) fica com ❌ nesse caso.
+
+### 1. Confira a versão no ar (qualquer pessoa, sem acesso ao painel)
+
+```bash
+curl -s https://stante-2tm9.onrender.com/api/health
+git rev-parse origin/main
+```
+
+Se o `commit` da resposta for diferente do `git rev-parse`, a produção está atrasada. O
+`iniciadoEm` mostra quando essa versão subiu.
+
+### 2. No painel do Render (dona ou dono do serviço)
+
+1. **Settings → Build & Deploy:** confira se o repositório é `Rumo-7/stante`, se a
+   **Branch** é `main` e se o **Auto-Deploy** está ligado. Um serviço apontando para
+   outra branch ou para um repositório antigo nunca recebe as atualizações da `main`.
+2. **Events:** se houver deploy com falha, abra o log e veja em que etapa parou:
+   - no **build** (`npm ci`/`npm run build`): rode o mesmo comando localmente, numa cópia
+     limpa do repositório: `npm ci --include=dev && npm run build`;
+   - no **start**, durante `prisma migrate deploy`: leia o erro do Prisma e confira o estado
+     das migrações no Neon, com a `DATABASE_URL` de produção em `apps/api/.env.producao`:
+     `cd apps/api && node --env-file=.env.producao ../../node_modules/prisma/build/index.js migrate status`;
+   - no **start**, com "Variáveis de ambiente inválidas": falta alguma variável da seção 4.
+3. **Manual Deploy → Deploy latest commit** publica a `main` na hora.
+
+Enquanto um deploy novo falha, o Render mantém a versão anterior no ar. Por isso a
+produção parece "funcionar", só que desatualizada.
+
+### 3. Republicar sem acesso ao painel (Deploy Hook)
+
+Em **Settings → Deploy Hook**, o Render gera uma URL secreta: um `POST` nela dispara um
+deploy. Cadastre essa URL no GitHub como secret `RENDER_DEPLOY_HOOK_URL` (Settings →
+Secrets and variables → Actions). A partir daí, o workflow **Verificar deploy** dispara o
+deploy a cada push na `main`, e qualquer pessoa com acesso ao repositório pode republicar
+pela aba Actions (**Verificar deploy → Run workflow**).
+
+A URL do Deploy Hook é uma credencial: não a coloque em README, issue, PR ou grupo de
+mensagens.
+
