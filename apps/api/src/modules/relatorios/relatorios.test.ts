@@ -235,7 +235,7 @@ describe('GeradorGroq', () => {
 
     const saida = await gerador(fetchFalso).gerar(MENSAGENS);
 
-    expect(saida).toEqual({ texto: 'Texto do parecer', modelo: 'modelo-de-teste-v2', tokensEntrada: 120, tokensSaida: 80 });
+    expect(saida).toEqual({ texto: 'Texto do parecer', modelo: 'modelo-de-teste-v2', tokensEntrada: 120, tokensSaida: 80, truncada: false });
     expect(chamadas).toHaveLength(1);
     expect(chamadas[0]!.url).toBe('https://exemplo.test/chat');
     const init = chamadas[0]!.init;
