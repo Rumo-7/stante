@@ -2,9 +2,9 @@ import { diasParaPrazo, hojeNoFuso, inicioDoDia, adicionarDias } from '@stante/s
 import type { StatusDemanda, TipoDemandante } from '@prisma/client';
 import { prisma } from '../../db';
 import { env } from '../../env';
+import { DIA_MS } from '../../utils/tempo';
 import { filtroPeriodoDeCadastro } from '../demandas/filtros';
 
-const DIA_MS = 24 * 60 * 60 * 1000;
 
 export interface OrgaoBase {
   id: number;

@@ -28,6 +28,20 @@ const assunto = z
 /** Status que podem ser definidos manualmente. "em_analise" só sai via validação do gestor. */
 export const STATUS_EDITAVEIS = ['aberta', 'em_andamento', 'concluida'] as const;
 
+const ORDEM_ETAPAS: Record<string, number> = {
+  aberta: 0,
+  em_andamento: 1,
+  concluida: 2,
+};
+
+/** Indica se a mudança de status retorna a demanda para uma etapa anterior do fluxo. */
+export function ehRetornoDeEtapa(de: string, para: string): boolean {
+  const origem = ORDEM_ETAPAS[de];
+  const destino = ORDEM_ETAPAS[para];
+  if (origem === undefined || destino === undefined) return false;
+  return destino < origem;
+}
+
 export const criarDemandaSchema = z.object({
   demandanteId: idObrigatorio('Demandante inválido.'),
   assunto,
@@ -44,6 +58,8 @@ export const atualizarDemandaSchema = z
     assunto: assunto.optional(),
     /** Obrigatório (e só o gestor pode) ao reabrir uma demanda concluída; fica registrado no histórico. */
     motivo: z.string().trim().max(500, 'O motivo deve ter no máximo 500 caracteres.').optional(),
+    /** Obrigatória ao retornar a demanda para uma etapa anterior; fica registrada no histórico. */
+    justificativa: z.string().trim().max(500, 'A justificativa deve ter no máximo 500 caracteres.').optional(),
   })
   .refine(
     // O motivo sozinho não é uma alteração: ele só acompanha uma mudança de status
@@ -54,6 +70,23 @@ export const atualizarDemandaSchema = z
 export const validarDemandaSchema = z.object({
   fiscalId: idOpcional,
   prazo: prazo.optional(),
+});
+
+const MSG_MOTIVO_CICLO = 'Campo obrigatório: informe o motivo do novo ciclo.';
+
+/**
+ * Novo ciclo (reincidência) de uma demanda concluída. Só o motivo é obrigatório:
+ * assunto e fiscal são herdados da demanda original, e o prazo segue o padrão.
+ */
+export const novoCicloSchema = z.object({
+  motivo: z
+    .string({ required_error: MSG_MOTIVO_CICLO, invalid_type_error: MSG_MOTIVO_CICLO })
+    .trim()
+    .min(3, MSG_MOTIVO_CICLO)
+    .max(500, 'O motivo deve ter no máximo 500 caracteres.'),
+  assunto: assunto.optional(),
+  fiscalId: idOpcional,
+  prazo: z.preprocess(vazioParaUndefined, prazo.optional()),
 });
 
 const dataOpcional = z.preprocess(
@@ -142,5 +175,6 @@ export const periodoQuerySchema = z
 export type CriarDemandaInput = z.infer<typeof criarDemandaSchema>;
 export type AtualizarDemandaInput = z.infer<typeof atualizarDemandaSchema>;
 export type ValidarDemandaInput = z.infer<typeof validarDemandaSchema>;
+export type NovoCicloInput = z.infer<typeof novoCicloSchema>;
 export type ListarDemandasQuery = z.infer<typeof listarDemandasQuerySchema>;
 export type DashboardQuery = z.infer<typeof dashboardQuerySchema>;

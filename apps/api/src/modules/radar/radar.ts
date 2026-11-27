@@ -2,12 +2,12 @@ import { hojeNoFuso } from '@stante/shared';
 import type { UsuarioLogado } from '../../auth/sessao';
 import { prisma } from '../../db';
 import { env } from '../../env';
+import { DIA_MS } from '../../utils/tempo';
 import { escopoDemandas } from '../demandas/escopo';
 import { paraData } from '../demandas/filtros';
 import { mediana } from '../demandantes/estatisticas';
 import { avaliarRisco, type ContextoDeRisco, type NivelDeRisco, type Ritmo } from './risco';
 
-const DIA_MS = 24 * 60 * 60 * 1000;
 /** Só o último ano conta: o ritmo da unidade de três anos atrás não diz nada sobre hoje. */
 const JANELA_DO_HISTORICO_DIAS = 365;
 const LIMITE_DA_LISTA = 50;

@@ -3,9 +3,12 @@ import type { Prisma } from '@prisma/client';
 import {
   atualizarDemandaSchema,
   criarDemandaSchema,
+  ehRetornoDeEtapa,
   hojeNoFuso,
   prazoPadrao,
   listarDemandasQuerySchema,
+  novoCicloSchema,
+  numeroDemanda,
   validarDemandaSchema,
 } from '@stante/shared';
 import { exigirLogin, exigirPerfil } from '../../auth/middleware';
@@ -13,6 +16,7 @@ import { prisma } from '../../db';
 import { env } from '../../env';
 import { ErroHttp } from '../../http/erros';
 import { validar } from '../../http/validar';
+import { ehIdValido } from '../../utils/validacao';
 import {
   descartarArquivos,
   gravarArquivos,
@@ -37,7 +41,7 @@ demandasRouter.use(exigirLogin);
 
 function lerId(valor: unknown): number {
   const id = typeof valor === 'string' ? Number(valor) : NaN;
-  if (!Number.isInteger(id) || id <= 0 || id > 2_147_483_647) {
+  if (!ehIdValido(id)) {
     throw new ErroHttp(404, 'Demanda não encontrada.');
   }
   return id;
@@ -200,6 +204,12 @@ demandasRouter.patch('/:id', exigirPerfil('gestor', 'inspetor'), async (req, res
     }
   }
 
+  // Retornar para uma etapa anterior exige justificativa obrigatória
+  const retornando = !reabrindo && dados.status !== undefined && ehRetornoDeEtapa(atual.status, dados.status);
+  if (retornando && !dados.justificativa) {
+    throw new ErroHttp(400, 'Campo obrigatório');
+  }
+
   const novoFiscal = await buscarFiscal(dados.fiscalId);
 
   // Só vira evento o que de fato mudou
@@ -208,7 +218,12 @@ demandasRouter.patch('/:id', exigirPerfil('gestor', 'inspetor'), async (req, res
     eventos.push(
       reabrindo
         ? { tipo: 'reaberta', dados: { para: dados.status, motivo: dados.motivo! } }
-        : { tipo: 'status_alterado', dados: { de: atual.status, para: dados.status } },
+        : {
+            tipo: 'status_alterado',
+            dados: retornando
+              ? { de: atual.status, para: dados.status, justificativa: dados.justificativa! }
+              : { de: atual.status, para: dados.status },
+          },
     );
   }
   if (dados.fiscalId !== undefined && (dados.fiscalId ?? null) !== atual.fiscalId) {
@@ -307,4 +322,81 @@ demandasRouter.get('/:id/historico', exigirPerfil('gestor', 'inspetor'), async (
   if (!demanda) throw new ErroHttp(404, 'Demanda não encontrada.');
 
   res.json(await listarHistorico(id));
+});
+
+// Reincidência (UH15): uma nova solicitação sobre um caso encerrado vira um NOVO CICLO,
+// uma demanda nova ligada à original. A original não muda (diferente da reabertura do
+// PATCH, que serve para correções e reaproveita o mesmo id).
+demandasRouter.post('/:id/novo-ciclo', exigirPerfil('gestor'), async (req, res) => {
+  const id = lerId(req.params.id);
+  const dados = validar(novoCicloSchema, req.body);
+  const usuario = req.usuario!;
+  const hoje = hojeNoFuso(env.TZ_NEGOCIO);
+
+  const existente = await prisma.demanda.findUnique({ where: { id } });
+  if (!existente) throw new ErroHttp(404, 'Demanda não encontrada.');
+  if (existente.status !== 'concluida') {
+    throw new ErroHttp(409, 'Só uma demanda concluída pode ganhar um novo ciclo.');
+  }
+
+  // Todos os ciclos apontam para a primeira demanda do caso, mesmo vindo de outro ciclo
+  const raizId = existente.demandaOrigemId ?? id;
+  // fiscalId omitido herda o fiscal; null explícito deixa o novo ciclo sem fiscal
+  const fiscalId = dados.fiscalId === undefined ? existente.fiscalId : dados.fiscalId;
+  if (dados.fiscalId !== undefined) await buscarFiscal(dados.fiscalId);
+
+  const criada = await prisma.$transaction(async (tx) => {
+    const nova = await tx.demanda.create({
+      data: {
+        demandanteId: existente.demandanteId,
+        assunto: dados.assunto ?? existente.assunto,
+        prazo: paraData(dados.prazo ?? prazoPadrao(hoje)),
+        fiscalId,
+        status: 'aberta',
+        origem: 'planejada',
+        criadaPorId: usuario.id,
+        demandaOrigemId: raizId,
+      },
+      include: INCLUIR_RELACOES,
+    });
+    // Um evento em cada ponta: a nova sabe de onde veio, e a raiz guarda o vínculo
+    // sem perder nada do que já estava no seu histórico.
+    await registrar(tx, nova.id, usuario.id, [
+      { tipo: 'novo_ciclo', dados: { origem: numeroDemanda(raizId), motivo: dados.motivo } },
+    ]);
+    await registrar(tx, raizId, usuario.id, [
+      { tipo: 'ciclo_vinculado', dados: { novo: numeroDemanda(nova.id), motivo: dados.motivo } },
+    ]);
+    if (nova.fiscalId) await notificarAtribuida(tx, nova, nova.fiscalId, usuario.id);
+    return nova;
+  });
+  res.status(201).json(serializarDemanda(criada, hoje));
+});
+
+// Todos os ciclos de um caso (a raiz e os ciclos ligados a ela), a partir de qualquer um deles.
+demandasRouter.get('/:id/ciclos', async (req, res) => {
+  const id = lerId(req.params.id);
+  const escopo = escopoDemandas(req.usuario!);
+  const demanda = await prisma.demanda.findFirst({
+    where: { AND: [{ id }, escopo] },
+    select: { id: true, demandaOrigemId: true },
+  });
+  if (!demanda) throw new ErroHttp(404, 'Demanda não encontrada.');
+
+  const raizId = demanda.demandaOrigemId ?? demanda.id;
+  // O escopo vale também para a lista: um ciclo de outro fiscal não aparece para o inspetor
+  const ciclos = await prisma.demanda.findMany({
+    where: { AND: [{ OR: [{ id: raizId }, { demandaOrigemId: raizId }] }, escopo] },
+    select: { id: true, status: true, createdAt: true },
+    orderBy: { id: 'asc' },
+  });
+
+  res.json(
+    ciclos.map((ciclo) => ({
+      id: ciclo.id,
+      numero: numeroDemanda(ciclo.id),
+      status: ciclo.status,
+      criadoEm: ciclo.createdAt.toISOString(),
+    })),
+  );
 });

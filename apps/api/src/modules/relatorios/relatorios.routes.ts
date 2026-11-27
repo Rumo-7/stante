@@ -7,6 +7,7 @@ import { prisma } from '../../db';
 import { env } from '../../env';
 import { ErroHttp } from '../../http/erros';
 import { validar } from '../../http/validar';
+import { ehIdValido } from '../../utils/validacao';
 import { numerosForaDosDados } from './conferencia';
 import { montarFatos, type FatosParecer } from './fatos';
 import type { GeradorDeTexto } from './gerador';
@@ -120,7 +121,7 @@ export function criarRelatoriosRouter(gerador: GeradorDeTexto | null): Router {
 
   router.get('/:id', exigirPerfil('gestor'), async (req, res) => {
     const id = typeof req.params.id === 'string' ? Number(req.params.id) : NaN;
-    if (!Number.isInteger(id) || id <= 0 || id > 2_147_483_647) {
+    if (!ehIdValido(id)) {
       throw new ErroHttp(404, 'Parecer não encontrado.');
     }
     const registro = await prisma.relatorio.findUnique({

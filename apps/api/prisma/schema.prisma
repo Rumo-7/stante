@@ -44,6 +44,8 @@ enum TipoHistorico {
   assunto_alterado
   anexo_adicionado
   anexo_removido
+  novo_ciclo // na demanda nova: ela é um novo ciclo de uma demanda encerrada
+  ciclo_vinculado // na demanda original: um novo ciclo foi aberto a partir dela
 }
 
 enum TipoDemandante {
@@ -141,6 +143,9 @@ model Demanda {
   // Preenchida quando a demanda é concluída; alimenta a tendência mensal do
   // dashboard (antes usava updated_at, que muda a cada edição).
   concluidaEm  DateTime?     @map("concluida_em")
+  // Reincidência (UH15): aponta SEMPRE para a primeira demanda do caso (a raiz),
+  // mesmo quando o ciclo nasce de outro ciclo. Assim, achar todos os ciclos é uma consulta só.
+  demandaOrigemId Int?       @map("demanda_origem_id")
   // Número do processo no SEI, quando a demanda chegou por lá (ex.: importada da planilha da VISAT).
   // Único: importar a mesma planilha duas vezes não duplica demandas.
   processoSei  String?       @unique @map("processo_sei")
@@ -153,6 +158,8 @@ model Demanda {
   fiscal     Fiscal?    @relation(fields: [fiscalId], references: [id], onDelete: SetNull)
   criadaPor    User?    @relation("DemandaCriadaPor", fields: [criadaPorId], references: [id], onDelete: SetNull)
   validadaPor  User?    @relation("DemandaValidadaPor", fields: [validadaPorId], references: [id], onDelete: SetNull)
+  demandaOrigem Demanda? @relation("CiclosDaDemanda", fields: [demandaOrigemId], references: [id], onDelete: SetNull)
+  ciclos       Demanda[] @relation("CiclosDaDemanda")
   anexos     Anexo[]
   historico  HistoricoDemanda[]
   notificacoes Notificacao[]
@@ -161,6 +168,7 @@ model Demanda {
   @@index([status])
   @@index([fiscalId])
   @@index([demandanteId])
+  @@index([demandaOrigemId])
   @@map("demandas")
 }
 

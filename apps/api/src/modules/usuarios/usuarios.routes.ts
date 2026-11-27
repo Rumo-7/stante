@@ -6,6 +6,7 @@ import { gerarSenhaProvisoria, hashSenha } from '../../auth/senha';
 import { prisma } from '../../db';
 import { ErroHttp } from '../../http/erros';
 import { validar } from '../../http/validar';
+import { ehIdValido } from '../../utils/validacao';
 
 // Tudo aqui é administração de contas: só o gestor. Sem `router.use`, para não
 // barrar rotas de outros módulos montadas depois (ver o router de referência).
@@ -34,7 +35,7 @@ const serializar = (usuario: UsuarioComVinculos) => ({
 
 function lerId(valor: unknown): number {
   const id = typeof valor === 'string' ? Number(valor) : NaN;
-  if (!Number.isInteger(id) || id <= 0 || id > 2_147_483_647) {
+  if (!ehIdValido(id)) {
     throw new ErroHttp(404, 'Usuário não encontrado.');
   }
   return id;

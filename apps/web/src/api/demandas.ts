@@ -21,10 +21,21 @@ export interface Demanda {
   statusSalvo: StatusDemanda;
   origem: 'planejada' | 'campo';
   validadaEm: string | null;
+  /** Novo ciclo (reincidência): id da demanda original do caso, ou null se esta é a original. */
+  demandaOrigemId: number | null;
+  numeroOrigem: string | null;
   /** Número do processo no SEI (demandas importadas da planilha). */
   processoSei: string | null;
   /** Dia em que o órgão enviou a demanda ("AAAA-MM-DD"), quando informado. */
   recebidaEm: string | null;
+}
+
+/** Um ciclo do caso (a original ou um novo ciclo ligado a ela). */
+export interface CicloDemanda {
+  id: number;
+  numero: string;
+  status: StatusDemanda;
+  criadoEm: string;
 }
 
 export interface FiltrosDemandas {
@@ -112,8 +123,12 @@ export function useCriarDemanda() {
 export interface AlteracaoDemanda {
   status?: StatusDemandaEditavel;
   fiscalId?: number | null;
+  /** Novo prazo (AAAA-MM-DD); só o gestor pode alterar. */
+  prazo?: string;
   /** Obrigatório ao reabrir uma demanda concluída (só o gestor pode). */
   motivo?: string;
+  /** Obrigatória ao retornar uma demanda para etapa anterior. */
+  justificativa?: string;
 }
 
 export function useAtualizarDemanda() {
@@ -130,6 +145,23 @@ export function useValidarDemanda() {
   return useMutation({
     mutationFn: ({ id, dados }: { id: number; dados: { fiscalId?: number | null; prazo?: string } }) =>
       api.post<Demanda>(`/demandas/${id}/validar`, dados),
+    onSuccess: () => invalidarDemandas(clienteQuery),
+  });
+}
+
+/** A original e os novos ciclos do mesmo caso, a partir de qualquer um deles. */
+export const useCiclos = (id: number) =>
+  useQuery({
+    queryKey: ['demandas', 'ciclos', id],
+    queryFn: () => api.get<CicloDemanda[]>(`/demandas/${id}/ciclos`),
+  });
+
+/** Abre um novo ciclo (reincidência) de uma demanda concluída; só o gestor pode. */
+export function useNovoCiclo() {
+  const clienteQuery = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, motivo }: { id: number; motivo: string }) =>
+      api.post<Demanda>(`/demandas/${id}/novo-ciclo`, { motivo }),
     onSuccess: () => invalidarDemandas(clienteQuery),
   });
 }

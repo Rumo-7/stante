@@ -8,11 +8,13 @@ import {
   type Demanda,
   type StatusDemandaEditavel,
 } from '../api/demandas';
-import { useHistorico } from '../api/historico';
 import { useUsuarioLogado } from '../auth/rotas';
 import { formatarData, formatarInstante } from '../util/data';
+import { ehEtapaAnterior } from '../util/etapas';
 import { formatarTamanho } from '../util/tamanho';
 import { Modal } from './Modal';
+import { SecaoCiclos } from './SecaoCiclos';
+import { SecaoHistorico } from './SecaoHistorico';
 import { SeletorFiscal } from './SeletorFiscal';
 import { StatusBadge } from './StatusBadge';
 
@@ -23,28 +25,6 @@ const STATUS_EDITAVEIS: { valor: StatusDemandaEditavel; rotulo: string }[] = [
 ];
 
 const TAMANHO_MAXIMO = 10 * 1024 * 1024;
-
-function SecaoHistorico({ demandaId }: { demandaId: number }) {
-  const historico = useHistorico(demandaId);
-
-  return (
-    <details className="historico">
-      <summary>Histórico</summary>
-      {historico.isPending && <p className="empty-state">Carregando…</p>}
-      {historico.error && <p className="estado-erro">{mensagemDeErro(historico.error)}</p>}
-      {historico.data?.length === 0 && <p className="empty-state">Nenhum registro ainda.</p>}
-      <ol className="historico-lista">
-        {historico.data?.map((evento) => (
-          <li key={evento.id}>
-            <span className="historico-quando">{formatarInstante(evento.criadoEm)}</span>
-            <span>{evento.descricao}</span>
-            <span className="historico-autor">{evento.autor ?? 'Usuário removido'}</span>
-          </li>
-        ))}
-      </ol>
-    </details>
-  );
-}
 
 export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; onFechar: () => void }) {
   const usuario = useUsuarioLogado();
@@ -65,18 +45,26 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
   const [inputArquivos, setInputArquivos] = useState(0); // muda para limpar o <input type="file">
   const [mensagem, setMensagem] = useState<string | null>(null);
   const [motivo, setMotivo] = useState('');
+  const [justificativa, setJustificativa] = useState('');
 
   const fiscalOriginal = demanda.fiscalId ? String(demanda.fiscalId) : '';
   const converterFiscal = (valor: string) => (valor ? Number(valor) : null);
 
   // Tirar uma demanda de "concluída" é reabrir: só o gestor, e o motivo fica no histórico
   const reabrindo = demanda.statusSalvo === 'concluida' && status !== 'concluida';
+  const retornando = !reabrindo && ehEtapaAnterior(demanda.statusSalvo, status);
   const podeAlterarStatus = !(usuario.perfil === 'inspetor' && demanda.statusSalvo === 'concluida');
+
+  // O que mudou em relação ao salvo: sem nenhuma mudança, não há o que salvar (o botão nem aparece)
+  const alterouStatus = status !== demanda.statusSalvo;
+  const alterouFiscal = ehGestor && fiscalId !== fiscalOriginal;
+  const alterouPrazo = ehGestor && prazo !== demanda.prazo;
+  const temAlteracao = alterouStatus || alterouFiscal || alterouPrazo;
 
   function salvar() {
     setMensagem(null);
     const alteracoes: AlteracaoDemanda = {};
-    if (status !== demanda.statusSalvo) alteracoes.status = status as StatusDemandaEditavel;
+    if (alterouStatus) alteracoes.status = status as StatusDemandaEditavel;
     if (reabrindo) {
       if (motivo.trim().length < 3) {
         setMensagem('Informe o motivo da reabertura.');
@@ -84,7 +72,21 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
       }
       alteracoes.motivo = motivo.trim();
     }
-    if (ehGestor && fiscalId !== fiscalOriginal) alteracoes.fiscalId = converterFiscal(fiscalId);
+    if (retornando) {
+      if (!justificativa.trim()) {
+        setMensagem('Campo obrigatório: informe a justificativa');
+        return;
+      }
+      alteracoes.justificativa = justificativa.trim();
+    }
+    if (alterouFiscal) alteracoes.fiscalId = converterFiscal(fiscalId);
+    if (alterouPrazo) {
+      if (!prazo) {
+        setMensagem('Informe o prazo.');
+        return;
+      }
+      alteracoes.prazo = prazo;
+    }
 
     if (Object.keys(alteracoes).length === 0) {
       onFechar();
@@ -239,12 +241,35 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
             </div>
           )}
 
-          {ehGestor && (
+          {retornando && (
             <div className="field-group">
-              <label htmlFor="fiscal">Fiscal responsável</label>
-              {seletorFiscal}
+              <label htmlFor="justificativa">Justificativa do retorno (obrigatória)</label>
+              <textarea
+                id="justificativa"
+                rows={3}
+                maxLength={500}
+                placeholder="Ex.: relatório técnico precisa de ajustes antes da validação final"
+                value={justificativa}
+                onChange={(e) => setJustificativa(e.target.value)}
+              />
+              <p className="modal-dica">A justificativa fica registrada no histórico</p>
             </div>
           )}
+
+          {ehGestor && (
+            <>
+              <div className="field-group">
+                <label htmlFor="fiscal">Fiscal responsável</label>
+                {seletorFiscal}
+              </div>
+              <div className="field-group">
+                <label htmlFor="prazo">Prazo</label>
+                <input type="date" id="prazo" value={prazo} onChange={(e) => setPrazo(e.target.value)} />
+              </div>
+            </>
+          )}
+
+          <p className="modal-dica">Mudanças de status, prazo e fiscal ficam registradas no histórico.</p>
         </>
       )}
 
@@ -310,6 +335,8 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
         )}
       </div>
 
+      <SecaoCiclos demanda={demanda} />
+
       {!somenteLeitura && <SecaoHistorico demandaId={demanda.id} />}
 
       <p className={`form-message ${mensagem ? 'error' : ''}`} role="alert">
@@ -320,7 +347,7 @@ export function DetalheDemandaModal({ demanda, onFechar }: { demanda: Demanda; o
         <button type="button" className="btn-secondary" onClick={onFechar}>
           Fechar
         </button>
-        {!emAnalise && !somenteLeitura && (
+        {!emAnalise && !somenteLeitura && temAlteracao && (
           <button type="button" className="btn-primary" onClick={salvar} disabled={atualizar.isPending}>
             {atualizar.isPending ? 'Salvando…' : 'Salvar alterações'}
           </button>
