@@ -1,0 +1,31 @@
+# PostgreSQL para desenvolvimento e testes, sem instalar nada além do Docker.
+#   npm run db:up    sobe o banco (espera ficar saudável)
+#   npm run db:down  para o banco (os dados ficam no volume)
+# Cria dois bancos: stante_dev (aplicação) e stante_test (apagado pelos testes).
+# A porta padrão é 5433 para não conflitar com um PostgreSQL instalado na 5432;
+# para usar outra: STANTE_DB_PORTA=5434 npm run db:up
+#
+# Só o banco roda em container: em produção o Render faz o build nativo da aplicação.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: stante-postgres
+    environment:
+      POSTGRES_USER: stante
+      POSTGRES_PASSWORD: stante
+      POSTGRES_DB: stante_dev
+      TZ: America/Recife
+    ports:
+      - "127.0.0.1:${STANTE_DB_PORTA:-5433}:5432"
+    volumes:
+      - stante-postgres:/var/lib/postgresql/data
+      - ./docker/postgres:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stante -d stante_dev"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  stante-postgres:

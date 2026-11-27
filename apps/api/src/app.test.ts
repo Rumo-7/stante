@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import request from 'supertest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { createApp } from './app';
 import { prisma } from './db';
 
@@ -77,5 +77,27 @@ describe('cabeçalhos de segurança', () => {
     const res = await request(createApp({ pastaWeb })).get('/api/health');
     expect(res.headers['x-content-type-options']).toBe('nosniff');
     expect(res.headers['content-security-policy']).toBeDefined();
+  });
+});
+
+describe('GET /api/health', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('informa o commit publicado e quando a aplicação subiu', async () => {
+    vi.stubEnv('RENDER_GIT_COMMIT', 'abc1234def');
+    const res = await request(createApp({ pastaWeb })).get('/api/health').expect(200);
+
+    expect(res.body.ok).toBe(true);
+    expect(res.body.commit).toBe('abc1234def');
+    expect(new Date(res.body.iniciadoEm).toISOString()).toBe(res.body.iniciadoEm);
+  });
+
+  it('fora do Render, o commit aparece como "local"', async () => {
+    vi.stubEnv('RENDER_GIT_COMMIT', undefined);
+    const res = await request(createApp({ pastaWeb })).get('/api/health').expect(200);
+
+    expect(res.body.commit).toBe('local');
   });
 });
