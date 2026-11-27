@@ -1,0 +1,72 @@
+# Integração contínua: roda em todo PR para develop/main e em todo push na develop.
+# O job "qualidade" é o check exigido pela proteção de branch: não renomeie sem atualizar a regra.
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  qualidade:
+    name: qualidade
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        # Mesmo usuário, senha e porta do docker-compose: o .env.test.example funciona sem ajuste
+        env:
+          POSTGRES_USER: stante
+          POSTGRES_PASSWORD: stante
+          POSTGRES_DB: stante_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U stante -d stante_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      TZ_NEGOCIO: America/Recife
+      # Testes nunca usam serviços externos: anexos em disco e IA desligada
+      STORAGE_DRIVER: disco
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Verificar tipos
+        run: npm run typecheck
+
+      - name: Build (mesmo comando do Render)
+        run: npm run build
+
+      - name: Preparar banco de teste
+        run: |
+          cp apps/api/.env.test.example apps/api/.env.test
+          npm run db:test:prepare -w @stante/api
+
+      - name: Testes unitários e de integração, com cobertura
+        run: npm run test:cobertura
+
+      - name: Resumo da cobertura
+        if: always()
+        run: node .github/scripts/resumo-cobertura.mjs >> "$GITHUB_STEP_SUMMARY"

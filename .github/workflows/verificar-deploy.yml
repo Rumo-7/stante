@@ -1,0 +1,62 @@
+# Deploy contínuo verificado.
+# O Render publica a main sozinho; este workflow confirma que a versão no ar é o commit
+# que acabou de entrar. Se o deploy travar ou falhar, o commit fica com ❌ no GitHub.
+# Com o secret RENDER_DEPLOY_HOOK_URL cadastrado, ele também dispara o deploy,
+# o que permite republicar sem acesso ao painel do Render (aba Actions → Run workflow).
+name: Verificar deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: verificar-deploy
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  URL_PRODUCAO: https://stante-2tm9.onrender.com
+
+jobs:
+  verificar:
+    name: verificar-deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Disparar deploy pelo Deploy Hook (se configurado)
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$DEPLOY_HOOK" ]; then
+            echo "Secret RENDER_DEPLOY_HOOK_URL não configurado: contando com o Auto-Deploy do Render."
+            exit 0
+          fi
+          curl -fsS -X POST "$DEPLOY_HOOK" > /dev/null
+          echo "Deploy disparado pelo Deploy Hook."
+
+      - name: Aguardar o commit ${{ github.sha }} no ar
+        run: |
+          esperado="${{ github.sha }}"
+          # Até 20 min: o plano gratuito demora para acordar, buildar e subir
+          for tentativa in $(seq 1 40); do
+            resposta=$(curl -fsS --max-time 60 "$URL_PRODUCAO/api/health" || true)
+            no_ar=$(echo "$resposta" | jq -r '.commit // "desconhecido"' 2>/dev/null || echo "desconhecido")
+            echo "Tentativa $tentativa: no ar = $no_ar"
+            if [ "$no_ar" = "$esperado" ]; then
+              echo "### ✅ Produção atualizada" >> "$GITHUB_STEP_SUMMARY"
+              echo "Commit \`$esperado\` no ar em $URL_PRODUCAO" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 30
+          done
+          {
+            echo "### ❌ Produção não atualizou"
+            echo "Esperado: \`$esperado\` · No ar: \`$no_ar\`"
+            echo "Veja docs/deploy.md, seção \"Quando o deploy não atualiza\"."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error::A produção não chegou ao commit $esperado em 20 minutos (no ar: $no_ar)."
+          exit 1
