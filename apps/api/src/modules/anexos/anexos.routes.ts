@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { exigirLogin, exigirPerfil } from '../../auth/middleware';
 import { prisma } from '../../db';
 import { ErroHttp } from '../../http/erros';
+import { ehIdValido } from '../../utils/validacao';
 import { armazenamento } from '../../storage';
 import { escopoDemandas } from '../demandas/escopo';
 import { registrar } from '../historico/historico';
@@ -34,7 +35,7 @@ const serializar = (anexo: AnexoBanco) => ({
 
 function lerId(valor: unknown, mensagem: string): number {
   const id = typeof valor === 'string' ? Number(valor) : NaN;
-  if (!Number.isInteger(id) || id <= 0 || id > 2_147_483_647) throw new ErroHttp(404, mensagem);
+  if (!ehIdValido(id)) throw new ErroHttp(404, mensagem);
   return id;
 }
 

@@ -12,6 +12,7 @@ import { exigirPerfil } from '../../auth/middleware';
 import { prisma } from '../../db';
 import { ErroHttp } from '../../http/erros';
 import { validar } from '../../http/validar';
+import { ehIdValido } from '../../utils/validacao';
 import { estatisticasPorOrgao } from '../demandantes/estatisticas';
 import { sugerirFiscais } from '../fiscais/sugestao';
 
@@ -114,7 +115,7 @@ referenciaRouter.post('/demandantes', exigirPerfil('gestor', 'inspetor'), async 
 
 referenciaRouter.patch('/demandantes/:id', exigirPerfil('gestor'), async (req, res) => {
   const id = typeof req.params.id === 'string' ? Number(req.params.id) : NaN;
-  if (!Number.isInteger(id) || id <= 0 || id > 2_147_483_647) {
+  if (!ehIdValido(id)) {
     throw new ErroHttp(404, 'Órgão não encontrado.');
   }
   const dados = validar(atualizarDemandanteSchema, req.body);
