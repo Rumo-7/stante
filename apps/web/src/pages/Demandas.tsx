@@ -6,6 +6,7 @@ import { mapaDoRadar, useRadar } from '../api/radar';
 import { useQueryClient } from '@tanstack/react-query';
 import { useUsuarioLogado } from '../auth/rotas';
 import { DetalheDemandaModal } from '../components/DetalheDemandaModal';
+import { ImportarCsvModal } from '../components/ImportarCsvModal';
 import { NovaDemandaModal } from '../components/NovaDemandaModal';
 import { RadarSelo } from '../components/RadarSelo';
 import { StatusBadge } from '../components/StatusBadge';
@@ -108,6 +109,7 @@ export function Demandas() {
   const [concluindo, setConcluindo] = useState(false);
   const [idAberto, setIdAberto] = useState<number | null>(null);
   const [novaAberta, setNovaAberta] = useState(false);
+  const [importarAberto, setImportarAberto] = useState(false);
 
   // Vindo de um aviso do sino (/demandas?abrir=ID): abre a demanda e limpa o parâmetro da URL
   const abrirParametro = parametros.get('abrir');
@@ -190,9 +192,16 @@ export function Demandas() {
           </p>
         </div>
         {podeEditar && (
-          <button type="button" className="btn-primary" onClick={() => setNovaAberta(true)}>
-            + Nova Demanda
-          </button>
+          <div className="page-header-acoes">
+            {usuario.perfil === 'gestor' && (
+              <button type="button" className="btn-secondary" onClick={() => setImportarAberto(true)}>
+                Importar CSV
+              </button>
+            )}
+            <button type="button" className="btn-primary" onClick={() => setNovaAberta(true)}>
+              + Nova Demanda
+            </button>
+          </div>
         )}
       </header>
 
@@ -375,6 +384,7 @@ export function Demandas() {
         <DetalheDemandaModal key={detalhe.data.id} demanda={detalhe.data} onFechar={() => setIdAberto(null)} />
       )}
       {novaAberta && <NovaDemandaModal onFechar={() => setNovaAberta(false)} />}
+      {importarAberto && <ImportarCsvModal onFechar={() => setImportarAberto(false)} />}
     </main>
   );
 }

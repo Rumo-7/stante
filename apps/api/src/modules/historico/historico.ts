@@ -41,6 +41,11 @@ const texto = (valor: unknown) => (typeof valor === 'string' ? valor : '');
 export function descrever(tipo: TipoHistorico, dados: Dados): string {
   switch (tipo) {
     case 'criada':
+      if (dados.importada) {
+        return dados.processoSei
+          ? `Demanda importada da planilha (processo SEI ${texto(dados.processoSei)})`
+          : 'Demanda importada da planilha';
+      }
       return dados.origem === 'campo'
         ? 'Demanda aberta em campo (aguardando validação do gestor)'
         : 'Demanda criada';
