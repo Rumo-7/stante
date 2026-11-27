@@ -53,6 +53,11 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      # O npm 11 não roda scripts de instalação das dependências por padrão,
+      # então o cliente do Prisma precisa ser gerado antes do typecheck
+      - name: Gerar cliente do Prisma
+        run: npm run db:generate -w @stante/api
+
       - name: Verificar tipos
         run: npm run typecheck
 

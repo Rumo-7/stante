@@ -46,7 +46,8 @@ jobs:
             resposta=$(curl -fsS --max-time 60 "$URL_PRODUCAO/api/health" || true)
             no_ar=$(echo "$resposta" | jq -r '.commit // "desconhecido"' 2>/dev/null || echo "desconhecido")
             echo "Tentativa $tentativa: no ar = $no_ar"
-            if [ "$no_ar" = "$esperado" ]; then
+            # Aceita o SHA completo ou abreviado (mínimo de 7 caracteres)
+            if [ "${#no_ar}" -ge 7 ] && [ "${esperado#"$no_ar"}" != "$esperado" ]; then
               echo "### ✅ Produção atualizada" >> "$GITHUB_STEP_SUMMARY"
               echo "Commit \`$esperado\` no ar em $URL_PRODUCAO" >> "$GITHUB_STEP_SUMMARY"
               exit 0
