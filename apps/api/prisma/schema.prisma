@@ -146,6 +146,11 @@ model Demanda {
   // Reincidência (UH15): aponta SEMPRE para a primeira demanda do caso (a raiz),
   // mesmo quando o ciclo nasce de outro ciclo. Assim, achar todos os ciclos é uma consulta só.
   demandaOrigemId Int?       @map("demanda_origem_id")
+  // Número do processo no SEI, quando a demanda chegou por lá (ex.: importada da planilha da VISAT).
+  // Único: importar a mesma planilha duas vezes não duplica demandas.
+  processoSei  String?       @unique @map("processo_sei")
+  // Dia em que o órgão enviou a demanda. Pode ser anterior ao cadastro no Stante (created_at).
+  recebidaEm   DateTime?     @map("recebida_em") @db.Date
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
 

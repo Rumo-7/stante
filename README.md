@@ -45,6 +45,7 @@
 - [Licença](#licenca)
 - [Sprint 1](#sprint-1)
 - [Sprint 2](#sprint-2)
+- [Sprint 3](#sprint-3)
 
 <br/>
 
@@ -271,6 +272,17 @@ As histórias abaixo foram implementadas e validadas por meio de screencasts, di
 **Backlog restante (Sprints 4 a 6)**
 <img width="1191" height="359" alt="image" src="https://github.com/user-attachments/assets/9e4d533b-0960-4d63-8a37-5ca457a6a926" />
 
+
+<br/>
+
+<a name="sprint-3"></a>
+## 🏃 Sprint 3
+
+**Histórias da Sprint 3 — board**
+<img src="./assets/sprint-3-view.png" alt="Board da Sprint 3 no ClickUp" width="100%"/>
+
+**Backlog restante**
+<img src="./assets/backlog-restante-sprint-3-view.png" alt="Backlog restante no ClickUp" width="100%"/>
 
 <br/>
 

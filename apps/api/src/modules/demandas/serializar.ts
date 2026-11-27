@@ -25,5 +25,7 @@ export function serializarDemanda(demanda: DemandaComRelacoes, hoje: string) {
     // Novo ciclo (reincidência): a demanda original do caso, ou null se esta é a original
     demandaOrigemId: demanda.demandaOrigemId,
     numeroOrigem: demanda.demandaOrigemId ? numeroDemanda(demanda.demandaOrigemId) : null,
+    processoSei: demanda.processoSei,
+    recebidaEm: demanda.recebidaEm?.toISOString().slice(0, 10) ?? null,
   };
 }

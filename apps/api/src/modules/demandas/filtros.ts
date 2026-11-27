@@ -69,6 +69,7 @@ export function montarWhere(
       { assunto: { contains: termo, mode: 'insensitive' } },
       { demandante: { nome: { contains: termo, mode: 'insensitive' } } },
       { fiscal: { nome: { contains: termo, mode: 'insensitive' } } },
+      { processoSei: { contains: termo, mode: 'insensitive' } },
     ];
     // "DEM-0007", "dem7" ou "7" encontram a demanda de id 7 (limite de dígitos evita estourar o Int do Postgres)
     const numero = /^(?:dem-?)?0*(\d{1,9})$/i.exec(termo);

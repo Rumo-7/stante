@@ -24,6 +24,10 @@ export interface Demanda {
   /** Novo ciclo (reincidência): id da demanda original do caso, ou null se esta é a original. */
   demandaOrigemId: number | null;
   numeroOrigem: string | null;
+  /** Número do processo no SEI (demandas importadas da planilha). */
+  processoSei: string | null;
+  /** Dia em que o órgão enviou a demanda ("AAAA-MM-DD"), quando informado. */
+  recebidaEm: string | null;
 }
 
 /** Um ciclo do caso (a original ou um novo ciclo ligado a ela). */
@@ -97,7 +101,7 @@ export const useDemandantes = (habilitado = true) =>
 export const criarDemandante = (nome: string) => api.post<Demandante>('/demandantes', { nome });
 
 /** Atualiza as telas que dependem das demandas (lista, indicadores e carga dos fiscais). */
-function invalidarDemandas(clienteQuery: QueryClient) {
+export function invalidarDemandas(clienteQuery: QueryClient) {
   return Promise.all([
     clienteQuery.invalidateQueries({ queryKey: ['demandas'] }),
     clienteQuery.invalidateQueries({ queryKey: ['dashboard'] }),
