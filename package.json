@@ -18,7 +18,10 @@
     "build:shared": "npm run build -w @stante/shared",
     "dev:api": "npm run build:shared && npm run dev -w @stante/api",
     "dev:web": "npm run build:shared && npm run dev -w @stante/web",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down",
     "test": "npm run build:shared && npm run test --workspaces --if-present",
+    "test:cobertura": "npm run build:shared && npm run test:cobertura --workspaces --if-present",
     "typecheck": "npm run build:shared && npm run typecheck --workspaces --if-present"
   }
 }

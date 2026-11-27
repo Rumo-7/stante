@@ -22,6 +22,9 @@ import { usuariosRouter } from './modules/usuarios/usuarios.routes';
 // apps/api/src ou apps/api/dist -> apps/web/dist (o front compilado)
 const PASTA_WEB_PADRAO = path.resolve(__dirname, '..', '..', 'web', 'dist');
 
+// Momento em que o processo carregou a aplicação: mostra no /api/health quando a versão atual subiu
+const INICIADO_EM = new Date().toISOString();
+
 interface OpcoesApp {
   /** Pasta do front compilado. Se não existir (ex.: em desenvolvimento), só a API é servida. */
   pastaWeb?: string;
@@ -63,9 +66,10 @@ export function createApp({ pastaWeb = PASTA_WEB_PADRAO, gerador = criarGeradorP
   app.use(cookieParser());
   app.use(verificarOrigem);
 
+  // commit e iniciadoEm permitem conferir qual versão está no ar sem acesso ao painel do Render
   app.get('/api/health', async (_req, res) => {
     await prisma.$queryRaw`SELECT 1`;
-    res.json({ ok: true });
+    res.json({ ok: true, commit: process.env.RENDER_GIT_COMMIT ?? 'local', iniciadoEm: INICIADO_EM });
   });
 
   app.use('/api', carregarUsuario);
